@@ -76,7 +76,7 @@ export const newUploadToPc = catchAsyncError(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        response: `document inserted to pinecone successfully. The reduced chunk size is ${reducedDocs.length}.`
+        response: `Document inserted to pinecone successfully. The reduced chunk size is ${reducedDocs.length}.`
     })
 }
 )
