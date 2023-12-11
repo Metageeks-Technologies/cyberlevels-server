@@ -27,7 +27,7 @@ const jobPostSchema: Schema = new Schema({
         type: String
     },
     workMode: {
-        type: String
+        type: [String],
     },
     preferredLanguage: {
         type: String

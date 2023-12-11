@@ -6,7 +6,7 @@ export interface IJobPost extends Document {
     location: string;
     jobType: string[];
     jobCategory: string;
-    workMode: string;
+    workMode: string[];
     preferredLanguage: string;
     primarySkills: string[];
     secondarySkills: string[];
