@@ -1,15 +1,11 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { IJobPost } from '../types/jobPost';
-import Candidate from './user/Candidate';
 
 
 const jobPostSchema: Schema = new Schema({
     title: {
         type: String,
         required: true,
-    },
-    description: {
-        type: String,
     },
     location: {
         type: [String],
@@ -48,7 +44,7 @@ const jobPostSchema: Schema = new Schema({
             type: String,
             default: "Canadian dollars"
         },
-        salary: Number,
+        // salary: Number,
         period: {
             type: String,
             enum: ["monthly", "yearly", "weekly", "hourly"]
@@ -59,8 +55,17 @@ const jobPostSchema: Schema = new Schema({
         enum: ["active", "expired"],
         default: 'active',
     },
+    preferredQualification: {
+        type: String,
+    },
     preferredExperience: {
         type: [String],
+    },
+    workHours: {
+        type: String
+    },
+    joiningTime: {
+        type: String,
     },
     companyId: {
         type: mongoose.Types.ObjectId,
@@ -78,6 +83,9 @@ const jobPostSchema: Schema = new Schema({
     ],
     testQuestions: {
         type: String
+    },
+    description: {
+        type: String,
     },
 },
     { timestamps: true }
