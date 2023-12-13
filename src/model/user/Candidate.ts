@@ -76,6 +76,9 @@ const candidateSchema = new mongoose.Schema({
             description: String
         }
     ],
+    certificate:{
+        type:[String]
+    },
     location:
     {
         locality: String,

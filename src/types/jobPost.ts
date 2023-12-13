@@ -6,7 +6,7 @@ export interface IJobPost extends Document {
     location: string;
     jobType: string[];
     jobCategory: string;
-    workMode: string;
+    workMode: string[];
     preferredLanguage: string;
     primarySkills: string[];
     secondarySkills: string[];
@@ -17,6 +17,7 @@ export interface IJobPost extends Document {
     };
     status: "active" | "expired",
     preferredExperience: string[];
+    deadlineDate:Date;
     companyId: mongoose.Types.ObjectId;
     employerId: mongoose.Types.ObjectId;
     candidates: mongoose.Types.ObjectId[];

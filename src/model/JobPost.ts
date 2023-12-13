@@ -27,7 +27,7 @@ const jobPostSchema: Schema = new Schema({
         type: String
     },
     workMode: {
-        type: String
+        type: [String]
     },
     preferredLanguage: {
         type: String
@@ -51,7 +51,7 @@ const jobPostSchema: Schema = new Schema({
         salary: Number,
         period: {
             type: String,
-            enum: ["monthly", "yearly", "weekly", "hourly"]
+            enum: ["monthly", "yearly", "weekly", "hourly","By-weekly"]
         }
     },
     status: {
@@ -62,6 +62,7 @@ const jobPostSchema: Schema = new Schema({
     preferredExperience: {
         type: [String],
     },
+    deadlineDate: Date,
     companyId: {
         type: mongoose.Types.ObjectId,
         ref: 'Company',
