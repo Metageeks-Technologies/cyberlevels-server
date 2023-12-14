@@ -72,6 +72,7 @@ export interface ICandidate extends Document {
     resumes: IResume[],
     signInProvider: "linkedIn" | "jwt"
     skills: string[],
+    softSkills:string[],
     certificate:string[],
     role: string,
     location: ILocation,

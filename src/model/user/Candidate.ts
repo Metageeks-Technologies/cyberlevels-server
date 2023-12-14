@@ -110,6 +110,10 @@ const candidateSchema = new mongoose.Schema({
         default: [],
 
     },
+    softSkills: {
+        type: [String],
+        default: []
+    },
     freeCount: {
         type: Number,
         default: 5,
