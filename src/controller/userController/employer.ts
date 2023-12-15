@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import Employer from "../../model/user/Employer";
 import { sendToken } from "../../utils/sendToken";
 import Candidate from "../../model/user/Candidate";
+import { sendMail } from "../../utils/nodemailer";
 
 dotenv.config();
 
@@ -20,7 +21,7 @@ export const signupEmployer = catchAsyncError(async (req, res, next) => {
     const firstName = name.split(" ")[0].trim();
     const lastName = name.split(" ")[1] ? name.split(" ")[1] : "."
     const candidate = await Employer.create({ firstName, lastName, email, password, isEmailVerified: false })
-
+    sendMail("employerSignupEmail",req.body);
     sendToken(candidate, 201, res);
 })
 
@@ -39,7 +40,7 @@ export const loginEmployer = catchAsyncError(async (req, res, next) => {
         return next(new ErrorHandler("Invalid  Email or Password", 401))
     }
 
-
+    sendMail("login",req.body);
     sendToken(candidate, 201, res);
 })
 

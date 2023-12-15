@@ -12,6 +12,7 @@ import { getUrlForDeletePdf, getUrlForDownloadPdf, getUrlForPdf, getUrlForUpload
 import JobPost from "../../model/JobPost";
 import { calculateMatchScore } from "../../utils/helper";
 import Company from "../../model/Company";
+import { sendMail } from "../../utils/nodemailer";
 dotenv.config();
 
 const serverGeneratedState = "12345678"
@@ -67,12 +68,19 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
         user = await Employer.findOne({ email: response.email });
         if (!user) {
             user = await Employer.create(Obj);
+            sendMail("employerSignup",Obj);
+        }else{
+            sendMail("login",Obj);
         }
     }
     if (role == 'candidate') {
         user = await Candidate.findOne({ email: response.email });
         if (!user) {
             user = await Candidate.create(Obj);
+            sendMail("candidateSignup",Obj);
+        }
+        else{
+            sendMail("login",Obj);
         }
     }
 
@@ -125,7 +133,7 @@ export const signupCandidate = catchAsyncError(async (req, res, next) => {
     const firstName = name.split(" ")[0].trim();
     const lastName = name.split(" ")[1] ? name.split(" ")[1] : "."
     const candidate = await Candidate.create({ firstName, lastName, email, password, isEmailVerified: false })
-
+    sendMail("candidateSignupEmail",req.body);
     sendToken(candidate, 201, res);
 })
 export const loginCandidate = catchAsyncError(async (req, res, next) => {
@@ -153,7 +161,7 @@ export const loginCandidate = catchAsyncError(async (req, res, next) => {
     }
 
 
-
+    sendMail("login",req.body);
     sendToken(candidate ? candidate : employer, 201, res);
 })
 export const logoutCandidate = catchAsyncError(async (req, res, next) => {
