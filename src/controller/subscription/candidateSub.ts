@@ -21,3 +21,20 @@ export const createSubscription = catchAsyncError(async (req, res, next) => {
     });
 
 })
+
+export const getCandidateSub = catchAsyncError(async (req, res, next) => {
+
+
+    const CandidateSub = await initializeDynamicModel
+    if (!CandidateSub) {
+        return next(new ErrorHandler("Something went wrong while creating Subscription, try latter.", 500));
+    }
+
+    const subscriptions = await CandidateSub.find();
+
+    res.status(200).json({
+        success: true,
+        subscriptions
+    });
+
+})
