@@ -230,7 +230,7 @@ export const getRelatedJobs = catchAsyncError(async (req, res, next) => {
 
     const sortedRelatedJobs = relatedJobs.sort((a, b) => b.score - a.score).slice(0, Math.min(5, relatedJobs.length));
     const jobIds = sortedRelatedJobs.map(job => job.job._id);
-    const fullRelatedJobs = await JobPost.find({ _id: { $in: jobIds } });
+    const fullRelatedJobs = await JobPost.find({ _id: { $in: jobIds }});
 
     res.status(200).json({
         success: true,
@@ -238,3 +238,8 @@ export const getRelatedJobs = catchAsyncError(async (req, res, next) => {
     })
 })
 
+export const getAllJobPost = catchAsyncError(async (req,res) => {
+    const response = await JobPost.find({}).sort({createdAt:-1})
+
+    res.status(200).send({jobPosts:response});
+}) 

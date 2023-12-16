@@ -1,5 +1,5 @@
 import express from 'express';
-import { addJobPost, getJobPosts, populateJobPost, getDetails, deleteJobPost, getJobPostsForEmployer, getRelatedJobs } from '../controller/jobPostController';
+import { addJobPost, getJobPosts, populateJobPost, getDetails, deleteJobPost, getJobPostsForEmployer, getRelatedJobs, getAllJobPost } from '../controller/jobPostController';
 import multer from 'multer'
 import { chatWithAiUsingRest, deleteFromPinecone, getSuggestion, newQueryToPc, newUploadToPc, query, queryToPinecone, uploadResumeToPinecone } from '../controller/aiController';
 import { isAuthenticatedCandidate } from '../middleware/auth';
@@ -17,6 +17,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 jobPostRouter.route("/add").post(addJobPost);
+jobPostRouter.route("/getalljobposts").get(getAllJobPost);
 jobPostRouter.route("/get").get(getJobPosts);
 jobPostRouter.route("/populate").post(populateJobPost);
 jobPostRouter.route("/askGpt").get(chatWithAiUsingRest);
