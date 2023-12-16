@@ -21,7 +21,7 @@ export const createJobApp = catchAsyncError(async (req, res, next) => {
 
     const jobApp = await JobApp.create(req.body);
     user.subscription.jobApplicationLimit--;
-    await user.save()
+    await user.save();
 
     res.status(200).json({
         jobApp,
