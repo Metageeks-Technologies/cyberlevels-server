@@ -11,4 +11,6 @@ companyRouter.route('/logo').patch(updateLogo)
 companyRouter.route('/populate').post(populateJobPost)
 companyRouter.route("/:id").get(getDetails)
 
+
+
 export default companyRouter;

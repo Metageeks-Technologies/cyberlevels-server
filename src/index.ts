@@ -17,6 +17,8 @@ import adminRouter from './routes/user/adminRoute.js';
 import http from 'http';
 import chatRouter from './routes/chat.js';
 import cookieParser from 'cookie-parser';
+import templateRouter from './routes/template.js';
+import subscriptionRouter from './routes/subscription.js';
 dotenv.config()
 
 // initiating the app
@@ -46,8 +48,10 @@ app.use("/api/v1/candidate", candidateRouter)
 app.use("/api/v1/employer", employerRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/jobApp", jobAppRouter);
-app.use("/api/v1", controlledFieldRouter)
-app.use("/api/v1/chat", chatRouter)
+app.use("/api/v1/template", templateRouter);
+app.use("/api/v1/subscription", subscriptionRouter);
+app.use("/api/v1", controlledFieldRouter);
+app.use("/api/v1/chat", chatRouter);
 
 // app.use("/", (req, res, next) => {
 //   res.send("⚡️[server]: This is cyberLevel's server")

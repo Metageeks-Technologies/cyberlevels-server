@@ -3,17 +3,23 @@ import mongoose, { Document } from "mongoose";
 export interface IJobPost extends Document {
     title: string;
     description: string;
-    location: string;
+    location: string[];
     jobType: string[];
+    benefits: string[];
     jobCategory: string;
     workMode: string[];
     preferredLanguage: string;
+    preferredQualification: string;
     primarySkills: string[];
     secondarySkills: string[];
+    workHours: string;
+    joiningTime: string;
     salary: {
         minimum: number;
         maximum: number;
         isDisclosed: boolean;
+        currency: string;
+        period: "monthly" | "yearly" | "weekly" | "hourly";
     };
     status: "active" | "expired",
     preferredExperience: string[];

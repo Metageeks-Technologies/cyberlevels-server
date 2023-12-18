@@ -6,6 +6,7 @@ import Candidate from "../model/user/Candidate";
 import JobPost from "../model/JobPost";
 import { getUrlForUploadProfile } from "../utils/uploadToS3";
 
+
 export const addCompany = catchAsyncError(async (req, res, next) => {
 
     if (!req.body) {
