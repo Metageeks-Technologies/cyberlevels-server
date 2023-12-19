@@ -37,3 +37,11 @@ export const getEmploySub = catchAsyncError(async (req, res, next) => {
     });
 
 })
+
+export const updateSubscription = catchAsyncError(async (req,res) => {
+    const planId:string = req.body.planId;
+    const updateDoc = req.body.data;
+    const EmployerSub = await initializeDynamicModel
+    const plan = await EmployerSub.findByIdAndUpdate(planId,req.body.data); 
+    res.status(200).json({success: true,data:plan});
+})
