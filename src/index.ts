@@ -19,7 +19,8 @@ import chatRouter from './routes/chat.js';
 import cookieParser from 'cookie-parser';
 import templateRouter from './routes/template.js';
 import subscriptionRouter from './routes/subscription.js';
-dotenv.config()
+import paymentRouter from './routes/payment.js';
+dotenv.config();
 
 // initiating the app
 const app: Express = express();
@@ -50,6 +51,7 @@ app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/jobApp", jobAppRouter);
 app.use("/api/v1/template", templateRouter);
 app.use("/api/v1/subscription", subscriptionRouter);
+app.use("/api/v1/payment", paymentRouter);
 app.use("/api/v1", controlledFieldRouter);
 app.use("/api/v1/chat", chatRouter);
 
