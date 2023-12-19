@@ -47,7 +47,7 @@ const jobPostSchema: Schema = new Schema({
         // salary: Number,
         period: {
             type: String,
-            enum: ["monthly", "yearly", "weekly", "hourly"]
+            enum: ["monthly", "yearly", "weekly", "hourly", "By-weekly"]
         }
     },
     status: {
@@ -67,6 +67,7 @@ const jobPostSchema: Schema = new Schema({
     joiningTime: {
         type: String,
     },
+    deadlineDate: Date,
     companyId: {
         type: mongoose.Types.ObjectId,
         ref: 'Company',
