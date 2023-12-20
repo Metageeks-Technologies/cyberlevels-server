@@ -23,6 +23,7 @@ export interface IJobPost extends Document {
     };
     status: "active" | "expired",
     preferredExperience: string[];
+    deadlineDate:Date;
     companyId: mongoose.Types.ObjectId;
     employerId: mongoose.Types.ObjectId;
     candidates: mongoose.Types.ObjectId[];
