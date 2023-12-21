@@ -2,15 +2,15 @@ import mongoose, { Schema } from 'mongoose';
 import { IRazorpayPayment } from '../types/payment';
 
 const paymentSchema: Schema = new mongoose.Schema({
-    razorpay_order_id: {
+    razorpayOrderId: {
         type: String,
         required: true,
     },
-    razorpay_payment_id: {
+    razorpayPaymentId: {
         type: String,
         required: true,
     },
-    razorpay_signature: {
+    razorpaySignature: {
         type: String,
         required: true,
     },
@@ -26,15 +26,22 @@ const paymentSchema: Schema = new mongoose.Schema({
     },
     product: {
         type: mongoose.Schema.Types.ObjectId,
-        refPath: 'subscriptionPlan',
+        refPath: 'productModel',
         required: true,
     },
-    subscriptionPlan: {
+    productModel: {
         type: String,
         required: true,
         enum: ['CandidateSub', 'EmployerSub']
     },
     payment_method: {
+        type: String,
+    },
+    amount: {
+        type: Number,
+        required: true,
+    },
+    currency: {
         type: String,
     },
     receipt: {
