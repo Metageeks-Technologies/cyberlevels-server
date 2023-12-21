@@ -22,6 +22,15 @@ export const createSubscription = catchAsyncError(async (req, res, next) => {
 
 })
 
+export const updateSubscription = catchAsyncError(async (req,res) => {
+    // console.log(req.body)
+    const planId:string = req.body._id;
+    const updateDoc = req.body;
+    const CandidateSub = await initializeDynamicModel
+    const plan = await CandidateSub.findByIdAndUpdate(planId,updateDoc); 
+    res.status(200).json({success: true,plan});
+})
+
 export const getCandidateSub = catchAsyncError(async (req, res, next) => {
 
 

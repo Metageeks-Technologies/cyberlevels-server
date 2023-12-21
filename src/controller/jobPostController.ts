@@ -239,7 +239,7 @@ export const getRelatedJobs = catchAsyncError(async (req, res, next) => {
 })
 
 export const getAllJobPost = catchAsyncError(async (req,res) => {
-    const response = await JobPost.find({}).sort({createdAt:-1})
+    const response = await JobPost.find({}).sort({createdAt:-1}).limit(5)
 
     res.status(200).send({jobPosts:response});
 }) 
