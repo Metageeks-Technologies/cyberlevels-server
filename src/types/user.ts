@@ -77,7 +77,11 @@ export interface ICandidate extends Document {
     role: string,
     location: ILocation,
     expectedSalary: {
-        currency: string,
+        currency: {
+            abbreviation:string;
+            name:string;
+            symbol:string;
+        },
         salary: number,
         period: string
     },

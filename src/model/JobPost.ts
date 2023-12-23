@@ -41,8 +41,9 @@ const jobPostSchema: Schema = new Schema({
         maximum: Number,
         isDisclosed: Boolean,
         currency: {
-            type: String,
-            default: "Canadian dollars"
+           abbreviation:String,
+           name:String,
+           symbol:String
         },
         // salary: Number,
         period: {

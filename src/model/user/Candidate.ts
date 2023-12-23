@@ -126,8 +126,9 @@ const candidateSchema = new mongoose.Schema({
     },
     expectedSalary: {
         currency: {
-            type: String,
-            default: "Canadian dollars"
+            abbreviation:String,
+            name:String,
+            symbol:String
         },
         salary: Number,
         period: {

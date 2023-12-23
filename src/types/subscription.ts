@@ -7,7 +7,11 @@ export interface IEmployerSub extends Document {
     subscriptionFor: string;
     price: {
         amount: number;
-        currency: string;
+        currency: {
+            abbreviation: string;
+            name: string;
+            symbol: string;
+        };
     };
     duration: string;
     offering: {
@@ -20,7 +24,11 @@ export interface ICandidateSub extends Document {
     subscriptionFor: string;
     price: {
         amount: number;
-        currency: string;
+        currency: {
+            abbreviation: string;
+            name: string;
+            symbol: string;
+        };
     };
     duration: string;
     offering: {
