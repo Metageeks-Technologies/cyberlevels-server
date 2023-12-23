@@ -19,6 +19,7 @@ import chatRouter from './routes/chat.js';
 import cookieParser from 'cookie-parser';
 import templateRouter from './routes/template.js';
 import subscriptionRouter from './routes/subscription.js';
+import emailTemplateRouter from './routes/emailTemplate.js';
 dotenv.config()
 
 // initiating the app
@@ -52,6 +53,7 @@ app.use("/api/v1/template", templateRouter);
 app.use("/api/v1/subscription", subscriptionRouter);
 app.use("/api/v1", controlledFieldRouter);
 app.use("/api/v1/chat", chatRouter);
+app.use("/api/v1/emailTemplate",emailTemplateRouter);
 
 // app.use("/", (req, res, next) => {
 //   res.send("⚡️[server]: This is cyberLevel's server")
