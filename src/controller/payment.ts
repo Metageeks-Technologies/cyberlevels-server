@@ -5,6 +5,7 @@ import { razorpay } from "../utils/razorpayConfig";
 import crypto from "crypto";
 import serverCache from "../utils/cache";
 import { sendMail } from "../utils/nodemailer";
+import Candidate from "../model/user/Candidate";
 
 export const checkout = catchAsyncError(async (req, res, next) => {
 
@@ -63,11 +64,20 @@ export const paymentVerification = catchAsyncError(async (req, res, next) => {
         let response = await Payment.create(paymentData);
         const payment: any = await Payment.findOne({ _id: response._id })
             .populate('user', ['email', 'firstName', 'lastName'])
-            .populate('product', 'subscriptionType')
+            .populate('product');
 
         if (!payment) {
             return next(new ErrorHandler('Payment Verification Failed', 500));
         }
+        const user = await Candidate.findOne({ _id: payment.user._id });
+        if (!user) {
+            return next(new ErrorHandler('Payment Verification Failed', 500));
+        }
+        const userSubscription = {
+            ...payment.product
+        }
+        user.subscription = userSubscription;
+        await user.save();
         const emailData = {
             amount: payment.amount,
             subscriptionType: payment.product.subscriptionType,
@@ -81,7 +91,7 @@ export const paymentVerification = catchAsyncError(async (req, res, next) => {
 
         res.redirect(
             // `http://localhost:3000/paymentsuccess?reference=${razorpay_payment_id}`
-            `https://localhost:3000/dashboard/candidate-dashboard/membership`
+            `http://localhost:3000/dashboard/candidate-dashboard/membership`
         );
     } else {
         res.status(400).json({

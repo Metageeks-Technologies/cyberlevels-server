@@ -76,8 +76,8 @@ const candidateSchema = new mongoose.Schema({
             description: String
         }
     ],
-    certificate:{
-        type:[String]
+    certificate: {
+        type: [String]
     },
     location:
     {
@@ -162,19 +162,8 @@ const candidateSchema = new mongoose.Schema({
         default: 0,
     },
     subscription: {
-        plan: {
-            type: String,
-            enum: ['starter', 'gold', 'diamond'],
-            default: 'starter',
-        },
-        jobApplicationLimit: {
-            type: Number,
-            default: 10,
-        },
-        feedbackLimit: {
-            type: Number,
-            default: 10
-        }
+        type: mongoose.Schema.Types.Mixed,
+        default: {}
     },
 },
     { timestamps: true }

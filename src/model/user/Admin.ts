@@ -36,6 +36,7 @@ const AdminsSchema = new mongoose.Schema({
     required: true,
     default: "admin"
   }
+
 },
   { timestamps: true }
 );

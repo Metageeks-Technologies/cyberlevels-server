@@ -7,6 +7,9 @@ import {
     logoutAdmin,
     getAllAdmin,
     getCurrentAdmin,
+    getAllCandidate,
+    getAllEmployer,
+    getAllCompanies,
 
 } from '../../controller/userController/admin.js';
 
@@ -21,5 +24,8 @@ adminRouter.route("/signup").post(signupAdmin);
 adminRouter.route("/updateRole").patch(updateAdminRole);
 adminRouter.route("/:id").delete(deleteAdmin);
 adminRouter.route("/getCurrUser").get(getCurrentAdmin);
+adminRouter.route("/candidate").get(getAllCandidate);
+adminRouter.route("/employer").get(getAllEmployer);
+adminRouter.route("/company").get(getAllCompanies);
 
 export default adminRouter;

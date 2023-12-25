@@ -78,7 +78,9 @@ const companySchema: Schema = new Schema({
     },
     createdBy: {
         type: String,
-    }
+    },
+
+
 }, {
     timestamps: true
 }

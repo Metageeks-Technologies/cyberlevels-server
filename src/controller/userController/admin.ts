@@ -5,6 +5,9 @@ import { sendTokenForAdmin } from '../../utils/sendToken.js';
 import { AdminDocument } from '../../types/user.js';
 import Admin from '../../model/user/Admin.js';
 import { auth } from '../../config/firebase.js';
+import Candidate from '../../model/user/Candidate.js';
+import Employer from '../../model/user/Employer.js';
+import Company from '../../model/Company.js';
 
 export const signupAdmin = catchAsyncError(async (req, res, next) => {
     // console.log(req.body);
@@ -128,6 +131,78 @@ export const getAllAdmin = catchAsyncError(async (req, res, next) => {
         success: true,
         users
     })
+})
+
+export const getAllCandidate = catchAsyncError(async (req, res, next) => {
+
+    const { page } = req.query;
+
+    const queryObject: any = {};
+
+    console.log(page)
+    const p = Number(page) || 1;
+    const limit = 8;
+    const skip = (p - 1) * limit;
+
+    let result = await Candidate.find(queryObject).skip(skip).limit(limit).select(['email', 'firstName', 'lastName', 'phone', 'gender', 'email firstName', 'phoneNumber', 'avatar']);
+    const totalCandidate = await Candidate.countDocuments(queryObject);
+    const totalNumOfPage = Math.ceil(totalCandidate / limit);
+
+    res.status(200).json({
+        success: true,
+        totalNumOfPage,
+        totalCandidate,
+        result,
+    });
+
+})
+
+export const getAllEmployer = catchAsyncError(async (req, res, next) => {
+
+    const { page } = req.query;
+
+    const queryObject: any = {};
+
+    console.log(page)
+    const p = Number(page) || 1;
+    const limit = 8;
+    const skip = (p - 1) * limit;
+
+    let result = await Employer.find(queryObject).skip(skip).limit(limit).select(['email', 'firstName', 'lastName', 'gender', 'phoneNumber', 'avatar', 'company']);
+    const totalEmployer = await Employer.countDocuments(queryObject);
+    const totalNumOfPage = Math.ceil(totalEmployer / limit);
+
+    res.status(200).json({
+        success: true,
+        totalNumOfPage,
+        totalEmployer,
+        result,
+    });
+
+})
+
+export const getAllCompanies = catchAsyncError(async (req, res, next) => {
+
+    const { page } = req.query;
+
+    const queryObject: any = {};
+
+    console.log(page)
+    const p = Number(page) || 1;
+    const limit = 8;
+    const skip = (p - 1) * limit;
+
+    let result = await Company.find(queryObject).skip(skip).limit(limit).select(['email', 'logo', 'founderName', 'teamSize', 'contactNumber', 'location']);
+    const totalCompany = await Company.countDocuments(queryObject);
+    const totalNumOfPage = Math.ceil(totalCompany / limit);
+
+    res.status(200).json({
+        success: true,
+        totalNumOfPage,
+        totalCompany,
+        result,
+    });
+
 })
 // change password
 
