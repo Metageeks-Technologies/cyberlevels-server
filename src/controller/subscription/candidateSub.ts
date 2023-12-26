@@ -3,7 +3,7 @@ import initializeDynamicModel from "../../model/subscription/CandidateSub";
 import ErrorHandler from "../../utils/errorHandler";
 
 export const createSubscription = catchAsyncError(async (req, res, next) => {
-
+    console.log(req.body)
     if (!req.body) {
         return next(new ErrorHandler("body not found", 400));
     }

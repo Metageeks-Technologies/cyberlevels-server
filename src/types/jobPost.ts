@@ -18,7 +18,11 @@ export interface IJobPost extends Document {
         minimum: number;
         maximum: number;
         isDisclosed: boolean;
-        currency: string;
+        currency: {
+            abbreviation:string;
+            name:string;
+            symbol:string;
+        };
         period: "monthly" | "yearly" | "weekly" | "hourly";
     };
     status: "active" | "expired",
