@@ -66,6 +66,13 @@ export const sendMail = async function sendMail(str: string, data: any): Promise
       <br/>
       your details:
       Email- ${data.email}`
+      } else if (str === `paymentSuccess`) {
+        Osubject = `Dear ${data.userName} ,You have successfully purchased the ${data.productName} plan`
+        Ohtml = `<h1>You have purchased our plan ${data.productName} of amount ${data.amount} </h1>
+    Hope we provide you with the best services!!!
+    <br/>
+    your details:
+    Email- ${data.email}`
       }
 
       let info = await transporter.sendMail({
