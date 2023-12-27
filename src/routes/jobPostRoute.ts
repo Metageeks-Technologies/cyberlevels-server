@@ -1,5 +1,5 @@
 import express from 'express';
-import { addJobPost, getJobPosts, populateJobPost, getDetails, deleteJobPost, getJobPostsForEmployer, getRelatedJobs, getAllJobPost } from '../controller/jobPostController';
+import { addJobPost, getJobPosts, populateJobPost, getDetails, deleteJobPost, getJobPostsForEmployer, getRelatedJobs, getAllJobPost,getJobPostViews, addJobPostViews } from '../controller/jobPostController';
 import multer from 'multer'
 import { chatWithAiUsingRest, deleteFromPinecone, getSuggestion, newQueryToPc, newUploadToPc, query, queryToPinecone, uploadResumeToPinecone } from '../controller/aiController';
 import { isAuthenticatedCandidate } from '../middleware/auth';
@@ -31,5 +31,7 @@ jobPostRouter.route("/newUpload").post(newUploadToPc);
 jobPostRouter.route("/newQuery").get(newQueryToPc);
 jobPostRouter.route("/suggestion").get(getSuggestion);
 jobPostRouter.route("/:id").get(isAuthenticatedCandidate, getDetails).delete(deleteJobPost);
+jobPostRouter.route("/jobpostviews/:id/:viewby").get(getJobPostViews);
+jobPostRouter.route("/jobpostviews/:id/").post(addJobPostViews);
 
 export default jobPostRouter;

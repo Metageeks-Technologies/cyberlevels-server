@@ -1,5 +1,9 @@
 import mongoose, { Document } from "mongoose";
-
+interface JobPostView {
+    
+    view_count?: number;
+    view_timestamp?: string;
+}
 export interface IJobPost extends Document {
     title: string;
     description: string;
@@ -34,4 +38,5 @@ export interface IJobPost extends Document {
     testQuestions: string;
     isSaved?: boolean;
     matchScore?: number;
+    views:JobPostView[]
 }

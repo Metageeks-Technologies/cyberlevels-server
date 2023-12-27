@@ -89,6 +89,19 @@ const jobPostSchema: Schema = new Schema({
     description: {
         type: String,
     },
+    views: [
+        {
+            view_count: {
+                type: Number,
+                default: undefined,
+            },
+            view_timestamp: {
+                type: Date,
+                default: Date.now(),
+            },
+        },
+    ],
+
 },
     { timestamps: true }
 );
