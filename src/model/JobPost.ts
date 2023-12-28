@@ -1,11 +1,14 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { IJobPost } from '../types/jobPost';
-
+import Candidate from './user/Candidate';
 
 const jobPostSchema: Schema = new Schema({
     title: {
         type: String,
         required: true,
+    },
+    descrption: {
+        type: String,
     },
     location: {
         type: [String],
@@ -41,11 +44,11 @@ const jobPostSchema: Schema = new Schema({
         maximum: Number,
         isDisclosed: Boolean,
         currency: {
-           abbreviation:String,
-           name:String,
-           symbol:String
+            abbreviation: String,
+            name: String,
+            symbol: String
         },
-        // salary: Number,
+        salary: Number,
         period: {
             type: String,
             enum: ["monthly", "yearly", "weekly", "hourly", "By-weekly"]
