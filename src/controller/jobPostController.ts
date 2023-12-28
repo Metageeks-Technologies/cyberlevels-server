@@ -184,12 +184,20 @@ export const getJobPosts = catchAsyncError(async (req, res, next) => {
 export const getJobPostsForEmployer = catchAsyncError(
   async (req, res, next) => {
     const { employerId } = req.params;
-
-    const jobPosts = await JobPost.find({ employerId }).limit(5);
-
+    const {page} = req.query;
+    const p = Number(page) || 1;
+    const limit = 8;
+    const skip = (p-1)*limit;
+    const jobPosts = await JobPost.find({ employerId }).sort({createdAt: -1}).skip(skip).limit(limit);
+    const totalCount = await JobPost.countDocuments({ employerId })
+    const totalPages = Math.ceil(totalCount / limit);
     res.status(200).json({
       success: true,
       jobPosts,
+      totalPages,
+      currentPage:page,
+      pageSize:limit,
+      totalCount
     });
   }
 );
@@ -398,3 +406,32 @@ export const addJobPostViews = catchAsyncError(async (req, res) => {
 
   res.status(200).send({ data: document });
 });
+
+export const getJobPostsForEmployerDashboard = catchAsyncError(async (req,res) => {
+  const id = req.params.id;
+  const data = await JobPost.find({employerId:id}).sort({createdAt: -1}).limit(6)
+  // console.log(data);
+  res.status(200).send({data:data});
+})
+
+export const getJobDetailsForEmployerDashBoardCards = catchAsyncError(async (req,res) => {
+  const id = req.params.id;
+  const data = await JobPost.find({employerId:id}).select({views:1,candidates:1});
+
+  const totalViews = data.reduce((acc,jobPost) => acc + jobPost.views.length,0);
+  const totalApplications = data.reduce((acc,jobPost) => acc + jobPost.candidates.length,0);
+
+  res.status(200).send({
+    success:true,
+    totalViews,
+    totalApplications
+  })
+
+
+});
+
+export const getJobDetailsForEmployerChartNiceSelect = catchAsyncError(async (req,res) => {
+  const id = req.params.id;
+  const data = await JobPost.find({employerId:id}).sort({createdAt:-1}).select({_id:1,title:1,createdAt:1});
+  res.status(200).send({data:data});
+})
