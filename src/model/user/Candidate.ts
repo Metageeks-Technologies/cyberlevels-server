@@ -158,10 +158,18 @@ const candidateSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
-    profileViews: {
-        type: Number,
-        default: 0,
-    },
+    profileViews: [
+        {
+            view_count: {
+                type: Number,
+                default: undefined,
+            },
+            view_timestamp: {
+                type: Date,
+                default: Date.now(),
+            },
+        },
+    ],
     subscription: {
         type: mongoose.Schema.Types.Mixed,
         default: {}

@@ -2,6 +2,11 @@ import mongoose, { Document } from "mongoose";
 import type { ICompany } from "./company";
 import type { IJobPost } from "./jobPost";
 
+interface ProfileView {
+    
+    view_count?: number;
+    view_timestamp?: string;
+}
 export interface AdminDocument extends Document {
     name: string;
     email: string;
@@ -96,7 +101,7 @@ export interface ICandidate extends Document {
     savedJobs: string[] | IJobPost[];
     savedCompanies: string[] | ICompany[];
     notifications: INotification[];
-    profileViews: number;
+    profileViews:  ProfileView[];
     subscription: ISubscription
     createJWT(accessToken?: string): string;
     comparePassword(givenPassword: string): Promise<boolean>;

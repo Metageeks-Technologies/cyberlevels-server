@@ -4,7 +4,7 @@ import {
     getUserLinkedIn,
     getAllCandidate, saveJob,
     logoutCandidate, signupCandidate,
-    loginCandidate, updateCurrCandidate, updateEducation, updateExperience, populateCandidate, getDetails, getCurrCandidate, getSaveJob, removeSavedJob, saveCompany, getSavedCompany, removeSavedCompany, updateNotification, uploadResumeToS3, addResume, downloadResumeFromS3, getRecommendedJobs, deleteResumeFromS3, uploadProfileToS3, updateProfileAvatar
+    loginCandidate, updateCurrCandidate, updateEducation, updateExperience, populateCandidate, getDetails, getCurrCandidate, getSaveJob, removeSavedJob, saveCompany, getSavedCompany, removeSavedCompany, updateNotification, uploadResumeToS3, addResume, downloadResumeFromS3, getRecommendedJobs, deleteResumeFromS3, uploadProfileToS3, updateProfileAvatar, getCandidateProfileViews
 } from '../../controller/userController/candidate'
 import { isAuthenticatedCandidate, isAuthenticatedEmployer } from '../../middleware/auth';
 
@@ -35,6 +35,7 @@ candidateRouter.patch("/updateNoti/:id", updateNotification)
 candidateRouter.patch("/updateEdu/:id", updateEducation)
 candidateRouter.patch("/updateExp/:id", updateExperience)
 candidateRouter.get("/:id", isAuthenticatedEmployer, getDetails);
+candidateRouter.get("/profileViews/:id/:viewby",getCandidateProfileViews);
 
 
 export default candidateRouter;

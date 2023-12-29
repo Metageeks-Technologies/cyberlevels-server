@@ -248,7 +248,10 @@ export const getDetails = catchAsyncError(async (req, res, next) => {
 
     const candidate = await Candidate.findById({ _id: id });
     if (candidate) {
-        candidate.profileViews++;
+        candidate.profileViews.push({
+            view_count : 1,
+            view_timestamp : Date.now().toString()
+        });
         await candidate.save();
     }
     user.subscription.viewProfileLimit--;
@@ -666,6 +669,124 @@ export const getRecommendedJobs = catchAsyncError(async (req, res, next) => {
     });
 
 })
+
+
+export const getCandidateProfileViews = catchAsyncError(async (req, res) => {
+    const id = req.params.id;
+    const viewby = req.params.viewby;
+  
+    if (!id) {
+      res.status(400).send({ msg: "Candidate not found!!!" });
+      return;
+    }
+    const viewData = [];
+    if (viewby === "month") {
+      for (let i = 12; i > 0; i--) {
+        const currentDate = new Date();
+        const last12Months = new Date(currentDate);
+        currentDate.setMonth(currentDate.getMonth() - (i - 1));
+        last12Months.setMonth(currentDate.getMonth() - i);
+        const doc = await Candidate.aggregate([
+          {
+            $match: { _id: new mongoose.Types.ObjectId(id) },
+          },
+          {
+            $project: {
+                profileViews: {
+                $filter: {
+                  input: "$profileViews",
+                  as: "profileViews",
+                  cond: {
+                    $and: [
+                      { $eq: ["$$profileViews.view_count", 1] },
+                      { $gte: ["$$profileViews.view_timestamp", last12Months] },
+                      { $lt: ["$$profileViews.view_timestamp", currentDate] },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        ]);
+        viewData.push(doc[0].profileViews);
+      }
+    } else if (viewby === "year") {
+      const currentYear = new Date().getFullYear();
+  
+      for (let i = currentYear - 11; i <= currentYear; i++) {
+        const startOfYear = new Date(i, 0, 1);
+        const endOfYear = new Date(i + 1, 0, 1);
+  
+        const doc = await Candidate.aggregate([
+          {
+            $match: { _id: new mongoose.Types.ObjectId(id) },
+          },
+          {
+            $project: {
+                profileViews: {
+                $filter: {
+                  input: "$profileViews",
+                  as: "profileViews",
+                  cond: {
+                    $and: [
+                      { $eq: ["$$profileViews.view_count", 1] },
+                      { $gte: ["$$profileViews.view_timestamp", startOfYear] },
+                      { $lt: ["$$profileViews.view_timestamp", endOfYear] },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        ]);
+  
+        viewData.push(doc[0].profileViews);
+      }
+    }else if (viewby === "day") {
+      const currentDate = new Date();
+    
+      for (let i = 11; i >= 0; i--) {
+        const currentDay = new Date(currentDate);
+        currentDay.setDate(currentDate.getDate() - i);
+    
+        const startOfDay = new Date(currentDay);
+        startOfDay.setHours(0, 0, 0, 0);
+    
+        const endOfDay = new Date(currentDay);
+        endOfDay.setHours(23, 59, 59, 999);
+    
+        const doc = await Candidate.aggregate([
+          {
+            $match: { _id: new mongoose.Types.ObjectId(id) },
+          },
+          {
+            $project: {
+                profileViews: {
+                $filter: {
+                  input: "$profileViews",
+                  as: "profileViews",
+                  cond: {
+                    $and: [
+                      { $eq: ["$$profileViews.view_count", 1] },
+                      { $gte: ["$$profileViews.view_timestamp", startOfDay] },
+                      { $lt: ["$$profileViews.view_timestamp", endOfDay] },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        ]);
+    
+        viewData.push(doc[0].profileViews);
+      }
+    }
+  
+    // Access the filtered views array
+    const filteredViews = viewData;
+    res.status(200).send({ data: filteredViews });
+  });
+  
 
 
 
