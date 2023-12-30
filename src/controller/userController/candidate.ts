@@ -788,6 +788,12 @@ export const getCandidateProfileViews = catchAsyncError(async (req, res) => {
   });
   
 
+  export const getTotalCandidateProfileViews = catchAsyncError(async (req,res) => {
+    const id = req.params.id;
+    const totalViews = await Candidate.find({_id:id}).select({profileViews:1});
+    // console.log(totalViews)
+    res.status(200).send({totalViews:totalViews[0].profileViews.length});
+  })
 
 
 
