@@ -1,5 +1,5 @@
 import express from 'express';
-import { addJobPost, getJobPosts, populateJobPost, getDetails, deleteJobPost, getJobPostsForEmployer, getRelatedJobs, getAllJobPost,getJobPostViews, addJobPostViews, getJobPostsForEmployerDashboard, getJobDetailsForEmployerChartNiceSelect, getJobDetailsForEmployerDashBoardCards } from '../controller/jobPostController';
+import { addJobPost, getJobPosts, populateJobPost, getDetails, deleteJobPost, getJobPostsForEmployer, getRelatedJobs, getAllJobPost,getJobPostViews, addJobPostViews, getJobPostsForEmployerDashboard, getJobDetailsForEmployerChartNiceSelect, getJobDetailsForEmployerDashBoardCards, getJobPostByCreatedDate } from '../controller/jobPostController';
 import multer from 'multer'
 import { chatWithAiUsingRest, deleteFromPinecone, getSuggestion, newQueryToPc, newUploadToPc, query, queryToPinecone, uploadResumeToPinecone } from '../controller/aiController';
 import { isAuthenticatedCandidate } from '../middleware/auth';
@@ -35,7 +35,7 @@ jobPostRouter.route("/jobpostviews/:id/:viewby").get(getJobPostViews);
 jobPostRouter.route("/jobpostviews/:id/").post(addJobPostViews);
 jobPostRouter.route("/jobpostforemployerdashboard/:id").get(getJobPostsForEmployerDashboard);
 jobPostRouter.route("/jobpostforemployerniceselect/:id").get(getJobDetailsForEmployerChartNiceSelect); //
-jobPostRouter.route("/jobpostforemployerdashboardcards/:id").get(getJobDetailsForEmployerDashBoardCards); //
-
+jobPostRouter.route("/jobpostforemployerdashboardcards/:id").get(getJobDetailsForEmployerDashBoardCards); 
+jobPostRouter.get("/itemsbyjoiningdate/:viewby",getJobPostByCreatedDate);
 
 export default jobPostRouter;

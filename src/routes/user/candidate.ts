@@ -4,7 +4,7 @@ import {
     getUserLinkedIn,
     getAllCandidate, saveJob,
     logoutCandidate, signupCandidate,
-    loginCandidate, updateCurrCandidate, updateEducation, updateExperience, populateCandidate, getDetails, getCurrCandidate, getSaveJob, removeSavedJob, saveCompany, getSavedCompany, removeSavedCompany, updateNotification, uploadResumeToS3, addResume, downloadResumeFromS3, getRecommendedJobs, deleteResumeFromS3, uploadProfileToS3, updateProfileAvatar, getCandidateProfileViews, getTotalCandidateProfileViews
+    loginCandidate, updateCurrCandidate, updateEducation, updateExperience, populateCandidate, getDetails, getCurrCandidate, getSaveJob, removeSavedJob, saveCompany, getSavedCompany, removeSavedCompany, updateNotification, uploadResumeToS3, addResume, downloadResumeFromS3, getRecommendedJobs, deleteResumeFromS3, uploadProfileToS3, updateProfileAvatar, getCandidateProfileViews, getTotalCandidateProfileViews, getCandidateByJoiningDate
 } from '../../controller/userController/candidate'
 import { isAuthenticatedCandidate, isAuthenticatedEmployer } from '../../middleware/auth';
 
@@ -37,6 +37,7 @@ candidateRouter.patch("/updateExp/:id", updateExperience)
 candidateRouter.get("/:id", isAuthenticatedEmployer, getDetails);
 candidateRouter.get("/profileViews/:id/:viewby",getCandidateProfileViews);
 candidateRouter.get("/totalProfileViews/:id",getTotalCandidateProfileViews);
+candidateRouter.get("/itemsbyjoiningdate/:viewby",getCandidateByJoiningDate);
 
 
 export default candidateRouter;
