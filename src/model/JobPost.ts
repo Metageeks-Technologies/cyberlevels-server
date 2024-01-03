@@ -48,7 +48,6 @@ const jobPostSchema: Schema = new Schema({
             name: String,
             symbol: String
         },
-        salary: Number,
         period: {
             type: String,
             enum: ["monthly", "yearly", "weekly", "hourly", "By-weekly"]
@@ -96,7 +95,7 @@ const jobPostSchema: Schema = new Schema({
         {
             view_count: {
                 type: Number,
-                default: undefined,
+                default: 0,
             },
             view_timestamp: {
                 type: Date,

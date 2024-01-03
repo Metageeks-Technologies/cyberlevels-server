@@ -69,11 +69,11 @@ export const logoutAdmin = catchAsyncError(async (req, res, next) => {
 
 export const getCurrentAdmin = catchAsyncError(
     async (req, res, next) => {
-        const { _id } = req.body
-        const user = await Admin.findOne({ _id });
+        const { id: _id } = req.query;
+        const user = await Admin.findOne({ _id }).select("-password");
         res.status(200).json({
             success: true,
-            message: "got current user Successfully",
+            message: "got current admin Successfully",
             user
         });
     }

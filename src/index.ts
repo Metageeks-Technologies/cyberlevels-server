@@ -22,6 +22,7 @@ import subscriptionRouter from './routes/subscription.js';
 import paymentRouter from './routes/payment.js';
 import emailTemplateRouter from './routes/emailTemplate.js';
 import smtpConfigRouter from './routes/smtpConfig.js';
+import blogRouter from './routes/blog.js';
 dotenv.config();
 
 // initiating the app
@@ -58,6 +59,7 @@ app.use("/api/v1", controlledFieldRouter);
 app.use("/api/v1/chat", chatRouter);
 app.use("/api/v1/emailTemplate", emailTemplateRouter);
 app.use("/api/v1/smtpConfig", smtpConfigRouter);
+app.use("/api/v1/blog", blogRouter);
 
 // app.use("/", (req, res, next) => {
 //   res.send("⚡️[server]: This is cyberLevel's server")
