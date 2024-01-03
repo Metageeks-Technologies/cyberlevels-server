@@ -61,6 +61,7 @@ export const getAllJobAppByCandidate = catchAsyncError(async (req, res, next) =>
     // const allJobApp = await JobApp.find({ candidate });
     // const allJobPost= await JobPost.find()
     const allJobApp = await JobApp.find({ candidate }).sort({ createdAt: -1 }).populate('jobPost').skip(skip).limit(limit);
+    // console.log(allJobApp);
 
     res.status(200).json({
         allJobApp,
