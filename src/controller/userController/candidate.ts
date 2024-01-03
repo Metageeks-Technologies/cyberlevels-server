@@ -652,7 +652,10 @@ export const deleteResumeFromS3 = catchAsyncError(async (req, res, next) => {
 });
 
 export const getRecommendedJobs = catchAsyncError(async (req, res, next) => {
-  const { candidateId } = req.query;
+  const { candidateId, page } = req.query;
+  const p = Number(page) || 1;
+  const limit = 6;
+  const skip = (p-1) * limit;
   if (!candidateId) {
     return next(new ErrorHandler("candidateId not found", 400));
   }

@@ -210,6 +210,7 @@ export const getSavedCandidate = catchAsyncError(async (req, res, next) => {
     savedCandidates: employer?.savedCandidates,
     totalSavedCandidate,
     totalNumOfPage,
+    itemsPerPage:limit,
   });
 });
 
