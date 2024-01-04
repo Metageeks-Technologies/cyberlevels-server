@@ -91,7 +91,7 @@ export const paymentVerification = catchAsyncError(async (req, res, next) => {
 
         res.redirect(
             // `http://localhost:3000/paymentsuccess?reference=${razorpay_payment_id}`
-            `http://localhost:3000/dashboard/candidate-dashboard/membership`
+            `${process.env.CLIENT_URL}/dashboard/candidate-dashboard/membership`
         );
     } else {
         res.status(400).json({
