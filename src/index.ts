@@ -43,7 +43,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
-console.log("client url is", process.env.CLIENT_URL)
+
 
 // routers
 app.use("/api/v1/company", companyRouter);
@@ -60,6 +60,9 @@ app.use("/api/v1/chat", chatRouter);
 app.use("/api/v1/emailTemplate", emailTemplateRouter);
 app.use("/api/v1/smtpConfig", smtpConfigRouter);
 app.use("/api/v1/blog", blogRouter);
+app.use("getClientUrl", () => {
+  console.log("getClientUrl", process.env.CLIENT_URL)
+})
 
 // app.use("/", (req, res, next) => {
 //   res.send("⚡️[server]: This is cyberLevel's server")
