@@ -20,13 +20,13 @@ export const sendTokenForAdmin = (user: any, statusCode: number, res: Response) 
 export const sendToken = (user: any, statusCode: number, res: Response, accessToken?: string) => {
   let token = accessToken ? user.createJWT(accessToken) : user.createJWT();
 
-  // const options = {
-  //   httpOnly: process.env.NODE_ENV === 'production',
-  //   secure: process.env.NODE_ENV === 'production',
-  //   expires: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
-  //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-  // };
-  console.log("token", token);
+  const options = {
+    httpOnly: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production',
+    expires: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  };
+  console.log("token", options);
   res.status(statusCode).cookie("token", token, {
     httpOnly: process.env.NODE_ENV === 'production',
     secure: process.env.NODE_ENV === 'production',
