@@ -6,7 +6,8 @@ export const sendTokenForAdmin = (user: any, statusCode: number, res: Response) 
   const options = {
     httpOnly: true,
     expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-    secure: process.env.NODE_ENV === 'production',
+    secure: false,
+    // secure: process.env.NODE_ENV === 'production',
     // path: process.env.CLIENT_URL,
   };
   res.status(statusCode).cookie("token", token, options).json({
