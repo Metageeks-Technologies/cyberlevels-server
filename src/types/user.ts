@@ -1,9 +1,10 @@
 import mongoose, { Document } from "mongoose";
 import type { ICompany } from "./company";
 import type { IJobPost } from "./jobPost";
+import { ICandidateSub } from "./subscription";
 
 interface ProfileView {
-    
+
     view_count?: number;
     view_timestamp?: string;
 }
@@ -77,15 +78,15 @@ export interface ICandidate extends Document {
     resumes: IResume[],
     signInProvider: "linkedIn" | "jwt"
     skills: string[],
-    softSkills:string[],
-    certificate:string[],
+    softSkills: string[],
+    certificate: string[],
     role: string,
     location: ILocation,
     expectedSalary: {
         currency: {
-            abbreviation:string;
-            name:string;
-            symbol:string;
+            abbreviation: string;
+            name: string;
+            symbol: string;
         },
         salary: number,
         period: string
@@ -101,8 +102,8 @@ export interface ICandidate extends Document {
     savedJobs: string[] | IJobPost[];
     savedCompanies: string[] | ICompany[];
     notifications: INotification[];
-    profileViews:  ProfileView[];
-    subscription: ISubscription
+    profileViews: ProfileView[];
+    subscription: ICandidateSub;
     createJWT(accessToken?: string): string;
     comparePassword(givenPassword: string): Promise<boolean>;
 }

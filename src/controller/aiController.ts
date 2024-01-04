@@ -600,6 +600,7 @@ const deleteFromPc = async (namespace: string, next: NextFunction) => {
 
 export const getSuggestion = catchAsyncError(async (req, res, next) => {
 
+
     const s3Key = req.query.s3Key as string;
     const candidateId = req.query.candidateId as string;
     const question = req.query.question as string

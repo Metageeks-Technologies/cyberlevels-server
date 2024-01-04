@@ -632,6 +632,7 @@ export const addResume = catchAsyncError(async (req, res, next) => {
 export const downloadResumeFromS3 = catchAsyncError(async (req, res, next) => {
   const { s3Key } = req.body;
   const url = getUrlForDownloadPdf(s3Key);
+  // console.log(url);
   res.json({ success: true, url }).status(200);
 });
 
@@ -655,7 +656,7 @@ export const getRecommendedJobs = catchAsyncError(async (req, res, next) => {
   const { candidateId, page } = req.query;
   const p = Number(page) || 1;
   const limit = 6;
-  const skip = (p-1) * limit;
+  const skip = (p - 1) * limit;
   if (!candidateId) {
     return next(new ErrorHandler("candidateId not found", 400));
   }

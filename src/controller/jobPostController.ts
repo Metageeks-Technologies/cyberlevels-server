@@ -25,13 +25,13 @@ export const addJobPost = catchAsyncError(async (req, res, next) => {
 });
 export const getDetails = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
-  console.log("id", id);
+  // console.log("id", id);
   if (!id) {
     return next(new ErrorHandler("job post not found", 400));
   }
 
   const job = await JobPost.findById(id).populate("companyId");
-  console.log(job);
+  // console.log(job);
   if (!job) {
     return next(new ErrorHandler("job post not found", 404));
   }
@@ -54,7 +54,7 @@ export const getDetails = catchAsyncError(async (req, res, next) => {
     matchScore: score,
   };
 
-  console.log(jobWithScore);
+  // console.log(jobWithScore);
 
   res.status(200).json({
     job: jobWithScore,
