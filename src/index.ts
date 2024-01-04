@@ -43,7 +43,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
-// console.log("client url is", process.env.CLIENT_URL)
+console.log("client url is", process.env.CLIENT_URL)
 
 // routers
 app.use("/api/v1/company", companyRouter);

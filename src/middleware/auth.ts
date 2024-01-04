@@ -16,7 +16,7 @@ interface CustomJwtPayload extends JwtPayload {
 
 export const isAuthenticatedCandidate = catchAsyncError(async (req, res, next) => {
     const { token } = req.cookies;
-    console.log(token);
+    // console.log(token);
     // const token = ""
     if (!token) {
         return next(new ErrorHandler("Please Login to access this resource", 401));
@@ -25,7 +25,7 @@ export const isAuthenticatedCandidate = catchAsyncError(async (req, res, next) =
         throw new Error("JWT_SECRET is not defined in the environment.");
     }
     const decodedData = jwt.verify(token, process.env.JWT_SECRET) as CustomJwtPayload;
-    console.log("decodedData", decodedData);
+    // console.log("decodedData", decodedData);
 
     // if logged in with linkedIn
     if (decodedData.hasOwnProperty('accessToken')) {

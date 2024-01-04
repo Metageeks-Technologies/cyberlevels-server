@@ -30,7 +30,7 @@ jobPostRouter.route("/query").get(query);
 jobPostRouter.route("/newUpload").post(newUploadToPc);
 jobPostRouter.route("/newQuery").get(newQueryToPc);
 jobPostRouter.route("/suggestion").get(getSuggestion);
-jobPostRouter.route("/:id").get(getDetails).delete(deleteJobPost);
+jobPostRouter.route("/:id").get(isAuthenticatedCandidate, getDetails).delete(deleteJobPost);
 jobPostRouter.route("/jobpostviews/:id/:viewby").get(getJobPostViews);
 jobPostRouter.route("/jobpostviews/:id/").post(addJobPostViews);
 jobPostRouter.route("/jobpostforemployerdashboard/:id").get(getJobPostsForEmployerDashboard);

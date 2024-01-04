@@ -25,14 +25,18 @@ export const addJobPost = catchAsyncError(async (req, res, next) => {
 });
 export const getDetails = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
-  // this could be done using auth middlewere by req.user
+  console.log("id", id);
   if (!id) {
     return next(new ErrorHandler("job post not found", 400));
   }
 
-  const job = await JobPost.findOne({ _id: id }).populate("companyId");
-  if (!job || !req.user) {
+  const job = await JobPost.findById(id).populate("companyId");
+  console.log(job);
+  if (!job) {
     return next(new ErrorHandler("job post not found", 404));
+  }
+  if (!req.user) {
+    return next(new ErrorHandler("unauthenticated user", 404));
   }
   const candidate = req.user as ICandidate;
 
