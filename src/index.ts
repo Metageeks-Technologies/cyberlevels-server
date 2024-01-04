@@ -60,8 +60,10 @@ app.use("/api/v1/chat", chatRouter);
 app.use("/api/v1/emailTemplate", emailTemplateRouter);
 app.use("/api/v1/smtpConfig", smtpConfigRouter);
 app.use("/api/v1/blog", blogRouter);
-app.use("getClientUrl", () => {
-  console.log("getClientUrl", process.env.CLIENT_URL)
+app.use("/getClientUrl", (req, res) => {
+  res.send({
+    clientUrl: process.env.CLIENT_URL || "http://localhost:3000"
+  })
 })
 
 // app.use("/", (req, res, next) => {
