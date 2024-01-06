@@ -10,11 +10,11 @@ export const sendMail = async function sendMail(str: string, data: any): Promise
     if (smtpConfig) {
       const transporter = nodemailer.createTransport({
         host: smtpConfig.host,
-        port: smtpConfig.port,
+        port: parseInt(smtpConfig.port),
         secure: smtpConfig.secure,
         auth: {
-          user: process.env.NODEMAILER_EMAIL!,
-          pass: process.env.NOMEMAILER_PASSWORD!,
+          user: smtpConfig.user!,
+          pass: smtpConfig.pass!,
         },
       });
 
