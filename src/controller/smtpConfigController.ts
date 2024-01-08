@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import SmtpConfigModel from '../model/SmtpConfig';
+import catchAsyncError from '../middleware/catchAsyncError';
 
 export const createSmtpConfig = async (req: Request, res: Response) => {
   try {
@@ -21,3 +22,10 @@ export const getSmtpConfigs = async (_req: Request, res: Response) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   };
+
+export const updateSmtpConfig = catchAsyncError(async (req,res) => {
+  const config = req.body;
+  const newCongif = await SmtpConfigModel.findOneAndUpdate({},config);
+  res.status(200).json(newCongif);
+
+})

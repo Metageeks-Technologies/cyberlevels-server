@@ -4,12 +4,15 @@ import {
     getUserLinkedIn,
     getAllCandidate, saveJob,
     logoutCandidate, signupCandidate,
-    loginCandidate, updateCurrCandidate, updateEducation, updateExperience, populateCandidate, getDetails, getCurrCandidate, getSaveJob, removeSavedJob, saveCompany, getSavedCompany, removeSavedCompany, updateNotification, uploadResumeToS3, addResume, downloadResumeFromS3, getRecommendedJobs, deleteResumeFromS3, uploadProfileToS3, updateProfileAvatar, getCandidateProfileViews, getTotalCandidateProfileViews, getCandidateByJoiningDate
+    loginCandidate, updateCurrCandidate, updateEducation, updateExperience, populateCandidate, getDetails, getCurrCandidate, getSaveJob, removeSavedJob, saveCompany, getSavedCompany, removeSavedCompany, updateNotification, uploadResumeToS3, addResume, downloadResumeFromS3, getRecommendedJobs, deleteResumeFromS3, uploadProfileToS3, updateProfileAvatar, getCandidateProfileViews, getTotalCandidateProfileViews, getCandidateByJoiningDate, getUserGoogle
 } from '../../controller/userController/candidate'
 import { isAuthenticatedCandidate, isAuthenticatedEmployer } from '../../middleware/auth';
 
 const candidateRouter = express.Router();
 // auth 
+candidateRouter.get('/auth/google',passport.authenticate('google', {state:'12345678'}));
+candidateRouter.get('auth/google/callback',passport.authenticate('google',{successRedirect:"/", failureRedirect:"/login"}))
+candidateRouter.post('/auth/getCandidateGoogle', getUserGoogle);
 candidateRouter.get('/auth/linkedin', passport.authenticate('linkedin', { state: '12345678' }));
 candidateRouter.get('/auth/linkedin/callback', passport.authenticate('linkedin', { successRedirect: "/", failureRedirect: "/login" }));
 candidateRouter.post('/auth/getCandidate', getUserLinkedIn)

@@ -22,6 +22,83 @@ dotenv.config();
 
 const serverGeneratedState = "12345678";
 
+
+export const getUserGoogle = catchAsyncError(async (req, res, next) => {
+  if (req.body.hasOwnProperty("error")) {
+    const { error_description } = req.body;
+    return next(new ErrorHandler(error_description, 401));
+  }
+  const { code, state } = req.body;
+  if (serverGeneratedState !== state) {
+    return next(new ErrorHandler("candidate is not authorized", 401));
+  }
+  const clientId = process.env.GOOGLE_CLIENT_ID || "";
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
+  const callbackUrl = process.env.GOOGLE_CALLBACK_URL || "";
+  let accessToken="";
+  try {
+    const { data } = await axios.post(`https://oauth2.googleapis.com/token?code=${code}&client_id=${clientId}&client_secret=${clientSecret}&redirect_uri=${callbackUrl}&grant_type=authorization_code`);
+    accessToken = data.access_token;
+    // console.log(accessToken,"AccessToekn");
+  } catch (error) {
+    return next(new ErrorHandler("Error while getting accessToken", 400));
+
+  }
+  let response;
+  try {
+    const { data } = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    response = data;
+    // console.log(data);
+  } catch (err) {
+    return next(new ErrorHandler("Error while getting userInfo", 400));
+  }
+  const { role } = req.body;
+  let user: ICandidate | IEmployer | null = null;
+  const userObj = {
+    email: response.email,
+    firstName: response.given_name,
+    lastName: response.family_name,
+    avatar: response.picture,
+    isEmailVerified: response.email_verified,
+  };
+
+  if (role === "employer") {
+    user = await Employer.findOne({ email: response.email });
+    if (!user) {
+      user = await Employer.create(userObj);
+      sendMail("employerSignup", userObj);
+    } else {
+      sendMail("login", userObj);
+    }
+  }
+
+  if (role === "candidate") {
+    user = await Candidate.findOne({ email: response.email });
+    // console.log(user)
+    if (!user) {
+      user = await Candidate.create(userObj);
+      // console.log(user);
+      sendMail("candidateSignup", userObj);
+    } else {
+      sendMail("login", userObj);
+    }
+  }
+  // console.log(user)
+  sendToken(user,201,res,accessToken);
+})
+
+
+
+
+
+
+
+
+
 export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
   if (req.body.hasOwnProperty("error")) {
     const { error_description } = req.body;
@@ -94,6 +171,8 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
 
   sendToken(user, 201, res, accessToken);
 });
+
+
 export const getCurrCandidate = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
   // middleware should be there for authentication
