@@ -100,9 +100,7 @@ export const getJobPosts = catchAsyncError(async (req, res, next) => {
     companyId,
   } = req.query;
 
-  if (!candidateId) {
-    return next(new ErrorHandler("CandidateId Not found", 404));
-  }
+
 
   const queryObject: any = {};
   if (location) {
@@ -152,7 +150,7 @@ export const getJobPosts = catchAsyncError(async (req, res, next) => {
     ];
   }
 
-  console.log(page);
+  // console.log(page);
   const p = Number(page) || 1;
   const limit = 8;
   const skip = (p - 1) * limit;
@@ -160,9 +158,16 @@ export const getJobPosts = catchAsyncError(async (req, res, next) => {
   let jobPosts = await JobPost.find(queryObject).skip(skip).limit(limit);
   const totalJobPost = await JobPost.countDocuments(queryObject);
   const totalNumOfPage = Math.ceil(totalJobPost / limit);
-  // console.log(totalNumOfPage);
 
   // is jobSaved by the candidate who is requesting
+  if (!candidateId) {
+    return res.status(200).json({
+      success: true,
+      totalNumOfPage,
+      totalJobPost,
+      result: jobPosts,
+    });
+  }
   const candidate = await Candidate.findById({ _id: candidateId });
   if (!candidate) {
     return next(new ErrorHandler("User not Found", 401));

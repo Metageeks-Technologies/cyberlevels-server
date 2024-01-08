@@ -113,9 +113,15 @@ export const getCompanies = catchAsyncError(async (req, res, next) => {
     let companies = await Company.find(queryObject).skip(skip).limit(limit);
     const totalCompanies = await Company.countDocuments(queryObject);
     const totalNumOfPage = Math.ceil(totalCompanies / limit);
-    // console.log(totalNumOfPage)
 
-    // is companySaved by the candidate who is requesting
+    if (!candidateId) {
+        return res.status(200).json({
+            success: true,
+            totalNumOfPage,
+            totalCompanies,
+            result: companies,
+        });
+    }
 
     const candidate = await Candidate.findById(candidateId);
     if (!candidate) {
