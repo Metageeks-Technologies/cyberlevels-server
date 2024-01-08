@@ -25,7 +25,7 @@ export const isAuthenticatedCandidate = catchAsyncError(async (req, res, next) =
         throw new Error("JWT_SECRET is not defined in the environment.");
     }
     const decodedData = jwt.verify(token, process.env.JWT_SECRET) as CustomJwtPayload;
-    // console.log("decodedData", decodedData);
+    console.log("decodedData", decodedData);
 
     // if logged in with linkedIn
     if (decodedData.hasOwnProperty('accessToken')) {

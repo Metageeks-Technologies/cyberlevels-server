@@ -15,7 +15,7 @@ candidateRouter.get('/auth/linkedin/callback', passport.authenticate('linkedin',
 candidateRouter.post('/auth/getCandidate', getUserLinkedIn)
 candidateRouter.post('/auth/signup', signupCandidate)
 candidateRouter.post('/auth/login', loginCandidate);
-candidateRouter.get('/auth/:id', getCurrCandidate);
+candidateRouter.get('/auth/:id', isAuthenticatedCandidate, getCurrCandidate);
 candidateRouter.get('/logout', logoutCandidate)
 // saveJob
 candidateRouter.route("/savedJob").post(saveJob).get(getSaveJob).delete(removeSavedJob);
@@ -35,9 +35,9 @@ candidateRouter.patch("/updateNoti/:id", updateNotification)
 candidateRouter.patch("/updateEdu/:id", updateEducation)
 candidateRouter.patch("/updateExp/:id", updateExperience)
 candidateRouter.get("/:id", isAuthenticatedEmployer, getDetails);
-candidateRouter.get("/profileViews/:id/:viewby",getCandidateProfileViews);
-candidateRouter.get("/totalProfileViews/:id",getTotalCandidateProfileViews);
-candidateRouter.get("/itemsbyjoiningdate/:viewby",getCandidateByJoiningDate);
+candidateRouter.get("/profileViews/:id/:viewby", getCandidateProfileViews);
+candidateRouter.get("/totalProfileViews/:id", getTotalCandidateProfileViews);
+candidateRouter.get("/itemsbyjoiningdate/:viewby", getCandidateByJoiningDate);
 
 
 export default candidateRouter;

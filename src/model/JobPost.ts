@@ -104,6 +104,7 @@ const jobPostSchema: Schema = new Schema({
         },
     ],
 
+
 },
     { timestamps: true }
 );

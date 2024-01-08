@@ -82,6 +82,7 @@ export interface ICandidate extends Document {
     certificate: string[],
     role: string,
     location: ILocation,
+    isProfileCompleted: boolean,
     expectedSalary: {
         currency: {
             abbreviation: string;
@@ -90,14 +91,14 @@ export interface ICandidate extends Document {
         },
         salary: number,
         period: string
-    },
-    profileCompleted: number,
+    }
     experience: IExperience[],
     education: IEducation[],
     socialSites: ISocial;
     experienceInShort: string,
     gender: string,
     bio: string,
+    lastLogin: Date,
     isSaved?: boolean,
     savedJobs: string[] | IJobPost[];
     savedCompanies: string[] | ICompany[];
@@ -132,6 +133,7 @@ export interface IEmployer extends Document {
     jobs: string[],
     role: string,
     bio: string,
+    lastLogin: Date,
     subscription: ESubscription,
     signInProvider?: "linkedIn" | "jwt"
     savedCandidates: string[],

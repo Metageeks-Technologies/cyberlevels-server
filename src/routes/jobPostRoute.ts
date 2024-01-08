@@ -3,6 +3,7 @@ import { addJobPost, getJobPosts, populateJobPost, getDetails, deleteJobPost, ge
 import multer from 'multer'
 import { chatWithAiUsingRest, deleteFromPinecone, getSuggestion, newQueryToPc, newUploadToPc, query, queryToPinecone, uploadResumeToPinecone } from '../controller/aiController';
 import { isAuthenticatedCandidate } from '../middleware/auth';
+import profileComplete from '../middleware/profileComplete';
 
 const jobPostRouter = express.Router();
 
@@ -29,12 +30,8 @@ jobPostRouter.route("/deleteFromPc").delete(deleteFromPinecone);
 jobPostRouter.route("/query").get(query);
 jobPostRouter.route("/newUpload").post(newUploadToPc);
 jobPostRouter.route("/newQuery").get(newQueryToPc);
-jobPostRouter.route("/suggestion").get(((req, res, next) => {
-
-    console.log("suggestion called");
-    next();
-}), getSuggestion);
-jobPostRouter.route("/:id").get(isAuthenticatedCandidate, getDetails).delete(deleteJobPost);
+jobPostRouter.route("/suggestion").get(getSuggestion);
+jobPostRouter.route("/:id").get(isAuthenticatedCandidate, profileComplete, getDetails).delete(deleteJobPost);
 jobPostRouter.route("/jobpostviews/:id/:viewby").get(getJobPostViews);
 jobPostRouter.route("/jobpostviews/:id/").post(addJobPostViews);
 jobPostRouter.route("/jobpostforemployerdashboard/:id").get(getJobPostsForEmployerDashboard);

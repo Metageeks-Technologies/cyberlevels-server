@@ -67,6 +67,7 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
     lastName: response.family_name,
     avatar: response.picture,
     isEmailVerified: response.email_verified,
+    lastLogin: new Date(),
   };
   if (role == "employer") {
     user = await Employer.findOne({ email: response.email });
@@ -74,6 +75,8 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
       user = await Employer.create(Obj);
       sendMail("employerSignup", Obj);
     } else {
+      user.lastLogin = new Date();
+      await user.save();
       sendMail("login", Obj);
     }
   }
@@ -83,6 +86,8 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
       user = await Candidate.create(Obj);
       sendMail("candidateSignup", Obj);
     } else {
+      user.lastLogin = new Date();
+      await user.save();
       sendMail("login", Obj);
     }
   }

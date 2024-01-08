@@ -80,6 +80,10 @@ const employerSchema = new mongoose.Schema({
             default: ""
         },
     },
+    lastLogin: {
+        type: Date,
+        default: Date.now()
+    },
     industry: {
         type: String,
     },
