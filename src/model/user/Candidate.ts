@@ -178,6 +178,10 @@ const candidateSchema = new mongoose.Schema({
         type: Date,
         default: Date.now()
     },
+    provider:{
+        type:String,
+        default: "Admin"
+    }
 },
     { timestamps: true }
 );

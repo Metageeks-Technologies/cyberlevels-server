@@ -63,7 +63,9 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
     firstName: response.given_name,
     lastName: response.family_name,
     avatar: response.picture,
+    provider:"Google",
     isEmailVerified: response.email_verified,
+    lastLogin: new Date(),
   };
 
   if (role === "employer") {
@@ -88,6 +90,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
     }
   }
   // console.log(user)
+  console.log(accessToken);
   sendToken(user,201,res,accessToken);
 })
 
@@ -144,6 +147,7 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
     lastName: response.family_name,
     avatar: response.picture,
     isEmailVerified: response.email_verified,
+    provider:"LinkedIn",
     lastLogin: new Date(),
   };
   if (role == "employer") {

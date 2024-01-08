@@ -2,7 +2,7 @@ import ErrorHandler from "../utils/errorHandler.js";
 import catchAsyncError from "./catchAsyncError.js";
 import Candidate from "../model/user/Candidate.js";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { isActive } from "../utils/helper.js";
+import { isActive, isActiveGoogle } from "../utils/helper.js";
 import { ICandidate } from "../types/user.js";
 import Employer from "../model/user/Employer.js";
 
@@ -26,11 +26,14 @@ export const isAuthenticatedCandidate = catchAsyncError(async (req, res, next) =
     }
     const decodedData = jwt.verify(token, process.env.JWT_SECRET) as CustomJwtPayload;
     console.log("decodedData", decodedData);
-
+    
     // if logged in with linkedIn
     if (decodedData.hasOwnProperty('accessToken')) {
+        let isAccessTokenActiveGoogle = await isActiveGoogle(decodedData.accessToken,next);
         let isAccessTokenActive = await isActive(decodedData.accessToken, next);
-        if (!isAccessTokenActive) {
+       
+        
+        if (!isAccessTokenActive && !isAccessTokenActiveGoogle) {
             return next(new ErrorHandler("token has been expired", 401));
         }
     }
