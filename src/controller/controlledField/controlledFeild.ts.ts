@@ -41,7 +41,7 @@ export const addSkill = catchAsyncError(async (req, res, next) => {
     const skill = skillName.toLowerCase().trim();
     const existingSkill = await CandidateSkills.findOne({ name: skill });
     if (existingSkill) {
-        return next(new ErrorHandler("skill already exists", 400));
+        return next(new ErrorHandler("skill already exists, please select from the list", 400));
     }
     const newSkill = await CandidateSkills.create({ name: skill });
     res.status(200).json({
