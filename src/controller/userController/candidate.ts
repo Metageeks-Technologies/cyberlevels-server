@@ -90,7 +90,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
     }
   }
   // console.log(user)
-  console.log(accessToken);
+  console.log(user);
   sendToken(user,201,res,accessToken);
 })
 

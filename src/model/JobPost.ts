@@ -93,6 +93,10 @@ const jobPostSchema: Schema = new Schema({
     },
     views: [
         {
+            viewed_by:{
+                type: mongoose.Types.ObjectId,
+                ref:'Candidate'
+            },
             view_count: {
                 type: Number,
                 default: 0,
