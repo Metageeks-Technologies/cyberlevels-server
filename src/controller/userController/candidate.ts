@@ -35,11 +35,11 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   const clientId = process.env.GOOGLE_CLIENT_ID || "";
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
   const callbackUrl = process.env.GOOGLE_CALLBACK_URL || "";
-  let accessToken="";
+  let accessToken = "";
   try {
     const { data } = await axios.post(`https://oauth2.googleapis.com/token?code=${code}&client_id=${clientId}&client_secret=${clientSecret}&redirect_uri=${callbackUrl}&grant_type=authorization_code`);
     accessToken = data.access_token;
-    // console.log(accessToken,"AccessToekn");
+    console.log(accessToken, "AccessToekn by google");
   } catch (error) {
     return next(new ErrorHandler("Error while getting accessToken", 400));
 
@@ -52,7 +52,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
       },
     });
     response = data;
-    // console.log(data);
+    console.log(data, "data by google");
   } catch (err) {
     return next(new ErrorHandler("Error while getting userInfo", 400));
   }
@@ -88,16 +88,8 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
     }
   }
   // console.log(user)
-  sendToken(user,201,res,accessToken);
+  sendToken(user, 201, res, accessToken);
 })
-
-
-
-
-
-
-
-
 
 export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
   if (req.body.hasOwnProperty("error")) {
