@@ -189,6 +189,7 @@ export const getCurrCandidate = catchAsyncError(async (req, res, next) => {
     candidate,
   });
 });
+
 export const updateCurrCandidate = catchAsyncError(async (req, res, next) => {
   if (!req.body) {
     return next(new ErrorHandler("body not found", 400));
@@ -227,6 +228,7 @@ export const signupCandidate = catchAsyncError(async (req, res, next) => {
   sendMail("candidateSignupEmail", req.body);
   sendToken(candidate, 201, res);
 });
+
 export const loginCandidate = catchAsyncError(async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -266,6 +268,7 @@ export const logoutCandidate = catchAsyncError(async (req, res, next) => {
       message: "Logged Out Successfully",
     });
 });
+
 export const getAllCandidate = catchAsyncError(async (req, res, next) => {
   const {
     keyword,
