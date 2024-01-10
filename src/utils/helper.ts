@@ -22,6 +22,35 @@ export const isActive = async (token: string, next: NextFunction) => {
     }
 }
 
+export const isActiveGoogle = async (token: string, next: NextFunction) => {
+    const requestData = {
+        client_id: process.env.GOOGLE_CLIENT_ID || "",
+        client_secret: process.env.GOOGLE_CLIENT_SECRET || "",
+        accessToken: token
+    };
+    const formData = new URLSearchParams(requestData).toString();
+    const headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+    };
+
+    try {
+        const { data } = await axios.post("https://www.googleapis.com/oauth2/v3/tokeninfo?", formData, { headers })
+        // console.log(data)
+        const isTokenActive = ():boolean => {
+            const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+            const tokenExpirationTime = parseInt(data.exp);
+          
+            return tokenExpirationTime > currentTimeInSeconds;
+          };
+        //   console.log(isTokenActive(),"Active")
+          return isTokenActive() ;
+        //   console.log(`Token is ${activeStatus}`);
+        // return data?.active;
+    } catch (error) {
+        return next(new ErrorHandler("Error while Token introspection", 400))
+    }
+}
+
 export function calculateMatchScore(userSkills: string[], jobPrimarySkills: string[], jobSecondarySkills: string[]) {
 
     // It will come from the Database

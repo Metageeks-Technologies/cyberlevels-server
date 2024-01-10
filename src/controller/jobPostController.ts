@@ -8,6 +8,7 @@ import { calculateMatchScore, calculateScoreForSkills } from "../utils/helper";
 import { ICandidate } from "../types/user";
 import { IJobPost } from "../types/jobPost";
 import mongoose from "mongoose";
+const { ObjectId } = require("mongodb");
 
 export const addJobPost = catchAsyncError(async (req, res, next) => {
   if (!req.body) {
@@ -39,7 +40,20 @@ export const getDetails = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("unauthenticated user", 404));
   }
   const candidate = req.user as ICandidate;
-
+  const alreadyViewed = job.views.filter(
+    (view) =>
+      new ObjectId(view.viewed_by).toString() ===
+      new ObjectId(candidate._id).toString()
+  );
+  // console.log(alreadyViewed, "already Viewed");
+  if (alreadyViewed.length === 0) {
+    job.views.push({
+      viewed_by: candidate._id,
+      view_count: 1,
+      view_timestamp: Date.now().toString(),
+    });
+    await job.save();
+  }
   const score = Math.floor(
     calculateMatchScore(
       candidate.skills,
@@ -99,8 +113,6 @@ export const getJobPosts = catchAsyncError(async (req, res, next) => {
     candidateId,
     companyId,
   } = req.query;
-
-
 
   const queryObject: any = {};
   if (location) {
@@ -405,10 +417,10 @@ export const addJobPostViews = catchAsyncError(async (req, res) => {
     return;
   }
 
-  doc.views.push({
-    view_count: 1,
-    view_timestamp: Date.now().toString(),
-  });
+  // doc.views.push({
+  //   view_count: 1,
+  //   view_timestamp: Date.now().toString(),
+  // });
 
   const document = await doc.save();
 

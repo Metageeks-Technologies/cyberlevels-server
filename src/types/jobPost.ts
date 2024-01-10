@@ -1,6 +1,6 @@
 import mongoose, { Document } from "mongoose";
 interface JobPostView {
-    
+    viewed_by:mongoose.Types.ObjectId;
     view_count?: number;
     view_timestamp?: string;
 }

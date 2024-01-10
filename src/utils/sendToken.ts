@@ -19,7 +19,7 @@ export const sendTokenForAdmin = (user: any, statusCode: number, res: Response) 
 };
 
 export const sendToken = (user: any, statusCode: number, res: Response, accessToken?: string) => {
-  let token = accessToken ? user.createJWT(accessToken) : user.createJWT();
+  let token = accessToken ? user.createJWT({accessToken,provider:user.provider}) : user.createJWT();
 
   const options = {
     httpOnly: process.env.NODE_ENV === 'production',
