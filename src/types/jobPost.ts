@@ -1,5 +1,9 @@
 import mongoose, { Document } from "mongoose";
-
+interface JobPostView {
+    viewed_by:mongoose.Types.ObjectId;
+    view_count?: number;
+    view_timestamp?: string;
+}
 export interface IJobPost extends Document {
     title: string;
     description: string;
@@ -18,7 +22,11 @@ export interface IJobPost extends Document {
         minimum: number;
         maximum: number;
         isDisclosed: boolean;
-        currency: string;
+        currency: {
+            abbreviation:string;
+            name:string;
+            symbol:string;
+        };
         period: "monthly" | "yearly" | "weekly" | "hourly";
     };
     status: "active" | "expired",
@@ -30,4 +38,5 @@ export interface IJobPost extends Document {
     testQuestions: string;
     isSaved?: boolean;
     matchScore?: number;
+    views:JobPostView[]
 }

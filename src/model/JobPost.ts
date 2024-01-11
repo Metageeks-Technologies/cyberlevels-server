@@ -7,8 +7,8 @@ const jobPostSchema: Schema = new Schema({
         type: String,
         required: true,
     },
-    descrption:{
-        type:String,
+    descrption: {
+        type: String,
     },
     location: {
         type: [String],
@@ -44,13 +44,13 @@ const jobPostSchema: Schema = new Schema({
         maximum: Number,
         isDisclosed: Boolean,
         currency: {
-            type: String,
-            default: "Canadian dollars"
+            abbreviation: String,
+            name: String,
+            symbol: String
         },
-        salary: Number,
         period: {
             type: String,
-            enum: ["monthly", "yearly", "weekly", "hourly","By-weekly"]
+            enum: ["monthly", "yearly", "weekly", "hourly", "By-weekly"]
         }
     },
     status: {
@@ -64,7 +64,13 @@ const jobPostSchema: Schema = new Schema({
     preferredExperience: {
         type: [String],
     },
-    deadlineDate:Date,
+    workHours: {
+        type: String
+    },
+    joiningTime: {
+        type: String,
+    },
+    deadlineDate: Date,
     companyId: {
         type: mongoose.Types.ObjectId,
         ref: 'Company',
@@ -85,6 +91,24 @@ const jobPostSchema: Schema = new Schema({
     description: {
         type: String,
     },
+    views: [
+        {
+            viewed_by:{
+                type: mongoose.Types.ObjectId,
+                ref:'Candidate'
+            },
+            view_count: {
+                type: Number,
+                default: 0,
+            },
+            view_timestamp: {
+                type: Date,
+                default: Date.now(),
+            },
+        },
+    ],
+
+
 },
     { timestamps: true }
 );

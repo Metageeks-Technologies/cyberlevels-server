@@ -2,7 +2,7 @@ import mongoose, { Document, Schema, model } from 'mongoose';
 
 export interface SmtpConfig extends Document {
   host: string;
-  port: number;
+  port: string;
   secure: boolean;
   user: string;
   pass: string;
@@ -10,7 +10,7 @@ export interface SmtpConfig extends Document {
 
 const smtpConfigSchema = new Schema<SmtpConfig>({
   host: { type: String, required: true },
-  port: { type: Number, required: true },
+  port: { type: String, required: true },
   secure: { type: Boolean, required: true },
   user: { type: String, required: true },
   pass: { type: String, required: true },

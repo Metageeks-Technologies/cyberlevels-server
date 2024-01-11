@@ -15,12 +15,12 @@ export const createJobApp = catchAsyncError(async (req, res, next) => {
         return next(new ErrorHandler("candidate or jobPost is missing", 400));
     }
     const user = req.user as ICandidate;
-    if (user && user.subscription.jobApplicationLimit === 0) {
+    if (user && user.subscription.offering.applyJobLImit === 0) {
         return next(new ErrorHandler("You can't Apply more with you current plan Upgrade your plan to increase you daily limit maximum jobs you can apply", 400));
     }
 
     const jobApp = await JobApp.create(req.body);
-    user.subscription.jobApplicationLimit--;
+    if (user && 'applyJobLimit' in user.subscription.offering && typeof user.subscription.offering.applyJobLimit === 'number') user.subscription.offering.applyJobLimit--;
     await user.save();
 
     res.status(200).json({
@@ -48,17 +48,27 @@ export const getAllAppByCandidate = catchAsyncError(async (req, res, next) => {
 
 export const getAllJobAppByCandidate = catchAsyncError(async (req, res, next) => {
 
-    const { id: candidate } = req.params
+    const { id: candidate, page } = req.params
     if (!candidate) {
         return next(new ErrorHandler("candidate no found", 404));
     }
 
+    let p = Number(page) || 1;
+    let limit = 6;
+    let skip = (p - 1) * limit;
+    const totalCount = await JobApp.countDocuments({ candidate }).populate('jobPost');
+    const totalPages = Math.ceil(totalCount / limit);
     // const allJobApp = await JobApp.find({ candidate });
     // const allJobPost= await JobPost.find()
-    const allJobApp = await JobApp.find({ candidate }).sort({ createdAt: -1 }).populate('jobPost');
+    const allJobApp = await JobApp.find({ candidate }).sort({ createdAt: -1 }).populate('jobPost').skip(skip).limit(limit);
+    // console.log(allJobApp);
 
     res.status(200).json({
         allJobApp,
+        totalPages,
+        totalJobApplied: totalCount,
+        itemsPerPage: limit,
+        currentPage: page,
         success: true,
     })
 })
@@ -129,5 +139,9 @@ export const updateStatus = catchAsyncError(async (req, res, next) => {
         notification: notificationObject
     })
 })
-
+export const getAllShortlistedJobAppByCandidateId = catchAsyncError(async (req, res) => {
+    const id = req.params.id;
+    const data = await JobApp.find({ candidate: id, status: 'Shortlisted' });
+    res.status(200).send({ data: data.length });
+})
 

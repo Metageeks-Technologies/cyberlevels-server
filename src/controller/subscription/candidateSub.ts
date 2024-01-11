@@ -3,7 +3,7 @@ import initializeDynamicModel from "../../model/subscription/CandidateSub";
 import ErrorHandler from "../../utils/errorHandler";
 
 export const createSubscription = catchAsyncError(async (req, res, next) => {
-
+    console.log(req.body)
     if (!req.body) {
         return next(new ErrorHandler("body not found", 400));
     }
@@ -20,6 +20,15 @@ export const createSubscription = catchAsyncError(async (req, res, next) => {
         candidateSub
     });
 
+})
+
+export const updateSubscription = catchAsyncError(async (req,res) => {
+    // console.log(req.body)
+    const planId:string = req.body._id;
+    const updateDoc = req.body;
+    const CandidateSub = await initializeDynamicModel
+    const plan = await CandidateSub.findByIdAndUpdate(planId,updateDoc); 
+    res.status(200).json({success: true,plan});
 })
 
 export const getCandidateSub = catchAsyncError(async (req, res, next) => {

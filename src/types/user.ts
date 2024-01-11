@@ -1,7 +1,13 @@
 import mongoose, { Document } from "mongoose";
 import type { ICompany } from "./company";
 import type { IJobPost } from "./jobPost";
+import { ICandidateSub } from "./subscription";
 
+interface ProfileView {
+
+    view_count?: number;
+    view_timestamp?: string;
+}
 export interface AdminDocument extends Document {
     name: string;
     email: string;
@@ -72,28 +78,33 @@ export interface ICandidate extends Document {
     resumes: IResume[],
     signInProvider: "linkedIn" | "jwt"
     skills: string[],
-    softSkills:string[],
-    certificate:string[],
+    softSkills: string[],
+    certificate: string[],
     role: string,
     location: ILocation,
+    isProfileCompleted: boolean,
     expectedSalary: {
-        currency: string,
+        currency: {
+            abbreviation: string;
+            name: string;
+            symbol: string;
+        },
         salary: number,
         period: string
-    },
-    profileCompleted: number,
+    }
     experience: IExperience[],
     education: IEducation[],
     socialSites: ISocial;
     experienceInShort: string,
     gender: string,
     bio: string,
+    lastLogin: Date,
     isSaved?: boolean,
     savedJobs: string[] | IJobPost[];
     savedCompanies: string[] | ICompany[];
     notifications: INotification[];
-    profileViews: number;
-    subscription: ISubscription
+    profileViews: ProfileView[];
+    subscription: ICandidateSub;
     createJWT(accessToken?: string): string;
     comparePassword(givenPassword: string): Promise<boolean>;
 }
@@ -122,6 +133,7 @@ export interface IEmployer extends Document {
     jobs: string[],
     role: string,
     bio: string,
+    lastLogin: Date,
     subscription: ESubscription,
     signInProvider?: "linkedIn" | "jwt"
     savedCandidates: string[],

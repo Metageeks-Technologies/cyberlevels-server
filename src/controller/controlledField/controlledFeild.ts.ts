@@ -1,4 +1,6 @@
 import catchAsyncError from '../../middleware/catchAsyncError.js';
+import CandidateSkills from '../../model/controlledField/candidateSkills.js';
+import ErrorHandler from '../../utils/errorHandler.js';
 
 export const getAutoComplete = (model: any) => {
     return catchAsyncError(async (req, res, next) => {
@@ -29,6 +31,57 @@ export const getAutoComplete = (model: any) => {
 
     })
 }
+
+export const addSkill = catchAsyncError(async (req, res, next) => {
+
+    const { skillName } = req.body;
+    if (!skillName) {
+        return next(new ErrorHandler("skill is required", 400));
+    }
+    const skill = skillName.toLowerCase().trim();
+    const existingSkill = await CandidateSkills.findOne({ name: skill });
+    if (existingSkill) {
+        return next(new ErrorHandler("skill already exists, please select from the list", 400));
+    }
+    const newSkill = await CandidateSkills.create({ name: skill });
+    res.status(200).json({
+        success: true,
+        skill: newSkill
+    })
+})
+
+const cybersecuritySkills = [
+    "Information Security",
+    "Network Security",
+    "Security Analysis",
+    "Penetration Testing",
+    "Vulnerability Assessment",
+    "Security Auditing",
+    "Incident Response",
+    "Firewall Administration",
+    "Intrusion Detection",
+    "Cryptography",
+    "Computer Forensics",
+    "Malware Analysis",
+    "Risk Management",
+    "Secure Software Development",
+    "Cloud Security",
+    "Identity and Access Management",
+    "Data Privacy",
+    "Ethical Hacking",
+    "Security Architecture",
+    "Disaster Recovery"
+];
+// write a controller add this array in the CandidateSkills model
+export const addSkills = catchAsyncError(async (req, res, next) => {
+    for (const skill of cybersecuritySkills) {
+        await CandidateSkills.create({ name: skill });
+    }
+    res.status(200).json({
+        success: true,
+    })
+}
+)
 // export const getJobPosts = catchAsyncError(async (req, res, next) => {
 
 

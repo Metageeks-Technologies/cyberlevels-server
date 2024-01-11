@@ -29,6 +29,10 @@ const employerSchema = new mongoose.Schema({
         unique: true,
         // validate: [validator.isEmail, "please enter a valid email"],
     },
+    provider:{
+        type:String,
+        default: "Admin"
+    },
     gender: {
         type: String,
         enum: ["male", "female", "others"]
@@ -79,6 +83,10 @@ const employerSchema = new mongoose.Schema({
             type: String,
             default: ""
         },
+    },
+    lastLogin: {
+        type: Date,
+        default: Date.now()
     },
     industry: {
         type: String,

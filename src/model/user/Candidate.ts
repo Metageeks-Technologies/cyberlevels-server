@@ -76,8 +76,8 @@ const candidateSchema = new mongoose.Schema({
             description: String
         }
     ],
-    certificate:{
-        type:[String]
+    certificate: {
+        type: [String]
     },
     location:
     {
@@ -126,8 +126,9 @@ const candidateSchema = new mongoose.Schema({
     },
     expectedSalary: {
         currency: {
-            type: String,
-            default: "Canadian dollars"
+            abbreviation: String,
+            name: String,
+            symbol: String
         },
         salary: Number,
         period: {
@@ -153,29 +154,34 @@ const candidateSchema = new mongoose.Schema({
             isViewed: false
         }
     ],
-    profileCompleted: {
-        type: Number,
-        default: 0,
+    isProfileCompleted: {
+        type: Boolean,
+        default: false,
     },
-    profileViews: {
-        type: Number,
-        default: 0,
-    },
+    profileViews: [
+        {
+            view_count: {
+                type: Number,
+                default: undefined,
+            },
+            view_timestamp: {
+                type: Date,
+                default: Date.now(),
+            },
+        },
+    ],
     subscription: {
-        plan: {
-            type: String,
-            enum: ['starter', 'gold', 'diamond'],
-            default: 'starter',
-        },
-        jobApplicationLimit: {
-            type: Number,
-            default: 10,
-        },
-        feedbackLimit: {
-            type: Number,
-            default: 10
-        }
+        type: mongoose.Schema.Types.Mixed,
+        default: {}
     },
+    lastLogin: {
+        type: Date,
+        default: Date.now()
+    },
+    provider:{
+        type:String,
+        default: "Admin"
+    }
 },
     { timestamps: true }
 );
@@ -191,44 +197,6 @@ candidateSchema.pre<ICandidate>('save', async function (next) {
 
     next();
 });
-
-candidateSchema.pre<ICandidate>('findOneAndUpdate', async function (next) {
-
-    const requiredFields: (keyof ICandidate)[] = ['firstName', 'lastName', 'email', "gender", "experienceInShort", "avatar", "resumes", "phoneNumber", 'location', 'skills', "bio", "expectedSalary", 'education', 'experience'];
-    const totalFields = requiredFields.length;
-    const completedFields = requiredFields.reduce((count, field) => {
-        const value = this.get(field);
-
-        if (typeof value === 'boolean') {
-            return count + (value ? 1 : 0);
-        }
-
-        return count + (value !== undefined && value !== null && (typeof value !== 'string' || value.trim() !== '') ? 1 : 0);
-    }, 0);
-
-    // Calculate and return the completeness as a percentage
-    this.profileCompleted = Math.round((completedFields / totalFields) * 100);
-    next();
-});
-
-//Define a virtual property for profile completeness
-// candidateSchema.pre('findOneAndUpdate').get(function (this: ICandidate) {
-
-//     const requiredFields: (keyof ICandidate)[] = ['firstName', 'lastName', 'email', "gender", "experienceInShort", "avatar", "resumes", "phoneNumber", 'location', 'skills', "bio", "expectedSalary", 'education', 'experience'];
-//     const totalFields = requiredFields.length;
-//     const completedFields = requiredFields.reduce((count, field) => {
-//         const value = this.get(field);
-
-//         if (typeof value === 'boolean') {
-//             return count + (value ? 1 : 0);
-//         }
-
-//         return count + (value !== undefined && value !== null && (typeof value !== 'string' || value.trim() !== '') ? 1 : 0);
-//     }, 0);
-
-//     // Calculate and return the completeness as a percentage
-//     return Math.round((completedFields / totalFields) * 100);
-// });
 
 candidateSchema.methods.createJWT = function (this: ICandidate, accessToken?: string) {
     if (!process.env.JWT_SECRET) {
@@ -246,7 +214,7 @@ candidateSchema.methods.createJWT = function (this: ICandidate, accessToken?: st
     if (accessToken) {
         payload.accessToken = accessToken;
     }
-    return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "60d" });
+    return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" });
 };
 
 candidateSchema.methods.comparePassword = async function (this: ICandidate, givenPassword: string) {
