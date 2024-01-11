@@ -89,9 +89,17 @@ export interface ICandidate extends Document {
             name: string;
             symbol: string;
         },
-        salary: number,
+        min: number,
+        max:number,
         period: string
-    }
+    },
+    selfDeclaration: {
+        gender:string,
+        race:string
+    },
+    preferredLocations:string[],
+    preferredLanguages:string[],
+    experienceInYears:number,
     experience: IExperience[],
     education: IEducation[],
     socialSites: ISocial;

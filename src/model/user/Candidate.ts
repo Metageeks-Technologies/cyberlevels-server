@@ -23,6 +23,9 @@ const candidateSchema = new mongoose.Schema({
     gender: {
         type: String,
     },
+    experienceInYears:{
+        type:Number,
+    },
     experienceInShort: {
         type: String,
         enum: ["fresher", "intermediate", "expert"]
@@ -87,6 +90,10 @@ const candidateSchema = new mongoose.Schema({
 
     }
     ,
+    selfDeclaration:{
+        gender:String,
+        race:String,
+    },
     socialSites: {
         linkedIn: {
             type: String,
@@ -130,12 +137,19 @@ const candidateSchema = new mongoose.Schema({
             name: String,
             symbol: String
         },
-        salary: Number,
+        min: Number,
+        max:Number,
         period: {
             type: String,
             enum: ["monthly", "yearly", "weekly", "hourly"]
         }
 
+    },
+    preferredLocations: {
+        type: [String],
+    },
+    preferredLanguages: {
+        type: [String],
     },
     notifications: [
         {
