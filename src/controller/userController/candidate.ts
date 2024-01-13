@@ -22,7 +22,6 @@ dotenv.config();
 
 const serverGeneratedState = "12345678";
 
-
 export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   if (req.body.hasOwnProperty("error")) {
     const { error_description } = req.body;
@@ -35,22 +34,26 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   const clientId = process.env.GOOGLE_CLIENT_ID || "";
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
   const callbackUrl = process.env.GOOGLE_CALLBACK_URL || "";
-  let accessToken="";
+  let accessToken = "";
   try {
-    const { data } = await axios.post(`https://oauth2.googleapis.com/token?code=${code}&client_id=${clientId}&client_secret=${clientSecret}&redirect_uri=${callbackUrl}&grant_type=authorization_code`);
+    const { data } = await axios.post(
+      `https://oauth2.googleapis.com/token?code=${code}&client_id=${clientId}&client_secret=${clientSecret}&redirect_uri=${callbackUrl}&grant_type=authorization_code`
+    );
     accessToken = data.access_token;
     // console.log(accessToken,"AccessToekn");
   } catch (error) {
     return next(new ErrorHandler("Error while getting accessToken", 400));
-
   }
   let response;
   try {
-    const { data } = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const { data } = await axios.get(
+      "https://www.googleapis.com/oauth2/v2/userinfo",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
     response = data;
     // console.log(data);
   } catch (err) {
@@ -63,7 +66,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
     firstName: response.given_name,
     lastName: response.family_name,
     avatar: response.picture,
-    provider:"Google",
+    provider: "Google",
     isEmailVerified: response.email_verified,
     lastLogin: new Date(),
   };
@@ -91,16 +94,8 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   }
   // console.log(user)
   console.log(user);
-  sendToken(user,201,res,accessToken);
-})
-
-
-
-
-
-
-
-
+  sendToken(user, 201, res, accessToken);
+});
 
 export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
   if (req.body.hasOwnProperty("error")) {
@@ -147,7 +142,7 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
     lastName: response.family_name,
     avatar: response.picture,
     isEmailVerified: response.email_verified,
-    provider:"LinkedIn",
+    provider: "LinkedIn",
     lastLogin: new Date(),
   };
   if (role == "employer") {
@@ -175,7 +170,6 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
 
   sendToken(user, 201, res, accessToken);
 });
-
 
 export const getCurrCandidate = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
@@ -400,8 +394,30 @@ export const updateEducation = catchAsyncError(async (req, res, next) => {
   }
   res.status(200).json({
     success: true,
+    education:candidate.education
   });
 });
+export const updateExistingEducation = catchAsyncError(
+  async (req, res, next) => {
+    if (!req.body) {
+      return next(new ErrorHandler("body not found", 400));
+    }
+    const { id, eduId } = req.params;
+    const candidate = await Candidate.findOneAndUpdate(
+      { _id: id, "education._id": eduId },
+      { $set: { "education.$": req.body } },
+      { new: true, runValidators: true }
+    );
+      console.log(candidate);
+    if (!candidate) {
+      return next(new ErrorHandler("Candidate not found", 404));
+    }
+    res.status(200).json({
+      success: true,
+      data: candidate.education,
+    });
+  }
+);
 export const updateExperience = catchAsyncError(async (req, res, next) => {
   if (!req.body) {
     return next(new ErrorHandler("body not found", 400));
@@ -415,8 +431,29 @@ export const updateExperience = catchAsyncError(async (req, res, next) => {
   }
   res.status(200).json({
     success: true,
+    experience:candidate.experience
   });
 });
+
+export const updateExistingExperience = catchAsyncError(async (req,res,next) => {
+  if (!req.body) {
+    return next(new ErrorHandler("body not found", 400));
+  }
+  const { id, expId } = req.params;
+  const candidate = await Candidate.findOneAndUpdate(
+    { _id: id, "experience._id": expId },
+    { $set: { "experience.$": req.body } },
+    { new: true, runValidators: true }
+  );
+
+  if (!candidate) {
+    return next(new ErrorHandler("Candidate not found", 404));
+  }
+  res.status(200).json({
+    success: true,
+    data: candidate.experience,
+  });
+})
 
 export const populateCandidate = catchAsyncError(async (req, res, next) => {
   const location = "mockData/Candidate.json";

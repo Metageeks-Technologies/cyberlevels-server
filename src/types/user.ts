@@ -24,6 +24,7 @@ interface IEducation {
     startYear: string;
     endYear: string;
     description: string;
+    _id:string
 }
 interface IExperience {
     title: string;
