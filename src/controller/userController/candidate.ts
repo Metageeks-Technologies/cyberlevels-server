@@ -37,11 +37,19 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   let accessToken = "";
   try {
     const { data } = await axios.post(
-      `https://oauth2.googleapis.com/token?code=${code}&client_id=${clientId}&client_secret=${clientSecret}&redirect_uri=${callbackUrl}&grant_type=authorization_code`
-    );
+    `https://oauth2.googleapis.com/token`,
+    {
+      code,
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: callbackUrl,
+      grant_type: 'authorization_code',
+    }
+  );
     accessToken = data.access_token;
-    // console.log(accessToken,"AccessToekn");
+    console.log(accessToken,"AccessToekn");
   } catch (error) {
+    console.log(error);
     return next(new ErrorHandler("Error while getting accessToken", 400));
   }
   let response;
@@ -57,6 +65,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
     response = data;
     // console.log(data);
   } catch (err) {
+    console.log(err);
     return next(new ErrorHandler("Error while getting userInfo", 400));
   }
   const { role } = req.body;
@@ -67,7 +76,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
     lastName: response.family_name,
     avatar: response.picture,
     provider: "Google",
-    isEmailVerified: response.email_verified,
+    isEmailVerified: response.verified_email,
     lastLogin: new Date(),
   };
 
@@ -89,6 +98,15 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
       // console.log(user);
       sendMail("candidateSignup", userObj);
     } else {
+      if(user.provider!=="Google"){
+        // user.provider="Google";
+        user.avatar = response.picture;
+      }
+      if(user.isEmailVerified === false && response.verified_email === true){
+        user.isEmailVerified = true;
+      }
+      user.lastLogin = new Date();
+      await user.save();
       sendMail("login", userObj);
     }
   }
@@ -162,8 +180,17 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
       user = await Candidate.create(Obj);
       sendMail("candidateSignup", Obj);
     } else {
+      if(user.provider!=="LinkedIn"){
+        // user.provider="LinkedIn";
+        user.avatar = response.picture;
+      }
+      if(user.isEmailVerified === false && response.verified_email === true){
+        user.isEmailVerified = true;
+      }
       user.lastLogin = new Date();
       await user.save();
+      // user.lastLogin = new Date();
+      // await user.save();
       sendMail("login", Obj);
     }
   }

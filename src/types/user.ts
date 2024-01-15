@@ -84,6 +84,7 @@ export interface ICandidate extends Document {
     role: string,
     location: ILocation,
     isProfileCompleted: boolean,
+    provider:string,
     expectedSalary: {
         currency: {
             abbreviation: string;
@@ -127,6 +128,7 @@ export interface IEmployer extends Document {
     lastName: string;
     avatar: string;
     phoneNumber: string,
+    provider:string,
     company: {
         name: string,
         companyId: mongoose.Types.ObjectId,
