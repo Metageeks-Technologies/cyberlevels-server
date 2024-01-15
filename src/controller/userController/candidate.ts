@@ -22,7 +22,6 @@ dotenv.config();
 
 const serverGeneratedState = "12345678";
 
-
 export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   if (req.body.hasOwnProperty("error")) {
     const { error_description } = req.body;
@@ -37,23 +36,36 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   const callbackUrl = process.env.GOOGLE_CALLBACK_URL || "";
   let accessToken = "";
   try {
-    const { data } = await axios.post(`https://oauth2.googleapis.com/token?code=${code}&client_id=${clientId}&client_secret=${clientSecret}&redirect_uri=${callbackUrl}&grant_type=authorization_code`);
+    const { data } = await axios.post(
+      `https://oauth2.googleapis.com/token`,
+      {
+        code,
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uri: callbackUrl,
+        grant_type: 'authorization_code',
+      }
+    );
     accessToken = data.access_token;
-    console.log(accessToken, "AccessToekn by google");
+    console.log(accessToken, "AccessToekn");
   } catch (error) {
+    console.log(error);
     return next(new ErrorHandler("Error while getting accessToken", 400));
-
   }
   let response;
   try {
-    const { data } = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const { data } = await axios.get(
+      "https://www.googleapis.com/oauth2/v2/userinfo",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
     response = data;
     console.log(data, "data by google");
   } catch (err) {
+    console.log(err);
     return next(new ErrorHandler("Error while getting userInfo", 400));
   }
   const { role } = req.body;
@@ -74,6 +86,15 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
       user = await Employer.create(userObj);
       sendMail("employerSignup", userObj);
     } else {
+      if (user.provider !== "Google") {
+        user.provider = "Google";
+        user.avatar = response.picture;
+      }
+      if (user.isEmailVerified === false && response.verified_email === true) {
+        user.isEmailVerified = true;
+      }
+      user.lastLogin = new Date();
+      await user.save();
       sendMail("login", userObj);
     }
   }
@@ -86,6 +107,15 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
       // console.log(user);
       sendMail("candidateSignup", userObj);
     } else {
+      if (user.provider !== "Google") {
+        user.provider = "Google";
+        user.avatar = response.picture;
+      }
+      if (user.isEmailVerified === false && response.verified_email === true) {
+        user.isEmailVerified = true;
+      }
+      user.lastLogin = new Date();
+      await user.save();
       sendMail("login", userObj);
     }
   }
@@ -93,6 +123,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   console.log(user);
   sendToken(user, 201, res, accessToken);
 })
+
 
 export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
   if (req.body.hasOwnProperty("error")) {
@@ -148,6 +179,13 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
       user = await Employer.create(Obj);
       sendMail("employerSignup", Obj);
     } else {
+      if (user.provider !== "LinkedIn") {
+        user.provider = "LinkedIn";
+        user.avatar = response.picture;
+      }
+      if (user.isEmailVerified === false && response.verified_email === true) {
+        user.isEmailVerified = true;
+      }
       user.lastLogin = new Date();
       await user.save();
       sendMail("login", Obj);
@@ -159,15 +197,23 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
       user = await Candidate.create(Obj);
       sendMail("candidateSignup", Obj);
     } else {
+      if (user.provider !== "LinkedIn") {
+        user.provider = "LinkedIn";
+        user.avatar = response.picture;
+      }
+      if (user.isEmailVerified === false && response.verified_email === true) {
+        user.isEmailVerified = true;
+      }
       user.lastLogin = new Date();
       await user.save();
+      // user.lastLogin = new Date();
+      // await user.save();
       sendMail("login", Obj);
     }
   }
 
   sendToken(user, 201, res, accessToken);
 });
-
 
 export const getCurrCandidate = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
@@ -395,8 +441,30 @@ export const updateEducation = catchAsyncError(async (req, res, next) => {
   }
   res.status(200).json({
     success: true,
+    education: candidate.education
   });
 });
+export const updateExistingEducation = catchAsyncError(
+  async (req, res, next) => {
+    if (!req.body) {
+      return next(new ErrorHandler("body not found", 400));
+    }
+    const { id, eduId } = req.params;
+    const candidate = await Candidate.findOneAndUpdate(
+      { _id: id, "education._id": eduId },
+      { $set: { "education.$": req.body } },
+      { new: true, runValidators: true }
+    );
+    console.log(candidate);
+    if (!candidate) {
+      return next(new ErrorHandler("Candidate not found", 404));
+    }
+    res.status(200).json({
+      success: true,
+      data: candidate.education,
+    });
+  }
+);
 export const updateExperience = catchAsyncError(async (req, res, next) => {
   if (!req.body) {
     return next(new ErrorHandler("body not found", 400));
@@ -410,8 +478,29 @@ export const updateExperience = catchAsyncError(async (req, res, next) => {
   }
   res.status(200).json({
     success: true,
+    experience: candidate.experience
   });
 });
+
+export const updateExistingExperience = catchAsyncError(async (req, res, next) => {
+  if (!req.body) {
+    return next(new ErrorHandler("body not found", 400));
+  }
+  const { id, expId } = req.params;
+  const candidate = await Candidate.findOneAndUpdate(
+    { _id: id, "experience._id": expId },
+    { $set: { "experience.$": req.body } },
+    { new: true, runValidators: true }
+  );
+
+  if (!candidate) {
+    return next(new ErrorHandler("Candidate not found", 404));
+  }
+  res.status(200).json({
+    success: true,
+    data: candidate.experience,
+  });
+})
 
 export const populateCandidate = catchAsyncError(async (req, res, next) => {
   const location = "mockData/Candidate.json";

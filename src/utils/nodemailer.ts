@@ -6,7 +6,7 @@ import { getSmtpConfigFromDB } from '../services/smtpConfigService';
 export const sendMail = async function sendMail(str: string, data: any): Promise<void> {
   try {
     const smtpConfig = await getSmtpConfigFromDB();
-    console.log(smtpConfig);
+    // console.log(smtpConfig);
     if (smtpConfig) {
       const transporter = nodemailer.createTransport({
         host: smtpConfig.host,
