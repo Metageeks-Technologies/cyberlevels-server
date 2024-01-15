@@ -10,8 +10,8 @@ import { isAuthenticatedCandidate, isAuthenticatedEmployer } from '../../middlew
 
 const candidateRouter = express.Router();
 // auth 
-candidateRouter.get('/auth/google',passport.authenticate('google', {state:'12345678'}));
-candidateRouter.get('auth/google/callback',passport.authenticate('google',{successRedirect:"/", failureRedirect:"/login"}))
+candidateRouter.get('/auth/google', passport.authenticate('google', { state: '12345678' }));
+candidateRouter.get('/auth/google/callback', passport.authenticate('google', { successRedirect: "/", failureRedirect: "/login" }))
 candidateRouter.post('/auth/getCandidateGoogle', getUserGoogle);
 candidateRouter.get('/auth/linkedin', passport.authenticate('linkedin', { state: '12345678' }));
 candidateRouter.get('/auth/linkedin/callback', passport.authenticate('linkedin', { successRedirect: "/", failureRedirect: "/login" }));
