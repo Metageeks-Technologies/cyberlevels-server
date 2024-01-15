@@ -34,10 +34,11 @@ export const isAuthenticatedCandidate = catchAsyncError(
     if (decodedData.hasOwnProperty("accessToken")) {
       let isAccessTokenActive = false;
       if (decodedData.accessToken.provider === "Google") {
-        isAccessTokenActive = await isActiveGoogle(
+        const result = await isActiveGoogle(
           decodedData?.accessToken?.accessToken,
           next
         );
+        isAccessTokenActive = result === true;
       } else if (decodedData.accessToken.provider === "LinkedIn") {
         isAccessTokenActive = await isActive(
           decodedData?.accessToken?.accessToken,
@@ -85,15 +86,17 @@ export const isAuthenticatedEmployer = catchAsyncError(
     if (decodedData.hasOwnProperty("accessToken")) {
       let isAccessTokenActive = false;
       if (decodedData.accessToken.provider === "Google") {
-        isAccessTokenActive = await isActiveGoogle(
+        const result = await isActiveGoogle(
           decodedData?.accessToken?.accessToken,
           next
         );
+        isAccessTokenActive = result === true;
       } else if (decodedData.accessToken.provider === "LinkedIn") {
-        isAccessTokenActive = await isActive(
+        const result = await isActive(
           decodedData?.accessToken?.accessToken,
           next
         );
+        isAccessTokenActive = result === true;
       }
       if (!isAccessTokenActive) {
         return next(new ErrorHandler("token has been expired", 401));
