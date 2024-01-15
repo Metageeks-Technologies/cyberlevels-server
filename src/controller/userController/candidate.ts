@@ -76,11 +76,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
     lastName: response.family_name,
     avatar: response.picture,
     provider: "Google",
-<<<<<<<< <Temporary merge branch 1
-  isEmailVerified: response.email_verified,
-=========
     isEmailVerified: response.verified_email,
->>>>>>>>> Temporary merge branch 2
     lastLogin: new Date(),
   };
 
@@ -126,11 +122,9 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   // console.log(user)
   console.log(user);
   sendToken(user, 201, res, accessToken);
-<<<<<<<<< Temporary merge branch 1
+
 })
-=========
-});
->>>>>>>>> Temporary merge branch 2
+
 
 export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
   if (req.body.hasOwnProperty("error")) {
