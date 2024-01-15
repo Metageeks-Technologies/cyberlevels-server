@@ -9,6 +9,7 @@ import {
 import { isAuthenticatedCandidate, isAuthenticatedEmployer } from '../../middleware/auth';
 import profileComplete from '../../middleware/profileComplete';
 
+
 const candidateRouter = express.Router();
 // auth 
 candidateRouter.get('/auth/google', passport.authenticate('google', { state: '12345678' }));
@@ -29,16 +30,16 @@ candidateRouter.route("/savedCompany").post(saveCompany).get(getSavedCompany).de
 candidateRouter.get("/get", getAllCandidate)
 candidateRouter.get("/recommended", getRecommendedJobs);
 
-candidateRouter.route("/upload").post(uploadResumeToS3).patch(profileComplete, addResume)
-candidateRouter.route("/uploadProfile").post(uploadProfileToS3).patch(profileComplete, updateProfileAvatar)
+candidateRouter.route("/upload").post(uploadResumeToS3).patch(isAuthenticatedCandidate, profileComplete, addResume)
+candidateRouter.route("/uploadProfile").post(uploadProfileToS3).patch(isAuthenticatedCandidate, profileComplete, updateProfileAvatar)
 candidateRouter.route("/download").post(downloadResumeFromS3)
 candidateRouter.route("/delete").delete(deleteResumeFromS3)
 candidateRouter.post("/populate", populateCandidate)
-candidateRouter.patch("/update/:id", profileComplete, updateCurrCandidate)
+candidateRouter.patch("/update/:id", isAuthenticatedCandidate, profileComplete, updateCurrCandidate)
 candidateRouter.patch("/updateNoti/:id", updateNotification)
-candidateRouter.patch("/updateEdu/:id", profileComplete, updateEducation)
+candidateRouter.patch("/updateEdu/:id", isAuthenticatedCandidate, profileComplete, updateEducation)
 candidateRouter.patch("/updateEdu/:id/:eduId", updateExistingEducation)
-candidateRouter.patch("/updateExp/:id", profileComplete, updateExperience)
+candidateRouter.patch("/updateExp/:id", isAuthenticatedCandidate, profileComplete, updateExperience)
 candidateRouter.patch("/updateExp/:id/:expId", updateExistingExperience)
 candidateRouter.get("/:id", isAuthenticatedEmployer, getDetails);
 candidateRouter.get("/profileViews/:id/:viewby", getCandidateProfileViews);

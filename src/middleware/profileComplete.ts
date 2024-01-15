@@ -5,6 +5,7 @@ import catchAsyncError from './catchAsyncError';
 const profileComplete = catchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
 
     console.log('profileComplete 123');
+
     if (req.user && 'isProfileCompleted' in req.user && req.user.isProfileCompleted === false) {
         console.log('profileComplete middleware');
         const candidate = req.user as ICandidate;
