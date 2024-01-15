@@ -86,6 +86,15 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
       user = await Employer.create(userObj);
       sendMail("employerSignup", userObj);
     } else {
+      if(user.provider!=="Google"){
+        user.provider="Google";
+        user.avatar = response.picture;
+      }
+      if(user.isEmailVerified === false && response.verified_email === true){
+        user.isEmailVerified = true;
+      }
+      user.lastLogin = new Date();
+      await user.save();
       sendMail("login", userObj);
     }
   }
@@ -99,7 +108,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
       sendMail("candidateSignup", userObj);
     } else {
       if(user.provider!=="Google"){
-        // user.provider="Google";
+        user.provider="Google";
         user.avatar = response.picture;
       }
       if(user.isEmailVerified === false && response.verified_email === true){
@@ -169,6 +178,13 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
       user = await Employer.create(Obj);
       sendMail("employerSignup", Obj);
     } else {
+      if(user.provider!=="LinkedIn"){
+        user.provider="LinkedIn";
+        user.avatar = response.picture;
+      }
+      if(user.isEmailVerified === false && response.verified_email === true){
+        user.isEmailVerified = true;
+      }
       user.lastLogin = new Date();
       await user.save();
       sendMail("login", Obj);
@@ -181,7 +197,7 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
       sendMail("candidateSignup", Obj);
     } else {
       if(user.provider!=="LinkedIn"){
-        // user.provider="LinkedIn";
+        user.provider="LinkedIn";
         user.avatar = response.picture;
       }
       if(user.isEmailVerified === false && response.verified_email === true){
