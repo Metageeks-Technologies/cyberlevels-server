@@ -18,6 +18,7 @@ import JobPost from "../../model/JobPost";
 import { calculateMatchScore } from "../../utils/helper";
 import Company from "../../model/Company";
 import { sendMail } from "../../utils/nodemailer";
+import CandidateSub from "../../model/subscription/CandidateSub";
 dotenv.config();
 
 const serverGeneratedState = "12345678";
@@ -101,9 +102,19 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
 
   if (role === "candidate") {
     user = await Candidate.findOne({ email: response.email });
+
     // console.log(user)
     if (!user) {
-      user = await Candidate.create(userObj);
+      const freeSubscription = (await CandidateSub).findOne({ subscriptionType: "free" });
+      const userSubscription = {
+        ...freeSubscription
+      }
+      const userWithSubscription = {
+        ...userObj,
+        subscription: userSubscription
+      }
+      user = await Candidate.create(userWithSubscription);
+
       // console.log(user);
       sendMail("candidateSignup", userObj);
     } else {
@@ -195,7 +206,19 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
   if (role == "candidate") {
     user = await Candidate.findOne({ email: response.email });
     if (!user) {
-      user = await Candidate.create(Obj);
+      console.log("user not found");
+      const freeSubscription = await (await CandidateSub).findOne({ subscriptionType: "free" });
+      console.log("freeSubscription not found");
+      const userSubscription = {
+        ...freeSubscription
+      }
+      console.log("userSubscription not found");
+      const userWithSubscription = {
+        ...Obj,
+        subscription: userSubscription
+      }
+      console.log("user", userWithSubscription);
+      user = await Candidate.create(userWithSubscription);
       sendMail("candidateSignup", Obj);
     } else {
       if (user.provider !== "LinkedIn") {
