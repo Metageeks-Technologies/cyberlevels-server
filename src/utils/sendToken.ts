@@ -18,8 +18,8 @@ export const sendTokenForAdmin = (user: any, statusCode: number, res: Response) 
   });
 };
 
-export const sendToken = (user: any, statusCode: number, res: Response, accessToken?: string) => {
-  let token = accessToken ? user.createJWT({accessToken,provider:user.provider}) : user.createJWT();
+export const sendToken = async (user: any, statusCode: number, res: Response, accessToken?: string) => {
+  let token = accessToken ? await user.createJWT({accessToken,provider:user.provider}) : await user.createJWT();
 
   const options = {
     httpOnly: process.env.NODE_ENV === 'production',

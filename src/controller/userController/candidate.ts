@@ -121,7 +121,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   }
   // console.log(user)
   console.log(user);
-  sendToken(user, 201, res, accessToken);
+  await sendToken(user, 201, res, accessToken);
 
 })
 
@@ -213,7 +213,7 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
     }
   }
 
-  sendToken(user, 201, res, accessToken);
+  await sendToken(user, 201, res, accessToken);
 });
 
 export const getCurrCandidate = catchAsyncError(async (req, res, next) => {
