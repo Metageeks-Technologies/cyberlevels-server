@@ -36,13 +36,13 @@ export const isActiveGoogle = async (token: string, next: NextFunction) => {
     try {
         const { data } = await axios.post("https://www.googleapis.com/oauth2/v3/tokeninfo?", formData, { headers })
         // console.log(data)
-        const isTokenActive = ():boolean => {
+        const isTokenActive:any = ():boolean => {
             const currentTimeInSeconds = Math.floor(Date.now() / 1000);
             const tokenExpirationTime = parseInt(data.exp);
           
             return tokenExpirationTime > currentTimeInSeconds;
           };
-        //   console.log(isTokenActive(),"Active")
+          console.log(isTokenActive(),"Active")
           return isTokenActive() ;
         //   console.log(`Token is ${activeStatus}`);
         // return data?.active;
