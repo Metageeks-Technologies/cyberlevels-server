@@ -48,7 +48,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
       }
     );
     accessToken = data.access_token;
-    console.log(accessToken, "AccessToekn by google");
+    console.log(accessToken, "AccessToken by google");
   } catch (error) {
     console.log(error);
     return next(new ErrorHandler("Error while getting accessToken", 400));
