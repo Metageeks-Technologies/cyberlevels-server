@@ -74,7 +74,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   const userObj = {
     email: response.email,
     firstName: response.given_name,
-    lastName: response.family_name,
+    lastName: response.family_name || ".",
     avatar: response.picture,
     provider: "Google",
     isEmailVerified: response.verified_email,
@@ -105,7 +105,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
 
     // console.log(user)
     if (!user) {
-      const freeSubscription = (await CandidateSub).findOne({ subscriptionType: "free" });
+      const freeSubscription = await (await CandidateSub).findOne({ subscriptionType: "free" });
       const userSubscription = {
         ...freeSubscription
       }
