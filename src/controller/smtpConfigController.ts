@@ -17,6 +17,10 @@ export const createSmtpConfig = async (req: Request, res: Response) => {
 export const getSmtpConfigs = async (_req: Request, res: Response) => {
     try {
       const configs = await SmtpConfigModel.find();
+      // if (configs.length === 0) {
+      //   return res.status(404).json({ error: 'SMTP Configuration not found' });
+      // }
+      // const smtpConfig = configs[0];
       res.status(200).json(configs);
     } catch (error) {
       res.status(500).json({ error: 'Internal Server Error' });
