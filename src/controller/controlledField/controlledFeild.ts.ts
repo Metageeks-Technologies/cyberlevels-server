@@ -5,6 +5,7 @@ import ErrorHandler from '../../utils/errorHandler.js';
 export const getAutoComplete = (model: any) => {
     return catchAsyncError(async (req, res, next) => {
         const result = await model.aggregate([
+            
             {
                 "$search": {
 
@@ -16,6 +17,14 @@ export const getAutoComplete = (model: any) => {
                             "prefixLength": 3
                         }
                     }
+                }
+            },
+            {
+                "$match": {
+                    "$or": [
+                        { "createdBy": `${req.query.employerId}` },
+                        { "createdBy": { "$exists": false } }
+                    ]
                 }
             },
             {

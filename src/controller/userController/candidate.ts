@@ -48,7 +48,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
       }
     );
     accessToken = data.access_token;
-    console.log(accessToken, "AccessToekn by google");
+    console.log(accessToken, "AccessToken by google");
   } catch (error) {
     console.log(error);
     return next(new ErrorHandler("Error while getting accessToken", 400));
@@ -113,6 +113,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
         ...userObj,
         subscription: userSubscription
       }
+      console.log(userWithSubscription)
       user = await Candidate.create(userWithSubscription);
 
       // console.log(user);
@@ -132,7 +133,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   }
   // console.log(user)
   console.log(user);
-  sendToken(user, 201, res, accessToken);
+  await sendToken(user, 201, res, accessToken);
 
 })
 
@@ -236,7 +237,7 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
     }
   }
 
-  sendToken(user, 201, res, accessToken);
+  await sendToken(user, 201, res, accessToken);
 });
 
 export const getCurrCandidate = catchAsyncError(async (req, res, next) => {
