@@ -113,6 +113,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
         ...userObj,
         subscription: userSubscription
       }
+      console.log(userWithSubscription)
       user = await Candidate.create(userWithSubscription);
 
       // console.log(user);
