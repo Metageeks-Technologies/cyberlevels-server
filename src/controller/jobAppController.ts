@@ -14,14 +14,23 @@ export const createJobApp = catchAsyncError(async (req, res, next) => {
     if (!candidate || !jobPost) {
         return next(new ErrorHandler("candidate or jobPost is missing", 400));
     }
-    const user = req.user as ICandidate;
+    const requestingUser = req?.user as ICandidate;
+    const user = await Candidate.findById(requestingUser?._id || "");
     if (user && user.subscription.offering.applyJobLImit === 0) {
         return next(new ErrorHandler("You can't Apply more with you current plan Upgrade your plan to increase you daily limit maximum jobs you can apply", 400));
     }
 
     const jobApp = await JobApp.create(req.body);
-    if (user && 'applyJobLimit' in user.subscription.offering && typeof user.subscription.offering.applyJobLimit === 'number') user.subscription.offering.applyJobLimit--;
-    await user.save();
+    if (user && 'applyJobLimit' in user.subscription.offering && typeof user.subscription.offering.applyJobLimit === 'number') {
+        console.log("from job application", user.subscription.offering.applyJobLimit);
+        user.subscription.offering.applyJobLimit = user.subscription.offering.applyJobLimit - 1;
+        try {
+            await user.save();
+        } catch (error) {
+            console.error("Error saving user:", error);
+        }
+    }
+
 
     res.status(200).json({
         jobApp,
