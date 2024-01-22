@@ -22,17 +22,17 @@ export const createEmailTemplate = async (req: Request, res: Response) => {
 export const getEmailTemplates = async (_req: Request, res: Response) => {
   try {
     // const templates = await EmailTemplateModel.find();
-    const { page } = _req.query;
+    const { page,templateType } = _req.query;
 
     const queryObject: any = {};
 
     console.log(page)
     const p = Number(page) || 1;
-    const limit = 15;
+    const limit = 8;
     const skip = (p - 1) * limit;
 
-    const result = await EmailTemplateModel.find(queryObject).skip(skip).limit(limit);
-    const totalTemplate = await EmailTemplateModel.countDocuments(queryObject);
+    const result = await EmailTemplateModel.find({templateType}).skip(skip).limit(limit);
+    const totalTemplate = await EmailTemplateModel.countDocuments({templateType});
     const totalNumOfPage = Math.ceil(totalTemplate / limit);
 
     res.status(200).json({
