@@ -283,9 +283,16 @@ export const getRelatedJobs = catchAsyncError(async (req, res, next) => {
 });
 
 export const getAllJobPost = catchAsyncError(async (req, res) => {
-  const response = await JobPost.find({}).sort({ createdAt: -1 }).limit(7);
+  const {page,adminId} = req.query
+  let p = Number(page) || 1;
+  let limit = page?8:7;
+  let skip = (p-1) * limit;
+  const response = await JobPost.find(adminId?{employerId:adminId}:{}).sort({ createdAt: -1 }).skip(skip).limit(limit);
+  const totalDocs = await JobPost.countDocuments(adminId?{employerId:adminId}:{});
+  const totalPages = totalDocs/limit;
+  // console.log(totalPages);
 
-  res.status(200).send({ jobPosts: response });
+  res.status(200).send({ jobPosts: response,page:p,totalPages,totalDocs});
 });
 
 export const getJobPostViews = catchAsyncError(async (req, res) => {
