@@ -87,7 +87,7 @@ export const paymentVerification = catchAsyncError(async (req, res, next) => {
 
         console.log(payment);
 
-        sendMail('paymentSuccess', emailData);
+        sendMail("candidate",'paymentSuccess', emailData);
 
         res.redirect(
             // `http://localhost:3000/paymentsuccess?reference=${razorpay_payment_id}`

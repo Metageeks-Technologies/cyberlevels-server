@@ -6,8 +6,8 @@ import { createEmailTemplate,getEmailTemplates, updateEmailTemplate,removeEmailT
 const emailTemplateRouter = express.Router();
 // Create a new template
 emailTemplateRouter.route("/").post(createEmailTemplate).get(getEmailTemplates)
-emailTemplateRouter.route("/:id").patch(updateEmailTemplate);
+emailTemplateRouter.route("/:id").patch(updateEmailTemplate).delete(removeEmailTemplate);
+emailTemplateRouter.route("/updateuse/:id").patch()
 
-emailTemplateRouter.route("/:id").delete(removeEmailTemplate);
 
 export default emailTemplateRouter;

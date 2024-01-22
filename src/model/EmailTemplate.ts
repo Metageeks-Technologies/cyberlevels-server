@@ -6,6 +6,7 @@ export interface Template extends Document {
   templateName: string;
   subject: string;
   body: string;
+  beingUsedFor:string | undefined;
 }
 
 const emailTemplateSchema = new Schema<Template>({
@@ -14,6 +15,7 @@ const emailTemplateSchema = new Schema<Template>({
   templateName: { type: String, required: true },
   subject: { type: String, required: true },
   body: { type: String, required: true },
+  beingUsedFor:String,
 });
 
 const EmailTemplateModel = mongoose.model<Template>('EmailTemplate', emailTemplateSchema);
