@@ -22,6 +22,10 @@ export const sendMail = async function sendMail(user: string, useFor:string, dat
 
       let Osubject: string|undefined = template?.subject, Ohtml: string|undefined = template?.body;
 
+      const updatedHtml = String(Ohtml)
+  .replace("{{email}}", data.email)
+  .replace("{{userAvatar}}", `<img class="CToWUd" src="${data.avatar}" alt="" width="20" height="20" data-bit="iit">`);
+
     //   if (str === 'candidateSignup') {
     //     Osubject = `Thank you for signing up ${data.firstName}`;
     //     Ohtml = `
@@ -80,7 +84,7 @@ export const sendMail = async function sendMail(user: string, useFor:string, dat
         from: '"Rituj Manware 🆒" <manwarerutuj@gmail.com>', // sender address <${userObj.email}>
         to: data.email, // list of receivers
         subject: Osubject, // Subject line
-        html: Ohtml, // html body
+        html: updatedHtml, // html body
       });
 
       console.log('Message sent: %s', info.messageId);

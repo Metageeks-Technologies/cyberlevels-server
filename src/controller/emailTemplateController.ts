@@ -76,7 +76,7 @@ export const updateBeingUsedFor = catchAsyncError(async (req, res) => {
   const templateId = req.params.id;
   const use = req.query.use;
   const findTemplate = await EmailTemplateModel.findById(templateId);
-  const findTemplateAlreadyBeingUsed = await EmailTemplateModel.findOne({
+  const findTemplateAlreadyBeingUsed = await EmailTemplateModel.findOne({templateType:findTemplate?.templateType,
     beingUsedFor: use,
   });
   if (!findTemplate) {
