@@ -273,6 +273,12 @@ export const updateCurrCandidate = catchAsyncError(async (req, res, next) => {
   if (!candidate) {
     return next(new ErrorHandler("something went wrong ,try again", 500));
   }
+  const { firstName, lastName, resumes, location, skills, softSkills, } = candidate
+  if (!candidate.isProfileCompleted && firstName && lastName && resumes.length && location.city && location.country && skills.length && softSkills.length) {
+    candidate.isProfileCompleted = true;
+    console.log('profileComplete middleware making true');
+    await candidate.save();
+  }
   res.status(200).json({
     success: true,
     candidate,
