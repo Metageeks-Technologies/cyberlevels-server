@@ -3,7 +3,7 @@ import catchAsyncError from "./catchAsyncError.js";
 import Candidate from "../model/user/Candidate.js";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { isActive, isActiveGoogle } from "../utils/helper.js";
-import { ICandidate } from "../types/user.js";
+import { ICandidate, IEmployer } from "../types/user.js";
 import Employer from "../model/user/Employer.js";
 
 interface CustomJwtPayload extends JwtPayload {
@@ -14,8 +14,7 @@ interface CustomJwtPayload extends JwtPayload {
 export const isAuthenticatedCandidate = catchAsyncError(
   async (req, res, next) => {
     const { token } = req.cookies;
-    // console.log(token);
-    // const token = ""
+
     if (!token) {
       return next(
         new ErrorHandler("Please Login to access this resource", 401)
@@ -28,28 +27,6 @@ export const isAuthenticatedCandidate = catchAsyncError(
       token,
       process.env.JWT_SECRET
     ) as CustomJwtPayload;
-    console.log("decodedData", decodedData);
-
-    // if logged in with linkedIn
-    if (decodedData.hasOwnProperty("accessToken")) {
-      let isAccessTokenActive = false;
-      if (decodedData.accessToken.provider === "Google") {
-        const result = await isActiveGoogle(
-          decodedData?.accessToken?.accessToken,
-          next
-        );
-        isAccessTokenActive = result === true;
-      } else if (decodedData.accessToken.provider === "LinkedIn") {
-        isAccessTokenActive = await isActive(
-          decodedData?.accessToken?.accessToken,
-          next
-        );
-      }
-
-      if (!isAccessTokenActive) {
-        return next(new ErrorHandler("token has been expired", 401));
-      }
-    }
 
     const candidate = await Candidate.findOne({ _id: decodedData.id });
     if (!candidate) {
@@ -66,8 +43,7 @@ export const isAuthenticatedCandidate = catchAsyncError(
 export const isAuthenticatedEmployer = catchAsyncError(
   async (req, res, next) => {
     const { token } = req.cookies;
-    console.log(token);
-    // const token = ""
+
     if (!token) {
       return next(
         new ErrorHandler("Please Login to access this resource", 401)
@@ -80,28 +56,6 @@ export const isAuthenticatedEmployer = catchAsyncError(
       token,
       process.env.JWT_SECRET
     ) as CustomJwtPayload;
-    console.log("decodedData", decodedData);
-
-    // if logged in with linkedIn
-    if (decodedData.hasOwnProperty("accessToken")) {
-      let isAccessTokenActive = false;
-      if (decodedData.accessToken.provider === "Google") {
-        const result = await isActiveGoogle(
-          decodedData?.accessToken?.accessToken,
-          next
-        );
-        isAccessTokenActive = result === true;
-      } else if (decodedData.accessToken.provider === "LinkedIn") {
-        const result = await isActive(
-          decodedData?.accessToken?.accessToken,
-          next
-        );
-        isAccessTokenActive = result === true;
-      }
-      if (!isAccessTokenActive) {
-        return next(new ErrorHandler("token has been expired", 401));
-      }
-    }
 
     const employer = await Employer.findOne({ _id: decodedData.id });
     if (!employer) {
@@ -109,7 +63,7 @@ export const isAuthenticatedEmployer = catchAsyncError(
         new ErrorHandler("user not found with associated token", 401)
       );
     }
-    req.user = employer;
+    req.user = employer as IEmployer;
     next();
   }
 );

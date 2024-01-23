@@ -45,10 +45,12 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
         client_secret: clientSecret,
         redirect_uri: callbackUrl,
         grant_type: 'authorization_code',
+        access_type: 'offline',
+        prompt: 'consent'
       }
     );
     accessToken = data.access_token;
-    console.log(accessToken, "AccessToken by google");
+    console.log(data, "data by google");
   } catch (error) {
     console.log(error);
     return next(new ErrorHandler("Error while getting accessToken", 400));
@@ -136,7 +138,6 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   await sendToken(user, 201, res, accessToken);
 
 })
-
 
 export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
   if (req.body.hasOwnProperty("error")) {
