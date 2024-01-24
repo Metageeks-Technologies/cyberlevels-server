@@ -1,11 +1,13 @@
 import catchAsyncError from '../../middleware/catchAsyncError.js';
 import CandidateSkills from '../../model/controlledField/candidateSkills.js';
 import ErrorHandler from '../../utils/errorHandler.js';
+import JobPosition from '../../model/controlledField/JobPosition';
+import JobCategory from '../../model/controlledField/jobCategory';
 
 export const getAutoComplete = (model: any) => {
     return catchAsyncError(async (req, res, next) => {
         const result = await model.aggregate([
-            
+
             {
                 "$search": {
 
@@ -41,6 +43,39 @@ export const getAutoComplete = (model: any) => {
     })
 }
 
+export const getAutoCompleteCategory = catchAsyncError(async (req, res, next) => {
+
+    const query = req.query.query as string;
+    const queryObject: any = {}
+    if (query) {
+        queryObject.name = { $regex: query, $options: "i" };
+    }
+
+    const result = await JobCategory.find(queryObject).limit(5);
+
+    res.send(result);
+
+})
+
+export const addJobCategory = catchAsyncError(async (req, res, next) => {
+
+    const { categoryName } = req.body;
+    if (!categoryName) {
+        return next(new ErrorHandler("category is required", 400));
+    }
+    const category = categoryName.toLowerCase().trim();
+    const existingCategory = await JobCategory.findOne({ name: category });
+    if (existingCategory) {
+        return next(new ErrorHandler("category already exists, please select from the list", 400));
+    }
+    const newCategory = await JobCategory.create({ name: category });
+    res.status(200).json({
+        success: true,
+        category: newCategory
+    })
+
+})
+
 export const addSkill = catchAsyncError(async (req, res, next) => {
 
     const { skillName } = req.body;
@@ -56,6 +91,24 @@ export const addSkill = catchAsyncError(async (req, res, next) => {
     res.status(200).json({
         success: true,
         skill: newSkill
+    })
+})
+
+export const addPosition = catchAsyncError(async (req, res, next) => {
+
+    const { positionName } = req.body;
+    if (!positionName) {
+        return next(new ErrorHandler("skill is required", 400));
+    }
+    const position = positionName.toLowerCase().trim();
+    const existingPosition = await JobPosition.findOne({ name: position });
+    if (existingPosition) {
+        return next(new ErrorHandler("position already exists, please select from the list", 400));
+    }
+    const newPosition = await JobPosition.create({ name: position });
+    res.status(200).json({
+        success: true,
+        position: newPosition
     })
 })
 

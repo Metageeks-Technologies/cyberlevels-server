@@ -4,12 +4,12 @@ import catchAsyncError from './catchAsyncError';
 
 const profileComplete = catchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
 
-    console.log('profileComplete 123');
+    // console.log('profileComplete 123');
 
     if (req.user && 'isProfileCompleted' in req.user && req.user.isProfileCompleted === false) {
         console.log('profileComplete middleware');
         const candidate = req.user as ICandidate;
-        const { firstName, lastName, experienceInShort, avatar, selfDeclaration, phoneNumber, resumes, education, experience, location, skills, softSkills, bio, expectedSalary } = candidate
+        const { firstName, lastName, resumes, location, skills, softSkills, } = candidate
         // console.log({
         //     firstName: firstName,
         //     lastName: lastName,
@@ -25,7 +25,7 @@ const profileComplete = catchAsyncError(async (req: Request, res: Response, next
         //     bio: bio,
         //     expectedSalary: expectedSalary
         // });
-        if (firstName && lastName && selfDeclaration.gender && avatar && phoneNumber && resumes.length && education.length && experience.length && location && skills.length && softSkills.length && bio && expectedSalary) {
+        if (firstName && lastName && resumes.length && location.city && location.country && skills.length && softSkills.length) {
             candidate.isProfileCompleted = true;
             console.log('profileComplete middleware making true');
             await candidate.save();

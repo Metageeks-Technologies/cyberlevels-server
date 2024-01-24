@@ -45,10 +45,12 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
         client_secret: clientSecret,
         redirect_uri: callbackUrl,
         grant_type: 'authorization_code',
+        access_type: 'offline',
+        prompt: 'consent'
       }
     );
     accessToken = data.access_token;
-    console.log(accessToken, "AccessToken by google");
+    console.log(data, "data by google");
   } catch (error) {
     console.log(error);
     return next(new ErrorHandler("Error while getting accessToken", 400));
@@ -74,7 +76,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   const userObj = {
     email: response.email,
     firstName: response.given_name,
-    lastName: response.family_name,
+    lastName: response.family_name || ".",
     avatar: response.picture,
     provider: "Google",
     isEmailVerified: response.verified_email,
@@ -136,7 +138,6 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   await sendToken(user, 201, res, accessToken);
 
 })
-
 
 export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
   if (req.body.hasOwnProperty("error")) {
@@ -271,6 +272,12 @@ export const updateCurrCandidate = catchAsyncError(async (req, res, next) => {
   });
   if (!candidate) {
     return next(new ErrorHandler("something went wrong ,try again", 500));
+  }
+  const { firstName, lastName, resumes, location, skills, softSkills, } = candidate
+  if (!candidate.isProfileCompleted && firstName && lastName && resumes.length && location.city && location.country && skills.length && softSkills.length) {
+    candidate.isProfileCompleted = true;
+    console.log('profileComplete middleware making true');
+    await candidate.save();
   }
   res.status(200).json({
     success: true,

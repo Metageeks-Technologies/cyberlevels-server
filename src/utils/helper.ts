@@ -35,18 +35,19 @@ export const isActiveGoogle = async (token: string, next: NextFunction) => {
 
     try {
         const { data } = await axios.post("https://www.googleapis.com/oauth2/v3/tokeninfo?", formData, { headers })
-        // console.log(data)
-        const isTokenActive:any = ():boolean => {
+        console.log(data, "isActive Data from the google");
+        const isTokenActive: any = (): boolean => {
             const currentTimeInSeconds = Math.floor(Date.now() / 1000);
             const tokenExpirationTime = parseInt(data.exp);
-          
+
             return tokenExpirationTime > currentTimeInSeconds;
-          };
-          console.log(isTokenActive(),"Active")
-          return isTokenActive() ;
+        };
+        console.log(isTokenActive(), "Active")
+        return isTokenActive();
         //   console.log(`Token is ${activeStatus}`);
         // return data?.active;
     } catch (error) {
+        console.log(error, "Error")
         return next(new ErrorHandler("Error while Token introspection", 400))
     }
 }
