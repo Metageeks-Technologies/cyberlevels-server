@@ -105,7 +105,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
 
     // console.log(user)
     if (!user) {
-      const freeSubscription = (await CandidateSub).findOne({ subscriptionType: "free" });
+      const freeSubscription = await (await CandidateSub).findOne({ subscriptionType: "free" });
       const userSubscription = {
         ...freeSubscription
       }
