@@ -98,7 +98,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
       }
       user.lastLogin = new Date();
       await user.save();
-      sendMail("employer","login", user);
+      sendMail("employer","login", userObj);
     }
   }
 
