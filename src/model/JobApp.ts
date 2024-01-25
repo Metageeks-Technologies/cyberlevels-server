@@ -25,6 +25,7 @@ const jobApplicationSchema: Schema = new Schema({
         enum: ['Received', 'Under Review', 'Shortlisted', "Not Selected"],
         default: 'Received',
     },
+    profileMatchPercent:Number
 }, { timestamps: true }
 );
 
