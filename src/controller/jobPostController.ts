@@ -9,6 +9,7 @@ import { ICandidate } from "../types/user";
 import { IJobPost } from "../types/jobPost";
 import mongoose from "mongoose";
 const { ObjectId } = require("mongodb");
+const uuid = require('uuid');
 
 export const addJobPost = catchAsyncError(async (req, res, next) => {
   if (!req.body) {
@@ -16,8 +17,11 @@ export const addJobPost = catchAsyncError(async (req, res, next) => {
   }
 
   console.log(req.body);
+  const generatedUuid = uuid.v4();
+  const formattedUuid = `CL-${generatedUuid.substring(2, 8)}`;
+  const jobPostObj = {...req.body,jobCode:formattedUuid};
 
-  const job = await JobPost.create(req.body);
+  const job = await JobPost.create(jobPostObj);
 
   res.status(200).json({
     job,
@@ -205,16 +209,36 @@ export const getJobPosts = catchAsyncError(async (req, res, next) => {
 export const getJobPostsForEmployer = catchAsyncError(
   async (req, res, next) => {
     const { employerId } = req.params;
-    const { page } = req.query;
+    const { page,companyId,status,jobCode, title } = req.query;
+    const queryObject:any = {};
+    queryObject.employerId = employerId;
+    if (title) {
+      const titleRegExp = new RegExp(`^${title}`,'i');
+      queryObject.title = titleRegExp;
+    }
+    if (status) {
+      queryObject.status = status;
+    }
+    if (companyId) {
+      queryObject.companyId = companyId;
+    }
+    if (jobCode) {
+      // Create a regular expression for partial matching
+      const jobCodeRegExp = new RegExp(`^${jobCode}`);
+      queryObject.jobCode = jobCodeRegExp;
+    }
+
+
     const p = Number(page) || 1;
     const limit = 8;
     const skip = (p - 1) * limit;
-    const jobPosts = await JobPost.find({ employerId })
+    const jobPosts = await JobPost.find(queryObject)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
-    const totalCount = await JobPost.countDocuments({ employerId });
+    const totalCount = await JobPost.countDocuments(queryObject);
     const totalPages = Math.ceil(totalCount / limit);
+    // console.log(totalCount);
     res.status(200).json({
       success: true,
       jobPosts,
