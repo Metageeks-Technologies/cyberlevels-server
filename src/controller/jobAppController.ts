@@ -3,6 +3,8 @@ import ErrorHandler from "../utils/errorHandler";
 import JobApp from "../model/JobApp";
 import Candidate from "../model/user/Candidate";
 import { ICandidate } from "../types/user";
+import { calculateMatchScore } from "../utils/helper";
+import JobPost from "../model/JobPost";
 
 export const createJobApp = catchAsyncError(async (req, res, next) => {
 
@@ -16,10 +18,19 @@ export const createJobApp = catchAsyncError(async (req, res, next) => {
     }
     const requestingUser = req?.user as ICandidate;
     const user = await Candidate.findById(requestingUser?._id || "");
+    const job = await JobPost.findById(jobPost);
     if (user && user.subscription.offering.applyJobLImit === 0) {
         return next(new ErrorHandler("You can't Apply more with you current plan Upgrade your plan to increase you daily limit maximum jobs you can apply", 400));
     }
 
+    const score = Math.floor(
+        calculateMatchScore(
+          user?.skills as string[],
+          job?.primarySkills as string[],
+          job?.secondarySkills as string[]
+        )
+      );
+      req.body.profileMatchPercent = score;
     const jobApp = await JobApp.create(req.body);
     if (user && 'applyJobLimit' in user.subscription.offering && typeof user.subscription.offering.applyJobLimit === 'number') {
         console.log("from job application", user.subscription.offering.applyJobLimit);
@@ -84,6 +95,7 @@ export const getAllJobAppByCandidate = catchAsyncError(async (req, res, next) =>
 export const getAllCandidateAppByJob = catchAsyncError(async (req, res, next) => {
 
     const { id: jobPost } = req.params
+    const {candidateName, testScore, status, matchPercent} = req.query
     if (!jobPost) {
         return next(new ErrorHandler("candidate no found", 404));
     }
