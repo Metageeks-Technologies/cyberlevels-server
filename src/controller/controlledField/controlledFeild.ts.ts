@@ -37,7 +37,7 @@ export const getAutoComplete = (model: any) => {
             }
 
         ]).exec(); // Use exec() to execute the aggregation
-
+        console.log(result,"Query:",req.query)
         res.send(result);
 
     })

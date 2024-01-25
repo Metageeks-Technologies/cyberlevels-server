@@ -87,7 +87,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
     user = await Employer.findOne({ email: response.email });
     if (!user) {
       user = await Employer.create(userObj);
-      sendMail("employerSignup", userObj);
+      sendMail("employer","signup", userObj);
     } else {
       if (user.provider !== "Google") {
         user.provider = "Google";
@@ -98,7 +98,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
       }
       user.lastLogin = new Date();
       await user.save();
-      sendMail("login", userObj);
+      sendMail("employer","login", user);
     }
   }
 
@@ -119,7 +119,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
       user = await Candidate.create(userWithSubscription);
 
       // console.log(user);
-      sendMail("candidateSignup", userObj);
+      sendMail("candidate","signup", userObj);
     } else {
       if (user.provider !== "Google") {
         user.provider = "Google";
@@ -130,7 +130,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
       }
       user.lastLogin = new Date();
       await user.save();
-      sendMail("login", userObj);
+      sendMail("candidate","login", userObj);
     }
   }
   // console.log(user)
@@ -191,7 +191,7 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
     user = await Employer.findOne({ email: response.email });
     if (!user) {
       user = await Employer.create(Obj);
-      sendMail("employerSignup", Obj);
+      sendMail("employer","signup", Obj);
     } else {
       if (user.provider !== "LinkedIn") {
         user.provider = "LinkedIn";
@@ -202,7 +202,7 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
       }
       user.lastLogin = new Date();
       await user.save();
-      sendMail("login", Obj);
+      sendMail("employer","login", Obj);
     }
   }
   if (role == "candidate") {
@@ -221,7 +221,7 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
       }
       console.log("user", userWithSubscription);
       user = await Candidate.create(userWithSubscription);
-      sendMail("candidateSignup", Obj);
+      sendMail("candidate","signup", Obj);
     } else {
       if (user.provider !== "LinkedIn") {
         user.provider = "LinkedIn";
@@ -234,7 +234,7 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
       await user.save();
       // user.lastLogin = new Date();
       // await user.save();
-      sendMail("login", Obj);
+      sendMail("candidate","login", Obj);
     }
   }
 
@@ -303,7 +303,7 @@ export const signupCandidate = catchAsyncError(async (req, res, next) => {
     password,
     isEmailVerified: false,
   });
-  sendMail("candidateSignupEmail", req.body);
+  sendMail("candidate","signup", req.body);
   sendToken(candidate, 201, res);
 });
 
@@ -331,7 +331,7 @@ export const loginCandidate = catchAsyncError(async (req, res, next) => {
     }
   }
 
-  sendMail("login", req.body);
+  sendMail(candidate?"candidate":"employer","login", req.body);
   sendToken(candidate ? candidate : employer, 201, res);
 });
 export const logoutCandidate = catchAsyncError(async (req, res, next) => {

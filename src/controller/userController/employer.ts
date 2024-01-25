@@ -26,7 +26,7 @@ export const signupEmployer = catchAsyncError(async (req, res, next) => {
     password,
     isEmailVerified: false,
   });
-  sendMail("employerSignupEmail", req.body);
+  sendMail("employer","signup", req.body);
   sendToken(candidate, 201, res);
 });
 
@@ -45,7 +45,7 @@ export const loginEmployer = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Invalid  Email or Password", 401));
   }
 
-  sendMail("login", req.body);
+  sendMail("employer","login", req.body);
   sendToken(candidate, 201, res);
 });
 
