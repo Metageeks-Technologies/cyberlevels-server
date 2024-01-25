@@ -58,7 +58,7 @@ AdminsSchema.methods.createJWT = function (this: AdminDocument) {
   if (!process.env.JWT_SECRET) {
     throw new Error("JWT_SECRET is not defined in the environment.");
   }
-  return jwt.sign({ id: this._id, token: "" }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_LIFETIME });
+  return jwt.sign({ id: this._id, token: "" }, process.env.JWT_SECRET, { expiresIn: '1d' });
 };
 
 // Compare password
