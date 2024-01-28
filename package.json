@@ -7,6 +7,7 @@
     "build": "npx tsc ",
     "start": "node dist/index.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
+    
   },
   "keywords": [],
   "author": "shiva, metaGeeks",
@@ -19,6 +20,7 @@
     "aws-sdk": "^2.1489.0",
     "axios": "^1.5.1",
     "bcryptjs": "^2.4.3",
+    "bull": "^4.12.2",
     "chart.js": "^4.4.1",
     "circular-json": "^0.5.9",
     "cookie-parser": "^1.4.6",
