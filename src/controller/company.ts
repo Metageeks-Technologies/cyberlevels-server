@@ -5,6 +5,7 @@ import fs from 'fs'
 import Candidate from "../model/user/Candidate";
 import JobPost from "../model/JobPost";
 import { getUrlForUploadProfile } from "../utils/uploadToS3";
+import { getCandidatesWhoSavedCompany } from "../utils/helper";
 
 
 export const addCompany = catchAsyncError(async (req, res, next) => {
@@ -82,6 +83,7 @@ export const getDetails = catchAsyncError(async (req, res, next) => {
     if (!id) {
         return next(new ErrorHandler("Company not found", 400));
     }
+    // const result = await getCandidatesWhoSavedCompany(id)
 
     const company = await Company.findById({ _id: id });
 

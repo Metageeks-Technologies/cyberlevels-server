@@ -184,8 +184,9 @@ export const getAllEmployer = catchAsyncError(async (req, res, next) => {
 export const getAllCompanies = catchAsyncError(async (req, res, next) => {
 
     const { page } = req.query;
+    const { id: createdBy } = req.params;
 
-    const queryObject: any = {};
+    const queryObject: any = {createdBy};
 
     console.log(page)
     const p = Number(page) || 1;

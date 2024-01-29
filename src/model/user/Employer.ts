@@ -29,8 +29,8 @@ const employerSchema = new mongoose.Schema({
         unique: true,
         // validate: [validator.isEmail, "please enter a valid email"],
     },
-    provider:{
-        type:String,
+    provider: {
+        type: String,
         default: "Admin"
     },
     gender: {
@@ -133,7 +133,7 @@ employerSchema.methods.createJWT = function (this: IEmployer, accessToken: strin
     if (!process.env.JWT_SECRET) {
         throw new Error("JWT_SECRET is not defined in the environment.");
     }
-    return jwt.sign({ id: this._id, accessToken }, process.env.JWT_SECRET, { expiresIn: "60d" });
+    return jwt.sign({ id: this._id, accessToken }, process.env.JWT_SECRET, { expiresIn: "1d" });
 };
 
 export default mongoose.model<IEmployer, CandidateModel>('Employer', employerSchema);

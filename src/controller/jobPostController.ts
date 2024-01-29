@@ -10,24 +10,33 @@ import { IJobPost } from "../types/jobPost";
 import mongoose from "mongoose";
 const { ObjectId } = require("mongodb");
 const uuid = require('uuid');
+import favCompanyAlertQueue from "../queues/favCompanyAlert";
 
 export const addJobPost = catchAsyncError(async (req, res, next) => {
   if (!req.body) {
     return next(new ErrorHandler("body not found", 400));
   }
-
-  console.log(req.body);
+  const { companyId, employerId } = req.body;
+  // console.log(req.body);
   const generatedUuid = uuid.v4();
   const formattedUuid = `CL-${generatedUuid.substring(0, 4)}${generatedUuid.substring(generatedUuid.length-2)}`;
   const jobPostObj = {...req.body,jobCode:formattedUuid};
 
   const job = await JobPost.create(jobPostObj);
 
+  if (!job) {
+    return next(new ErrorHandler("Something went wrong while creating job.", 500));
+  }
+
+
+  favCompanyAlertQueue.add({ companyId, employerId, jobId: job._id, jobTitle: job.title, jobDescription: job.description });
+
   res.status(200).json({
     job,
     success: true,
   });
 });
+
 export const getDetails = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
   // console.log("id", id);
@@ -209,11 +218,11 @@ export const getJobPosts = catchAsyncError(async (req, res, next) => {
 export const getJobPostsForEmployer = catchAsyncError(
   async (req, res, next) => {
     const { employerId } = req.params;
-    const { page,companyId,status,jobCode, title } = req.query;
-    const queryObject:any = {};
+    const { page, companyId, status, jobCode, title } = req.query;
+    const queryObject: any = {};
     queryObject.employerId = employerId;
     if (title) {
-      const titleRegExp = new RegExp(`^${title}`,'i');
+      const titleRegExp = new RegExp(`^${title}`, 'i');
       queryObject.title = titleRegExp;
     }
     if (status) {
@@ -307,16 +316,16 @@ export const getRelatedJobs = catchAsyncError(async (req, res, next) => {
 });
 
 export const getAllJobPost = catchAsyncError(async (req, res) => {
-  const {page,adminId} = req.query
+  const { page, adminId } = req.query
   let p = Number(page) || 1;
-  let limit = page?8:7;
-  let skip = (p-1) * limit;
-  const response = await JobPost.find(adminId?{employerId:adminId}:{}).sort({ createdAt: -1 }).skip(skip).limit(limit);
-  const totalDocs = await JobPost.countDocuments(adminId?{employerId:adminId}:{});
-  const totalPages = totalDocs/limit;
+  let limit = page ? 8 : 7;
+  let skip = (p - 1) * limit;
+  const response = await JobPost.find(adminId ? { employerId: adminId } : {}).sort({ createdAt: -1 }).skip(skip).limit(limit);
+  const totalDocs = await JobPost.countDocuments(adminId ? { employerId: adminId } : {});
+  const totalPages = totalDocs / limit;
   // console.log(totalPages);
 
-  res.status(200).send({ jobPosts: response,page:p,totalPages,totalDocs});
+  res.status(200).send({ jobPosts: response, page: p, totalPages, totalDocs });
 });
 
 export const getJobPostViews = catchAsyncError(async (req, res) => {

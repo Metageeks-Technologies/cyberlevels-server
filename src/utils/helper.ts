@@ -1,6 +1,7 @@
 import axios from "axios"
 import { NextFunction } from "express";
 import ErrorHandler from "./errorHandler";
+import Company from "../model/Company";
 
 
 export const isActive = async (token: string, next: NextFunction) => {
@@ -90,4 +91,11 @@ export function calculateScoreForSkills(userSkills: string[], jobSkills: string[
     });
 
     return score;
+}
+
+export const getCandidatesWhoSavedCompany = async (companyId: string) => {
+
+    const company = await Company.findOne({ _id: companyId }, { savedByCandidates: 1, name: 1 });
+
+    return { candidates: company?.savedByCandidates, companyName: company?.name };
 }
