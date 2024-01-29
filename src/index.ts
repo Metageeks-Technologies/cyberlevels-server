@@ -15,6 +15,7 @@ import controlledFieldRouter from './routes/controlledField.js';
 import errorMiddleware from './middleware/error.js';
 import adminRouter from './routes/user/adminRoute.js';
 import http from 'http';
+import { Server } from "socket.io";
 import chatRouter from './routes/chat.js';
 import cookieParser from 'cookie-parser';
 import templateRouter from './routes/template.js';
@@ -23,13 +24,56 @@ import paymentRouter from './routes/payment.js';
 import emailTemplateRouter from './routes/emailTemplate.js';
 import smtpConfigRouter from './routes/smtpConfig.js';
 import backupRouter from './routes/backup.js';
-dotenv.config()
 import blogRouter from './routes/blog.js';
 dotenv.config();
 
 // initiating the app
 const app: Express = express();
 const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CLIENT_URL,
+  },
+});
+// socket IO
+const candidateSockets: any = {};
+
+const addNewUser = (mongoId: string, socketId: string) => {
+  candidateSockets[mongoId] = socketId;
+};
+
+io.on("connection", (socket) => {
+  console.log("some one has connected");
+  // addNewUser(mongoId, socket.id);
+  socket.on("newUser", (mongoId) => {
+    console.log(mongoId, socket.id);
+    addNewUser(mongoId, socket.id);
+  });
+  // sendNotification
+  socket.on("sendNotification", ({ senderId, receiverId, data }) => {
+    // console.log(candidateSockets[receiverId], receiverId);
+    console.log(candidateSockets);
+    console.log(receiverId);
+
+    io.to(candidateSockets[receiverId]).emit("getNotification", {
+      senderId,
+      notification: data,
+    });
+  });
+  // send message
+  socket.on("sendMessage", ({ senderId, receiverId, data }) => {
+    console.log(candidateSockets);
+
+    io.to(candidateSockets[receiverId]).emit("getMessage", {
+      senderId,
+      message: data,
+    });
+  });
+
+  socket.on("disconnect", () => {
+    console.log("someone has left");
+  });
+});
 
 // required middleware
 app.use(session({
@@ -91,12 +135,13 @@ const start = async () => {
         )
       );
     }
+
     // server.listen(7000)
-    // // https.createServer(options, app).listen(httpsPort, () => {
-    // //   console.log(
-    // //     `⚡️[server]: Server is running on HTTPS at port ${httpsPort}`
-    // //   );
-    // // });
+    // https.createServer(options, app).listen(httpsPort, () => {
+    //   console.log(
+    //     `⚡️[server]: Server is running on HTTPS at port ${httpsPort}`
+    //   );
+    // });
 
   } catch (error) {
     console.log(error);

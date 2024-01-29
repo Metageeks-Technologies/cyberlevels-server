@@ -10,7 +10,7 @@ export const sendTokenForAdmin = (user: any, statusCode: number, res: Response) 
     secure: process.env.NODE_ENV === 'production',
     sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as 'none' | 'lax',
   };
-  console.log("token", token);
+  // console.log("token", token);
   res.status(statusCode).cookie("token", token, options).json({
     success: true,
     token,
@@ -19,7 +19,7 @@ export const sendTokenForAdmin = (user: any, statusCode: number, res: Response) 
 };
 
 export const sendToken = async (user: any, statusCode: number, res: Response, accessToken?: string) => {
-  let token = accessToken ? await user.createJWT({accessToken,provider:user.provider}) : await user.createJWT();
+  let token = accessToken ? await user.createJWT({ accessToken, provider: user.provider }) : await user.createJWT();
 
   const options = {
     httpOnly: process.env.NODE_ENV === 'production',
