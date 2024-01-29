@@ -35,7 +35,8 @@ const AdminsSchema = new mongoose.Schema({
     type: String,
     required: true,
     default: "admin"
-  }
+  },
+  savedCandidates: [{ type: mongoose.Types.ObjectId, ref: 'Candidate' }]
 
 },
   { timestamps: true }
