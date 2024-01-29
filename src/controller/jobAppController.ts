@@ -5,6 +5,7 @@ import Candidate from "../model/user/Candidate";
 import { ICandidate } from "../types/user";
 import { calculateMatchScore } from "../utils/helper";
 import JobPost from "../model/JobPost";
+import { sendMail } from "../utils/nodemailer";
 
 export const createJobApp = catchAsyncError(async (req, res, next) => {
   if (!req.body) {
@@ -49,6 +50,7 @@ export const createJobApp = catchAsyncError(async (req, res, next) => {
       user.subscription.offering.applyJobLimit - 1;
     try {
       await user.save();
+      // sendMail("candidate","jobApplication",{...job,...user});
     } catch (error) {
       console.error("Error saving user:", error);
     }
