@@ -18,7 +18,7 @@ export const addJobPost = catchAsyncError(async (req, res, next) => {
 
   console.log(req.body);
   const generatedUuid = uuid.v4();
-  const formattedUuid = `CL-${generatedUuid.substring(2, 8)}`;
+  const formattedUuid = `CL-${generatedUuid.substring(0, 4)}${generatedUuid.substring(generatedUuid.length-2)}`;
   const jobPostObj = {...req.body,jobCode:formattedUuid};
 
   const job = await JobPost.create(jobPostObj);
