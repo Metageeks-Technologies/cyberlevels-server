@@ -37,6 +37,21 @@ export const addJobPost = catchAsyncError(async (req, res, next) => {
   });
 });
 
+export const updateJobPost= catchAsyncError(async(req,res,next) => {
+  if(!req.body){
+    return next(new ErrorHandler("body not found", 400));
+  }
+  const {_id} = req.body;
+  const job = await JobPost.findByIdAndUpdate(_id,req.body);
+  if(!job){
+    return next(new ErrorHandler("Something went wrong while creating job.", 500));
+  }
+  res.status(200).json({
+    job,
+    success:true,
+  })
+}) 
+
 export const getDetails = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
   // console.log("id", id);
@@ -244,7 +259,7 @@ export const getJobPostsForEmployer = catchAsyncError(
     const jobPosts = await JobPost.find(queryObject)
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
     const totalCount = await JobPost.countDocuments(queryObject);
     const totalPages = Math.ceil(totalCount / limit);
     // console.log(totalCount);

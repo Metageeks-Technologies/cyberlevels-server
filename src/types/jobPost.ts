@@ -33,6 +33,7 @@ export interface IJobPost extends Document {
     preferredExperience: string[];
     deadlineDate:Date;
     companyId: mongoose.Types.ObjectId;
+    companyName:string;
     employerId: mongoose.Types.ObjectId;
     candidates: mongoose.Types.ObjectId[];
     testQuestions: string;
