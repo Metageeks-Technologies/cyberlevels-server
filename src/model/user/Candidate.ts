@@ -67,7 +67,8 @@ const candidateSchema = new mongoose.Schema({
             institute: String,
             startYear: String,
             endYear: String,
-            description: String
+            description: String,
+            present:Boolean,
         }
     ],
     experience: [
@@ -76,7 +77,8 @@ const candidateSchema = new mongoose.Schema({
             company: String,
             startYear: String,
             endYear: String,
-            description: String
+            description: String,
+            present:Boolean,
         }
     ],
     certificate: {
