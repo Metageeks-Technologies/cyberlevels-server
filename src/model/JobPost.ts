@@ -75,6 +75,9 @@ const jobPostSchema: Schema = new Schema({
         type: mongoose.Types.ObjectId,
         ref: 'Company',
     },
+    companyName:{
+        type:String,
+    },
     employerId: {
         type: mongoose.Types.ObjectId,
         ref: 'Employer',

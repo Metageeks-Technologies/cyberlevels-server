@@ -77,7 +77,8 @@ const companySchema: Schema = new Schema({
         default: [],
     },
     createdBy: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Employer'
     },
     savedByCandidates: [
         {

@@ -193,7 +193,7 @@ export const getAllCompanies = catchAsyncError(async (req, res, next) => {
     const limit = 8;
     const skip = (p - 1) * limit;
 
-    let result = await Company.find(queryObject).skip(skip).limit(limit).select(['email', 'logo', 'founderName', 'teamSize', 'contactNumber', 'location']);
+    let result = await Company.find(queryObject).skip(skip).limit(limit).select(['name','email', 'logo', 'founderName', 'teamSize', 'contactNumber', 'location']);
     const totalCompany = await Company.countDocuments(queryObject);
     const totalNumOfPage = Math.ceil(totalCompany / limit);
 
