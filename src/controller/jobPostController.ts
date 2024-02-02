@@ -207,7 +207,7 @@ export const getJobPosts = catchAsyncError(async (req, res, next) => {
   const limit = 8;
   const skip = (p - 1) * limit;
 
-  let jobPosts = await JobPost.find(queryObject).skip(skip).limit(limit);
+  let jobPosts = await JobPost.find(queryObject).skip(skip).limit(limit).populate('companyId',{logo:1});
   const totalJobPost = await JobPost.countDocuments(queryObject);
   const totalNumOfPage = Math.ceil(totalJobPost / limit);
 
