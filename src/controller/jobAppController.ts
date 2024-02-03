@@ -55,7 +55,8 @@ export const createJobApp = catchAsyncError(async (req, res, next) => {
       console.error("Error saving user:", error);
     }
   }
-
+  job?.candidates.push(requestingUser?._id)
+  await job?.save();
   res.status(200).json({
     jobApp,
     success: true,

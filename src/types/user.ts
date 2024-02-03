@@ -25,6 +25,7 @@ interface IEducation {
     endYear: string;
     description: string;
     _id:string
+    present:boolean;
 }
 interface IExperience {
     title: string;
@@ -32,6 +33,7 @@ interface IExperience {
     startYear: string;
     endYear: string;
     description: string;
+    present:boolean;
 }
 interface INotification {
     sender: string,
