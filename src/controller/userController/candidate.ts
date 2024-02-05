@@ -91,7 +91,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
     } else {
       if (user.provider !== "Google") {
         user.provider = "Google";
-        user.avatar = response.picture;
+        user.avatar = user.avatar?user.avatar:response.picture;
       }
       if (user.isEmailVerified === false && response.verified_email === true) {
         user.isEmailVerified = true;
@@ -123,7 +123,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
     } else {
       if (user.provider !== "Google") {
         user.provider = "Google";
-        user.avatar = response.picture;
+        user.avatar = user.avatar?user.avatar:response.picture;
       }
       if (user.isEmailVerified === false && response.verified_email === true) {
         user.isEmailVerified = true;
@@ -195,7 +195,7 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
     } else {
       if (user.provider !== "LinkedIn") {
         user.provider = "LinkedIn";
-        user.avatar = response.picture;
+        user.avatar = user.avatar?user.avatar:response.picture;
       }
       if (user.isEmailVerified === false && response.verified_email === true) {
         user.isEmailVerified = true;
@@ -225,7 +225,7 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
     } else {
       if (user.provider !== "LinkedIn") {
         user.provider = "LinkedIn";
-        user.avatar = response.picture;
+        user.avatar = user.avatar?user.avatar:response.picture;
       }
       if (user.isEmailVerified === false && response.verified_email === true) {
         user.isEmailVerified = true;
@@ -638,6 +638,10 @@ export const getSaveJob = catchAsyncError(async (req, res, next) => {
 
   const candidate = await Candidate.findById(candidateId).populate({
     path: "savedJobs",
+    populate: {
+      path: "companyId",
+      select:"logo"  
+  },
     options: { skip: skip, limit: limit },
   });
   if (!candidate) {
@@ -885,7 +889,10 @@ export const getRecommendedJobs = catchAsyncError(async (req, res, next) => {
       { primarySkills: { $in: candidate.skills } },
       { secondarySkills: { $in: candidate.skills } },
     ],
-  }).sort({ createdAt: -1 });
+  }).sort({ createdAt: -1 }).populate({
+    path: "companyId",
+    select: "logo",
+  });
 
   const totalPerRequired = 60;
   const jobRecommendations = relevantJobs.map((job) => ({
