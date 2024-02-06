@@ -86,6 +86,10 @@ const companySchema: Schema = new Schema({
             ref: 'Candidate',
         },
     ],
+    isDeleted:{
+        type:Boolean,
+        default: false
+    }
 
 
 }, {
