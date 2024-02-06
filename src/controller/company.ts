@@ -99,6 +99,7 @@ export const getCompanies = catchAsyncError(async (req, res, next) => {
     desiredTeamSize = desiredTeamSize.split(",");
     queryObject.teamSize = { $in: desiredTeamSize };
   }
+  queryObject.isDeleted = false;
 
   const p = Number(page) || 1;
   const limit = 8;
@@ -151,10 +152,15 @@ export const getCompanies = catchAsyncError(async (req, res, next) => {
 export const updateCompany = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
   // console.log(id);
+  const { bodyObj, logoMetadata } = req.body;
   if (!id) {
     return next(new ErrorHandler("Company not found", 400));
   }
-  const company = await Company.findByIdAndUpdate({ _id: id }, req.body);
+  const company = await Company.findByIdAndUpdate({ _id: id }, bodyObj);
 
-  res.status(200).send(company);
+  const { folder, extension, type } = logoMetadata;
+  const key = `${folder}/${company?._id}.${extension}`;
+  const url = getUrlForUploadProfile(key, type);
+
+  res.status(200).send({company,url});
 });

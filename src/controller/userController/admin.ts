@@ -186,7 +186,7 @@ export const getAllCompanies = catchAsyncError(async (req, res, next) => {
     const { page } = req.query;
     const { id: createdBy } = req.params;
 
-    const queryObject: any = {createdBy,isDeleted:false||undefined};
+    const queryObject: any = {createdBy,isDeleted:false};
 
     console.log(page)
     const p = Number(page) || 1;
