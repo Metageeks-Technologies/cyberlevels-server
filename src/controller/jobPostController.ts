@@ -152,6 +152,7 @@ export const getJobPosts = catchAsyncError(async (req, res, next) => {
     preferredExperience,
     candidateId,
     companyId,
+    jobCode
   } = req.query;
 
   const queryObject: any = {};
@@ -159,6 +160,10 @@ export const getJobPosts = catchAsyncError(async (req, res, next) => {
     let desiredLocation: string | string[] = location as string;
     desiredLocation = desiredLocation.split(",");
     queryObject.location = { $in: desiredLocation };
+  }
+  if (jobCode) {
+    queryObject.jobCode = { $regex: jobCode, $options: "i" };
+
   }
   if (jobType) {
     let desiredJobTypes: string | string[] = jobType as string;
@@ -207,7 +212,7 @@ export const getJobPosts = catchAsyncError(async (req, res, next) => {
   const limit = 8;
   const skip = (p - 1) * limit;
 
-  let jobPosts = await JobPost.find(queryObject).skip(skip).limit(limit).populate('companyId',{logo:1});
+  let jobPosts = await JobPost.find(queryObject).skip(skip).limit(limit).populate('companyId', { logo: 1 });
   const totalJobPost = await JobPost.countDocuments(queryObject);
   const totalNumOfPage = Math.ceil(totalJobPost / limit);
 

@@ -89,7 +89,9 @@ export const getDetails = catchAsyncError(async (req, res, next) => {
 
 export const getCompanies = catchAsyncError(async (req, res, next) => {
   const { page, name, teamSize, candidateId } = req.query;
-  const queryObject: any = {};
+  const queryObject: any = {
+    isDeleted: false,
+  };
   if (name) {
     queryObject.name = { $regex: name, $options: "i" };
     console.log(name);
@@ -162,5 +164,5 @@ export const updateCompany = catchAsyncError(async (req, res, next) => {
   const key = `${folder}/${company?._id}.${extension}`;
   const url = getUrlForUploadProfile(key, type);
 
-  res.status(200).send({company,url});
+  res.status(200).send({ company, url });
 });

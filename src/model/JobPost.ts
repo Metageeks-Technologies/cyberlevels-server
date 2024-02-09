@@ -7,9 +7,7 @@ const jobPostSchema: Schema = new Schema({
         type: String,
         required: true,
     },
-    descrption: {
-        type: String,
-    },
+
     location: {
         type: [String],
         required: true,
@@ -75,8 +73,8 @@ const jobPostSchema: Schema = new Schema({
         type: mongoose.Types.ObjectId,
         ref: 'Company',
     },
-    companyName:{
-        type:String,
+    companyName: {
+        type: String,
     },
     employerId: {
         type: mongoose.Types.ObjectId,
@@ -96,9 +94,9 @@ const jobPostSchema: Schema = new Schema({
     },
     views: [
         {
-            viewed_by:{
+            viewed_by: {
                 type: mongoose.Types.ObjectId,
-                ref:'Candidate'
+                ref: 'Candidate'
             },
             view_count: {
                 type: Number,
@@ -110,9 +108,9 @@ const jobPostSchema: Schema = new Schema({
             },
         },
     ],
-    jobCode:{
-        type:String,
-        unique:true,
+    jobCode: {
+        type: String,
+        unique: true,
     }
 
 

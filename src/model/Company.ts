@@ -4,7 +4,6 @@ import { ICompany } from '../types/company';
 const companySchema: Schema = new Schema({
     name: {
         type: String,
-
     },
     email: {
         type: String,
@@ -78,7 +77,7 @@ const companySchema: Schema = new Schema({
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:'Employer'
+        ref: 'Employer'
     },
     savedByCandidates: [
         {
@@ -86,8 +85,8 @@ const companySchema: Schema = new Schema({
             ref: 'Candidate',
         },
     ],
-    isDeleted:{
-        type:Boolean,
+    isDeleted: {
+        type: Boolean,
         default: false
     }
 
