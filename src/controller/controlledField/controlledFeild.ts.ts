@@ -21,14 +21,14 @@ export const getAutoComplete = (model: any) => {
                     }
                 }
             },
-            {
-                "$match": {
-                    "$or": [
-                        { "createdBy": `${req.query.employerId}` },
-                        { "createdBy": { "$exists": false } }
-                    ]
-                }
-            },
+            // {
+            //     "$match": {
+            //         "$or": [
+            //             { "createdBy": `${req.query.employerId}` },
+            //             { "createdBy": { "$exists": false } }
+            //         ]
+            //     }
+            // },
             {
                 "$project": {
                     "_id": 1,
@@ -37,7 +37,7 @@ export const getAutoComplete = (model: any) => {
             }
 
         ]).exec(); // Use exec() to execute the aggregation
-        console.log(result,"Query:",req.query)
+        console.log(result, "Query:", req.query)
         res.send(result);
 
     })

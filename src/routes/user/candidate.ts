@@ -9,7 +9,6 @@ import {
 import { isAuthenticatedCandidate, isAuthenticatedEmployer } from '../../middleware/auth';
 import profileComplete from '../../middleware/profileComplete';
 
-
 const candidateRouter = express.Router();
 // auth 
 candidateRouter.get('/auth/google', passport.authenticate('google', { state: '12345678' }));
