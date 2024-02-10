@@ -340,9 +340,20 @@ export const getRelatedJobs = catchAsyncError(async (req, res, next) => {
   const jobIds = sortedRelatedJobs.map((job) => job.job._id);
   const fullRelatedJobs = await JobPost.find({ _id: { $in: jobIds } });
 
+  const candidate = req.user as ICandidate;
+  const savedJobs = candidate.savedJobs as string[];
+  let result = fullRelatedJobs.map((job) => {
+    const isSaved = savedJobs.includes(job._id);
+    const jobObject = job.toObject();
+    return {
+      ...jobObject,
+      isSaved,
+    };
+  });
+
   res.status(200).json({
     success: true,
-    jobs: fullRelatedJobs,
+    jobs: result,
   });
 });
 

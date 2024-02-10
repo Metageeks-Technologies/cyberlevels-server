@@ -23,7 +23,7 @@ jobPostRouter.route("/get").get(getJobPosts);
 jobPostRouter.route("/populate").post(populateJobPost);
 jobPostRouter.route("/askGpt").get(chatWithAiUsingRest);
 jobPostRouter.route("/employer/:employerId").get(getJobPostsForEmployer);
-jobPostRouter.route("/related").get(getRelatedJobs);
+jobPostRouter.route("/related").get(isAuthenticatedCandidate, getRelatedJobs);
 jobPostRouter.route("/uploadToPc").post(upload.single('pdfFile'), uploadResumeToPinecone);
 jobPostRouter.route("/queryToPc").get(queryToPinecone);
 jobPostRouter.route("/deleteFromPc").delete(deleteFromPinecone);

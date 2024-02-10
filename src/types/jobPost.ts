@@ -1,6 +1,6 @@
 import mongoose, { Document } from "mongoose";
 interface JobPostView {
-    viewed_by:mongoose.Types.ObjectId;
+    viewed_by: mongoose.Types.ObjectId;
     view_count?: number;
     view_timestamp?: string;
 }
@@ -23,21 +23,21 @@ export interface IJobPost extends Document {
         maximum: number;
         isDisclosed: boolean;
         currency: {
-            abbreviation:string;
-            name:string;
-            symbol:string;
+            abbreviation: string;
+            name: string;
+            symbol: string;
         };
         period: "monthly" | "yearly" | "weekly" | "hourly";
     };
     status: "active" | "expired",
     preferredExperience: string[];
-    deadlineDate:Date;
+    deadlineDate: Date;
     companyId: mongoose.Types.ObjectId;
-    companyName:string;
+    companyName: string;
     employerId: mongoose.Types.ObjectId;
     candidates: mongoose.Types.ObjectId[];
-    testQuestions: string;
+    testQuestions: string[][];
     isSaved?: boolean;
     matchScore?: number;
-    views:JobPostView[]
+    views: JobPostView[]
 }

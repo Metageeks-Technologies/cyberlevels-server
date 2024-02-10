@@ -87,7 +87,7 @@ const jobPostSchema: Schema = new Schema({
         },
     ],
     testQuestions: {
-        type: String
+        type: [[String]]
     },
     description: {
         type: String,
