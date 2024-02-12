@@ -152,7 +152,7 @@ export const getJobPosts = catchAsyncError(async (req, res, next) => {
     preferredExperience,
     candidateId,
     companyId,
-    jobCode
+    jobCode,
   } = req.query;
 
   const queryObject: any = {};
@@ -163,7 +163,6 @@ export const getJobPosts = catchAsyncError(async (req, res, next) => {
   }
   if (jobCode) {
     queryObject.jobCode = { $regex: jobCode, $options: "i" };
-
   }
   if (jobType) {
     let desiredJobTypes: string | string[] = jobType as string;
@@ -194,17 +193,20 @@ export const getJobPosts = catchAsyncError(async (req, res, next) => {
 
   //user provides a number, such as salary=4, to find job posts with salary ranges that include this number:
   const userProvidedSalary = Number(salary);
+  // if (!isNaN(userProvidedSalary) && salary !== "-1") {
+  //   queryObject.$or = [
+  //     {
+  //       "salary.minimum": { $lte: userProvidedSalary },
+  //       "salary.maximum": { $gte: userProvidedSalary },
+  //     },
+  //     {
+  //       "salary.minimum": { $gte: userProvidedSalary },
+  //       "salary.maximum": { $lte: userProvidedSalary },
+  //     },
+  //   ];
+  // }
   if (!isNaN(userProvidedSalary) && salary !== "-1") {
-    queryObject.$or = [
-      {
-        "salary.minimum": { $lte: userProvidedSalary },
-        "salary.maximum": { $gte: userProvidedSalary },
-      },
-      {
-        "salary.minimum": { $gte: userProvidedSalary },
-        "salary.maximum": { $lte: userProvidedSalary },
-      },
-    ];
+    queryObject["salary.maximum"] = { $gte: userProvidedSalary };
   }
 
   // console.log(page);
@@ -212,7 +214,10 @@ export const getJobPosts = catchAsyncError(async (req, res, next) => {
   const limit = 8;
   const skip = (p - 1) * limit;
 
-  let jobPosts = await JobPost.find(queryObject).skip(skip).limit(limit).populate('companyId', { logo: 1 });
+  let jobPosts = await JobPost.find(queryObject)
+    .skip(skip)
+    .limit(limit)
+    .populate("companyId", { logo: 1 });
   const totalJobPost = await JobPost.countDocuments(queryObject);
   const totalNumOfPage = Math.ceil(totalJobPost / limit);
 
