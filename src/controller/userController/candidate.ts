@@ -37,18 +37,15 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   const callbackUrl = process.env.GOOGLE_CALLBACK_URL || "";
   let accessToken = "";
   try {
-    const { data } = await axios.post(
-      `https://oauth2.googleapis.com/token`,
-      {
-        code,
-        client_id: clientId,
-        client_secret: clientSecret,
-        redirect_uri: callbackUrl,
-        grant_type: 'authorization_code',
-        access_type: 'offline',
-        prompt: 'consent'
-      }
-    );
+    const { data } = await axios.post(`https://oauth2.googleapis.com/token`, {
+      code,
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: callbackUrl,
+      grant_type: "authorization_code",
+      access_type: "offline",
+      prompt: "consent",
+    });
     accessToken = data.access_token;
     console.log(data, "data by google");
   } catch (error) {
@@ -91,7 +88,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
     } else {
       if (user.provider !== "Google") {
         user.provider = "Google";
-        user.avatar = user.avatar?user.avatar:response.picture;
+        user.avatar = user.avatar ? user.avatar : response.picture;
       }
       if (user.isEmailVerified === false && response.verified_email === true) {
         user.isEmailVerified = true;
@@ -107,15 +104,17 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
 
     // console.log(user)
     if (!user) {
-      const freeSubscription = await (await CandidateSub).findOne({ subscriptionType: "free" });
+      const freeSubscription = await (
+        await CandidateSub
+      ).findOne({ subscriptionType: "free" });
       const userSubscription = {
-        ...freeSubscription
-      }
+        ...freeSubscription,
+      };
       const userWithSubscription = {
         ...userObj,
-        subscription: userSubscription
-      }
-      console.log(userWithSubscription)
+        subscription: userSubscription,
+      };
+      console.log(userWithSubscription);
       user = await Candidate.create(userWithSubscription);
 
       // console.log(user);
@@ -123,7 +122,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
     } else {
       if (user.provider !== "Google") {
         user.provider = "Google";
-        user.avatar = user.avatar?user.avatar:response.picture;
+        user.avatar = user.avatar ? user.avatar : response.picture;
       }
       if (user.isEmailVerified === false && response.verified_email === true) {
         user.isEmailVerified = true;
@@ -136,8 +135,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   // console.log(user)
   console.log(user);
   await sendToken(user, 201, res, accessToken);
-
-})
+});
 
 export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
   if (req.body.hasOwnProperty("error")) {
@@ -195,7 +193,7 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
     } else {
       if (user.provider !== "LinkedIn") {
         user.provider = "LinkedIn";
-        user.avatar = user.avatar?user.avatar:response.picture;
+        user.avatar = user.avatar ? user.avatar : response.picture;
       }
       if (user.isEmailVerified === false && response.verified_email === true) {
         user.isEmailVerified = true;
@@ -209,23 +207,25 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
     user = await Candidate.findOne({ email: response.email });
     if (!user) {
       console.log("user not found");
-      const freeSubscription = await (await CandidateSub).findOne({ subscriptionType: "free" });
+      const freeSubscription = await (
+        await CandidateSub
+      ).findOne({ subscriptionType: "free" });
       console.log("freeSubscription not found");
       const userSubscription = {
-        ...freeSubscription
-      }
+        ...freeSubscription,
+      };
       console.log("userSubscription not found");
       const userWithSubscription = {
         ...Obj,
-        subscription: userSubscription
-      }
+        subscription: userSubscription,
+      };
       console.log("user", userWithSubscription);
       user = await Candidate.create(userWithSubscription);
       sendMail("candidate", "signup", Obj);
     } else {
       if (user.provider !== "LinkedIn") {
         user.provider = "LinkedIn";
-        user.avatar = user.avatar?user.avatar:response.picture;
+        user.avatar = user.avatar ? user.avatar : response.picture;
       }
       if (user.isEmailVerified === false && response.verified_email === true) {
         user.isEmailVerified = true;
@@ -273,10 +273,20 @@ export const updateCurrCandidate = catchAsyncError(async (req, res, next) => {
   if (!candidate) {
     return next(new ErrorHandler("something went wrong ,try again", 500));
   }
-  const { firstName, lastName, resumes, location, skills, softSkills, } = candidate
-  if (!candidate.isProfileCompleted && firstName && lastName && resumes.length && location.city && location.country && skills.length && softSkills.length) {
+  const { firstName, lastName, resumes, location, skills, softSkills } =
+    candidate;
+  if (
+    !candidate.isProfileCompleted &&
+    firstName &&
+    lastName &&
+    resumes.length &&
+    location.city &&
+    location.country &&
+    skills.length &&
+    softSkills.length
+  ) {
     candidate.isProfileCompleted = true;
-    console.log('profileComplete middleware making true');
+    console.log("profileComplete middleware making true");
     await candidate.save();
   }
   res.status(200).json({
@@ -473,7 +483,7 @@ export const updateEducation = catchAsyncError(async (req, res, next) => {
   }
   res.status(200).json({
     success: true,
-    education: candidate.education
+    education: candidate.education,
   });
 });
 export const updateExistingEducation = catchAsyncError(
@@ -510,29 +520,31 @@ export const updateExperience = catchAsyncError(async (req, res, next) => {
   }
   res.status(200).json({
     success: true,
-    experience: candidate.experience
+    experience: candidate.experience,
   });
 });
 
-export const updateExistingExperience = catchAsyncError(async (req, res, next) => {
-  if (!req.body) {
-    return next(new ErrorHandler("body not found", 400));
-  }
-  const { id, expId } = req.params;
-  const candidate = await Candidate.findOneAndUpdate(
-    { _id: id, "experience._id": expId },
-    { $set: { "experience.$": req.body } },
-    { new: true, runValidators: true }
-  );
+export const updateExistingExperience = catchAsyncError(
+  async (req, res, next) => {
+    if (!req.body) {
+      return next(new ErrorHandler("body not found", 400));
+    }
+    const { id, expId } = req.params;
+    const candidate = await Candidate.findOneAndUpdate(
+      { _id: id, "experience._id": expId },
+      { $set: { "experience.$": req.body } },
+      { new: true, runValidators: true }
+    );
 
-  if (!candidate) {
-    return next(new ErrorHandler("Candidate not found", 404));
+    if (!candidate) {
+      return next(new ErrorHandler("Candidate not found", 404));
+    }
+    res.status(200).json({
+      success: true,
+      data: candidate.experience,
+    });
   }
-  res.status(200).json({
-    success: true,
-    data: candidate.experience,
-  });
-})
+);
 
 export const populateCandidate = catchAsyncError(async (req, res, next) => {
   const location = "mockData/Candidate.json";
@@ -608,6 +620,10 @@ export const removeSavedJob = catchAsyncError(async (req, res, next) => {
   const totalNumOfPage = Math.ceil(totalSavedJob / limit);
   const updatedCandidate = await Candidate.findById(candidateId).populate({
     path: "savedJobs",
+    populate: {
+      path: "companyId",
+      select: "logo",
+    },
     options: { skip: skip, limit: limit },
   });
   if (!updatedCandidate) {
@@ -640,8 +656,8 @@ export const getSaveJob = catchAsyncError(async (req, res, next) => {
     path: "savedJobs",
     populate: {
       path: "companyId",
-      select:"logo"  
-  },
+      select: "logo",
+    },
     options: { skip: skip, limit: limit },
   });
   if (!candidate) {
@@ -889,10 +905,12 @@ export const getRecommendedJobs = catchAsyncError(async (req, res, next) => {
       { primarySkills: { $in: candidate.skills } },
       { secondarySkills: { $in: candidate.skills } },
     ],
-  }).sort({ createdAt: -1 }).populate({
-    path: "companyId",
-    select: "logo",
-  });
+  })
+    .sort({ createdAt: -1 })
+    .populate({
+      path: "companyId",
+      select: "logo",
+    });
 
   const totalPerRequired = 60;
   const jobRecommendations = relevantJobs.map((job) => ({
