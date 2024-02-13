@@ -5,7 +5,7 @@ import fs from "fs";
 import Company from "../model/Company";
 import Candidate from "../model/user/Candidate";
 import { calculateMatchScore, calculateScoreForSkills } from "../utils/helper";
-import { ICandidate } from "../types/user";
+import { ICandidate, IEmployer } from "../types/user";
 import { IJobPost } from "../types/jobPost";
 import mongoose from "mongoose";
 const { ObjectId } = require("mongodb");
@@ -63,7 +63,61 @@ export const updateJobPost = catchAsyncError(async (req, res, next) => {
     success: true,
   });
 });
+export const getDetailsForEmployer = catchAsyncError(async(req,res,next) => {
+  const { id } = req.params;
+  // console.log("id", id);
+  if (!id) {
+    return next(new ErrorHandler("job post not found", 400));
+  }
 
+  const job = await JobPost.findById(id).populate("companyId");
+  // console.log(job);
+  if (!job) {
+    return next(new ErrorHandler("job post not found", 404));
+  }
+  // if (!req.user ) {
+  //   return next(new ErrorHandler("unauthenticated user", 404));
+  // }
+  // const employer = req.user as IEmployer;
+  // console.log(job.employerId.toString() ,"Employer Id")
+  // if(job.employerId.toString() !== employer._id){
+  //   return next(new ErrorHandler("unauthenticated user", 404));
+  // }
+  // const alreadyViewed = job.views.filter(
+  //   (view) =>
+  //     new ObjectId(view.viewed_by).toString() ===
+  //     new ObjectId(candidate._id).toString()
+  // );
+  // console.log(alreadyViewed, "already Viewed");
+  // if (alreadyViewed.length === 0) {
+  //   job.views.push({
+  //     viewed_by: candidate._id,
+  //     view_count: 1,
+  //     view_timestamp: Date.now().toString(),
+  //   });
+  //   await job.save();
+  // }
+  // const score = Math.floor(
+  //   calculateMatchScore(
+  //     candidate.skills,
+  //     job.primarySkills,
+  //     job.secondarySkills
+  //   )
+  // );
+
+  const jobObject = job.toObject();
+  const jobWithScore = {
+    ...jobObject,
+    matchScore: -1,
+  };
+
+  // console.log(jobWithScore);
+
+  res.status(200).json({
+    job: jobWithScore,
+    success: true,
+  });
+})
 export const getDetails = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
   // console.log("id", id);

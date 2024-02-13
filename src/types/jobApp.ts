@@ -1,8 +1,9 @@
 import mongoose, { Document } from "mongoose";
+import { IJobPost } from "./jobPost";
 
 export interface IJobApp extends Document {
     candidate: string,
-    jobPost: string,
+    jobPost: string | IJobPost,
     testScore: number,
     appliedWithResume: string,
     jobLetter: string,

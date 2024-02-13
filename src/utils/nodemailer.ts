@@ -25,7 +25,7 @@ export const sendMail = async function sendMail(user: string, useFor: string, da
 
       const updatedHtml = String(Ohtml)
         .replace("{{email}}", data.email)
-        .replace("{{userAvatar}}", `<img class="CToWUd" src="${data.avatar}" alt="" width="20" height="20" data-bit="iit">`).replace("{{Username}}", `${data.firstName} ${data.lastNam}`);
+        .replace("{{userAvatar}}", `<img class="CToWUd" src="${data.avatar}" alt="" width="20" height="20" data-bit="iit">`).replace("{{Username}}", `${data.firstName} ${data.lastName}`).replace("{{jobPost}}",`${data.title}`).replace(`{{jobCode}}`,`${data.jobCode}`);
 
       //   if (str === 'candidateSignup') {
       //     Osubject = `Thank you for signing up ${data.firstName}`;

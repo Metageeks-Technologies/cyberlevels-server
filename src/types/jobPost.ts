@@ -18,6 +18,7 @@ export interface IJobPost extends Document {
     secondarySkills: string[];
     workHours: string;
     joiningTime: string;
+    jobCode:string;
     salary: {
         minimum: number;
         maximum: number;

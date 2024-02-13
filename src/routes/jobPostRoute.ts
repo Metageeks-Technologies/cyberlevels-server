@@ -1,8 +1,8 @@
 import express from 'express';
-import { addJobPost, getJobPosts, populateJobPost, getDetails, deleteJobPost, getJobPostsForEmployer, getRelatedJobs, getAllJobPost, getJobPostViews, addJobPostViews, getJobPostsForEmployerDashboard, getJobDetailsForEmployerChartNiceSelect, getJobDetailsForEmployerDashBoardCards, getJobPostByCreatedDate, updateJobPost } from '../controller/jobPostController';
+import { addJobPost, getJobPosts, populateJobPost, getDetails, deleteJobPost, getJobPostsForEmployer, getRelatedJobs, getAllJobPost, getJobPostViews, addJobPostViews, getJobPostsForEmployerDashboard, getJobDetailsForEmployerChartNiceSelect, getJobDetailsForEmployerDashBoardCards, getJobPostByCreatedDate, updateJobPost, getDetailsForEmployer } from '../controller/jobPostController';
 import multer from 'multer'
 import { chatWithAiUsingRest, deleteFromPinecone, getSuggestion, newQueryToPc, newUploadToPc, query, queryToPinecone, uploadResumeToPinecone } from '../controller/aiController';
-import { isAuthenticatedCandidate } from '../middleware/auth';
+import { isAuthenticatedCandidate, isAuthenticatedEmployer } from '../middleware/auth';
 import profileComplete from '../middleware/profileComplete';
 
 const jobPostRouter = express.Router();
@@ -31,6 +31,7 @@ jobPostRouter.route("/query").get(query);
 jobPostRouter.route("/newUpload").post(newUploadToPc);
 jobPostRouter.route("/newQuery").get(newQueryToPc);
 jobPostRouter.route("/suggestion").get(getSuggestion);
+jobPostRouter.route("/getJobForEmployer/:id").get(getDetailsForEmployer);
 jobPostRouter.route("/:id").get(isAuthenticatedCandidate, profileComplete, getDetails).delete(deleteJobPost);
 jobPostRouter.route("/jobpostviews/:id/:viewby").get(getJobPostViews);
 jobPostRouter.route("/jobpostviews/:id/").post(addJobPostViews);

@@ -150,7 +150,7 @@ export interface IEmployer extends Document {
     subscription: ESubscription,
     signInProvider?: "linkedIn" | "jwt"
     savedCandidates: string[],
-    _id: string,
+    _id:string,
     createJWT(accessToken?: string): string;
     comparePassword(givenPassword: string): Promise<boolean>;
 
