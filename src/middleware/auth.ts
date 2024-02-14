@@ -64,7 +64,7 @@ export const isAuthenticatedEmployer = catchAsyncError(
     console.log(employer)
     if (!employer) {
       return next(
-        new ErrorHandler("user not found with associated token Hello", 401)
+        new ErrorHandler("user not found with associated token", 401)
       );
     }
     req.user = employer as IEmployer;
