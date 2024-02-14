@@ -75,9 +75,9 @@ export const getDetailsForEmployer = catchAsyncError(async(req,res,next) => {
   if (!job) {
     return next(new ErrorHandler("job post not found", 404));
   }
-  // if (!req.user ) {
-  //   return next(new ErrorHandler("unauthenticated user", 404));
-  // }
+  if (!req.user ) {
+    return next(new ErrorHandler("unauthenticated user", 404));
+  }
   // const employer = req.user as IEmployer;
   // console.log(job.employerId.toString() ,"Employer Id")
   // if(job.employerId.toString() !== employer._id){

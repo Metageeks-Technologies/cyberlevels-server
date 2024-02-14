@@ -58,13 +58,13 @@ export const isAuthenticatedEmployer = catchAsyncError(
       process.env.JWT_SECRET
     ) as CustomJwtPayload;
 
-    // console.log(decodedData)
+    console.log(decodedData.id)
 
     const employer = await Employer.findOne({ _id: decodedData.id });
     console.log(employer)
     if (!employer) {
       return next(
-        new ErrorHandler("user not found with associated token", 402)
+        new ErrorHandler("user not found with associated token Hello", 401)
       );
     }
     req.user = employer as IEmployer;
