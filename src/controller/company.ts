@@ -88,7 +88,7 @@ export const getDetails = catchAsyncError(async (req, res, next) => {
 });
 
 export const getCompanies = catchAsyncError(async (req, res, next) => {
-  const { page, name, teamSize, candidateId } = req.query;
+  const { page, name, teamSize, candidateId,location } = req.query;
   const queryObject: any = {
     isDeleted: false,
   };
@@ -100,6 +100,12 @@ export const getCompanies = catchAsyncError(async (req, res, next) => {
     let desiredTeamSize: string | string[] = teamSize as string;
     desiredTeamSize = desiredTeamSize.split(",");
     queryObject.teamSize = { $in: desiredTeamSize };
+  
+  }
+  if (location) {
+    let cityNames: string | string[] = location as string;
+    cityNames = cityNames.split(",");
+    queryObject.location = { $elemMatch: { city: { $in: cityNames } } };
   }
   queryObject.isDeleted = false;
 
