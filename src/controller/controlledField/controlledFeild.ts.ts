@@ -21,14 +21,14 @@ export const getAutoComplete = (model: any) => {
                     }
                 }
             },
-            {
-                "$match": {
-                    "$or": [
-                        { "createdBy": `${req.query.employerId}` },
-                        { "createdBy": { "$exists": false } }
-                    ]
-                }
-            },
+            // {
+            //     "$match": {
+            //         "$or": [
+            //             { "createdBy": `${req.query.employerId}` },
+            //             { "createdBy": { "$exists": false } }
+            //         ]
+            //     }
+            // },
             {
                 "$project": {
                     "_id": 1,
