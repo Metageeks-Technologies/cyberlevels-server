@@ -197,6 +197,10 @@ const candidateSchema = new mongoose.Schema({
     provider:{
         type:String,
         default: "Admin"
+    },
+    isDeleted:{
+        type:Boolean,
+        default: false
     }
 },
     { timestamps: true }

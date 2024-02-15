@@ -120,6 +120,10 @@ const employerSchema = new mongoose.Schema({
             default: 10
         }
     },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
     savedCandidates: [{ type: mongoose.Types.ObjectId, ref: 'Candidate' }]
 
 },

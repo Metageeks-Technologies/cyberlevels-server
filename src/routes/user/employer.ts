@@ -13,6 +13,7 @@ employerRouter.get("/getAllEmployers", isAuthenticatedCandidate, getAllEmployer)
 employerRouter.patch("/candidateNotification", addNotificationToCandidate)
 employerRouter.route("/uploadProfile").post(uploadProfileToS3).patch(updateProfileAvatar)
 // save
+employerRouter.route("/updateEmployerByAdmin/:id").patch(updateCurrEmployer)
 employerRouter.route("/savedCandidate").post(saveCandidate).get(getSavedCandidate).delete(removeSavedCandidate)
 employerRouter.get("/itemsbyjoiningdate/:viewby",getEmployerByJoiningDate);
 

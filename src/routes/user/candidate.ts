@@ -4,7 +4,7 @@ import {
     getUserLinkedIn,
     getAllCandidate, saveJob,
     logoutCandidate, signupCandidate,
-    loginCandidate, updateCurrCandidate, updateEducation, updateExperience, populateCandidate, getDetails, getCurrCandidate, getSaveJob, removeSavedJob, saveCompany, getSavedCompany, removeSavedCompany, updateNotification, uploadResumeToS3, addResume, downloadResumeFromS3, getRecommendedJobs, deleteResumeFromS3, uploadProfileToS3, updateProfileAvatar, getCandidateProfileViews, getTotalCandidateProfileViews, getCandidateByJoiningDate, getUserGoogle, updateExistingEducation, updateExistingExperience
+    loginCandidate, updateCurrCandidate, updateEducation, updateExperience, populateCandidate, getDetails, getCurrCandidate, getSaveJob, removeSavedJob, saveCompany, getSavedCompany, removeSavedCompany, updateNotification, uploadResumeToS3, addResume, downloadResumeFromS3, getRecommendedJobs, deleteResumeFromS3, uploadProfileToS3, updateProfileAvatar, getCandidateProfileViews, getTotalCandidateProfileViews, getCandidateByJoiningDate, getUserGoogle, updateExistingEducation, updateExistingExperience, updateCandidateByAdmin
 } from '../../controller/userController/candidate'
 import { isAuthenticatedCandidate, isAuthenticatedEmployer } from '../../middleware/auth';
 import profileComplete from '../../middleware/profileComplete';
@@ -28,6 +28,7 @@ candidateRouter.route("/savedCompany").post(saveCompany).get(getSavedCompany).de
 // others
 candidateRouter.get("/get", getAllCandidate)
 candidateRouter.get("/recommended", getRecommendedJobs);
+candidateRouter.route("/deleteByAdmin/:id").patch(updateCandidateByAdmin)
 
 candidateRouter.route("/upload").post(uploadResumeToS3).patch(isAuthenticatedCandidate, profileComplete, addResume)
 candidateRouter.route("/uploadProfile").post(uploadProfileToS3).patch(isAuthenticatedCandidate, profileComplete, updateProfileAvatar)

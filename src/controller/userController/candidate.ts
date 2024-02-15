@@ -424,6 +424,21 @@ export const getAllCandidate = catchAsyncError(async (req, res, next) => {
     result,
   });
 });
+
+
+export const updateCandidateByAdmin = catchAsyncError(async (req,res,next) => {
+  const {id} = req.params;
+  const candidate = await Candidate.findByIdAndUpdate(id,req.body);
+  if(!candidate){
+    return next(new Error("Candidate not found!!!"));
+  }
+  sendMail("candidate","deleteProfile",{...candidate});
+  res.status(200).send({success:true,data:candidate})
+})
+
+
+
+
 export const getDetails = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
 

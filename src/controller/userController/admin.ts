@@ -138,7 +138,7 @@ export const getAllCandidate = catchAsyncError(async (req, res, next) => {
     const { page } = req.query;
 
     const queryObject: any = {};
-
+    queryObject.isDeleted = false;
     console.log(page)
     const p = Number(page) || 1;
     const limit = 8;
@@ -167,7 +167,7 @@ export const getAllEmployer = catchAsyncError(async (req, res, next) => {
     const p = Number(page) || 1;
     const limit = 8;
     const skip = (p - 1) * limit;
-
+    queryObject.isDeleted = false;
     let result = await Employer.find(queryObject).skip(skip).limit(limit).select(['email', 'firstName', 'lastName', 'gender', 'phoneNumber', 'avatar', 'company']);
     const totalEmployer = await Employer.countDocuments(queryObject);
     const totalNumOfPage = Math.ceil(totalEmployer / limit);
