@@ -421,16 +421,35 @@ export const getRelatedJobs = catchAsyncError(async (req, res, next) => {
 });
 
 export const getAllJobPost = catchAsyncError(async (req, res) => {
-  const { page, adminId } = req.query;
+  const { page, adminId,companyId, status, jobCode, title } = req.query;
   let p = Number(page) || 1;
   let limit = page ? 8 : 7;
   let skip = (p - 1) * limit;
-  const response = await JobPost.find(adminId ? { employerId: adminId } : {})
+  const queryObject:any = {};
+  if(adminId){
+    queryObject.employerId = adminId;
+  }
+  if (title) {
+    const titleRegExp = new RegExp(`^${title}`, "i");
+    queryObject.title = titleRegExp;
+  }
+  if (status) {
+    queryObject.status = status;
+  }
+  if (companyId) {
+    queryObject.companyId = companyId;
+  }
+  if (jobCode) {
+    // Create a regular expression for partial matching
+    const jobCodeRegExp = new RegExp(`^${jobCode}`);
+    queryObject.jobCode = jobCodeRegExp;
+  }
+  const response = await JobPost.find(queryObject)
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit);
   const totalDocs = await JobPost.countDocuments(
-    adminId ? { employerId: adminId } : {}
+    queryObject
   );
   const totalPages = totalDocs / limit;
   // console.log(totalPages);
