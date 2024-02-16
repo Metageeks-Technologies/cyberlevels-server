@@ -6,7 +6,7 @@ import {
     logoutCandidate, signupCandidate,
     loginCandidate, updateCurrCandidate, updateEducation, updateExperience, populateCandidate, getDetails, getCurrCandidate, getSaveJob, removeSavedJob, saveCompany, getSavedCompany, removeSavedCompany, updateNotification, uploadResumeToS3, addResume, downloadResumeFromS3, getRecommendedJobs, deleteResumeFromS3, uploadProfileToS3, updateProfileAvatar, getCandidateProfileViews, getTotalCandidateProfileViews, getCandidateByJoiningDate, getUserGoogle, updateExistingEducation, updateExistingExperience, updateCandidateByAdmin
 } from '../../controller/userController/candidate'
-import { isAuthenticatedCandidate, isAuthenticatedEmployer } from '../../middleware/auth';
+import { isAuthenticatedAdmin, isAuthenticatedCandidate, isAuthenticatedEmployer } from '../../middleware/auth';
 import profileComplete from '../../middleware/profileComplete';
 
 const candidateRouter = express.Router();
@@ -26,7 +26,7 @@ candidateRouter.route("/savedJob").post(saveJob).get(getSaveJob).delete(removeSa
 // saveCompany
 candidateRouter.route("/savedCompany").post(saveCompany).get(getSavedCompany).delete(removeSavedCompany);
 // others
-candidateRouter.get("/get", getAllCandidate)
+candidateRouter.get("/get",isAuthenticatedEmployer,isAuthenticatedAdmin, getAllCandidate)
 candidateRouter.get("/recommended", getRecommendedJobs);
 candidateRouter.route("/deleteByAdmin/:id").patch(updateCandidateByAdmin)
 
@@ -41,7 +41,7 @@ candidateRouter.patch("/updateEdu/:id", isAuthenticatedCandidate, profileComplet
 candidateRouter.patch("/updateEdu/:id/:eduId", updateExistingEducation)
 candidateRouter.patch("/updateExp/:id", isAuthenticatedCandidate, profileComplete, updateExperience)
 candidateRouter.patch("/updateExp/:id/:expId", updateExistingExperience)
-candidateRouter.get("/:id", isAuthenticatedEmployer, getDetails);
+candidateRouter.get("/:id", isAuthenticatedEmployer,isAuthenticatedAdmin, getDetails);
 candidateRouter.get("/profileViews/:id/:viewby", getCandidateProfileViews);
 candidateRouter.get("/totalProfileViews/:id", getTotalCandidateProfileViews);
 candidateRouter.get("/itemsbyjoiningdate/:viewby", getCandidateByJoiningDate);

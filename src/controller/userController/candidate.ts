@@ -367,7 +367,7 @@ export const getAllCandidate = catchAsyncError(async (req, res, next) => {
     employerId,
   } = req.query;
 
-  if (!employerId) {
+  if (!req.user) {
     return next(new ErrorHandler("Employer Id not Found", 404));
   }
   const myKeyWord = keyword as string;
@@ -404,13 +404,13 @@ export const getAllCandidate = catchAsyncError(async (req, res, next) => {
 
   // is Candidate Saved by the Employer who is requesting
   const employer = await Employer.findById(employerId);
-  if (!employer) {
-    return next(new ErrorHandler("User not Found", 401));
-  }
-  const savedCandidates = employer.savedCandidates as string[];
-  let result = candidates.map((candidate) => {
-    const isSaved = savedCandidates.includes(candidate._id);
-    const candidateObject = candidate.toObject();
+  // if (!employer) {
+  //   // return next(new ErrorHandler("User not Found", 401));
+  // }
+  const savedCandidates = employer?.savedCandidates as string[];
+  let result = candidates?.map((candidate) => {
+    const isSaved = savedCandidates?.includes(candidate._id);
+    const candidateObject = candidate?.toObject();
     return {
       ...candidateObject,
       isSaved,
@@ -443,22 +443,28 @@ export const getDetails = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
 
   const user = req.user as IEmployer;
-  if (user && user.subscription.viewProfileLimit === 0) {
+  if(!req.user){
+    return next(new ErrorHandler("user not authenticated",401))
+  }
+  if (user && user.role!=="admin" && user.subscription?.viewProfileLimit === 0) {
     return next(
       new ErrorHandler("Upgrade your Plan to view more profile", 400)
     );
   }
 
   const candidate = await Candidate.findById({ _id: id });
-  if (candidate) {
+  if (candidate && user.role !=="admin") {
     candidate.profileViews.push({
       view_count: 1,
       view_timestamp: Date.now().toString(),
     });
     await candidate.save();
   }
-  user.subscription.viewProfileLimit--;
-  await user.save();
+  if(user.role!=="admin"){
+
+    user.subscription.viewProfileLimit--;
+    await user.save();
+  }
 
   res.status(200).json({
     success: true,
