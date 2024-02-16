@@ -65,6 +65,10 @@ export const updateJobPost = catchAsyncError(async (req, res, next) => {
 });
 export const getDetailsForEmployer = catchAsyncError(async(req,res,next) => {
   const { id } = req.params;
+ 
+  if (!req.user ) {
+    return next(new ErrorHandler("unauthenticated user", 404));
+  }
   // console.log("id", id);
   if (!id) {
     return next(new ErrorHandler("job post not found", 400));
@@ -74,9 +78,6 @@ export const getDetailsForEmployer = catchAsyncError(async(req,res,next) => {
   // console.log(job);
   if (!job) {
     return next(new ErrorHandler("job post not found", 404));
-  }
-  if (!req.user ) {
-    return next(new ErrorHandler("unauthenticated user", 404));
   }
   // const employer = req.user as IEmployer;
   // console.log(job.employerId.toString() ,"Employer Id")
@@ -285,13 +286,13 @@ export const getJobPosts = catchAsyncError(async (req, res, next) => {
     });
   }
   const candidate = await Candidate.findById({ _id: candidateId });
-  if (!candidate) {
-    return next(new ErrorHandler("User not Found", 401));
-  }
-  const savedJobs = candidate.savedJobs as string[];
-  let result = jobPosts.map((job) => {
-    const isSaved = savedJobs.includes(job._id);
-    const jobObject = job.toObject();
+  // if (!candidate) {
+  //   return next(new ErrorHandler("User not Found", 401));
+  // }
+  const savedJobs = candidate?.savedJobs as string[];
+  let result = jobPosts?.map((job) => {
+    const isSaved = savedJobs?.includes(job._id);
+    const jobObject = job?.toObject();
     return {
       ...jobObject,
       isSaved,
@@ -369,6 +370,9 @@ export const populateJobPost = catchAsyncError(async (req, res, next) => {
 
 export const getRelatedJobs = catchAsyncError(async (req, res, next) => {
   const { jobId } = req.query;
+  if(!req.user){
+    return next(new ErrorHandler("User not authenticated",401));
+  }
   if (!jobId) {
     return next(new ErrorHandler("jobId  not Found", 400));
   }
@@ -400,10 +404,10 @@ export const getRelatedJobs = catchAsyncError(async (req, res, next) => {
   const fullRelatedJobs = await JobPost.find({ _id: { $in: jobIds } });
 
   const candidate = req.user as ICandidate;
-  const savedJobs = candidate.savedJobs as string[];
+  const savedJobs = candidate?.savedJobs as string[];
   let result = fullRelatedJobs.map((job) => {
-    const isSaved = savedJobs.includes(job._id);
-    const jobObject = job.toObject();
+    const isSaved = savedJobs?.includes(job._id);
+    const jobObject = job?.toObject();
     return {
       ...jobObject,
       isSaved,

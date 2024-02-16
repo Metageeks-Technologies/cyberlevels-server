@@ -2,7 +2,7 @@ import express from 'express';
 import { addJobPost, getJobPosts, populateJobPost, getDetails, deleteJobPost, getJobPostsForEmployer, getRelatedJobs, getAllJobPost, getJobPostViews, addJobPostViews, getJobPostsForEmployerDashboard, getJobDetailsForEmployerChartNiceSelect, getJobDetailsForEmployerDashBoardCards, getJobPostByCreatedDate, updateJobPost, getDetailsForEmployer } from '../controller/jobPostController';
 import multer from 'multer'
 import { chatWithAiUsingRest, deleteFromPinecone, getSuggestion, newQueryToPc, newUploadToPc, query, queryToPinecone, uploadResumeToPinecone } from '../controller/aiController';
-import { isAuthenticatedCandidate, isAuthenticatedEmployer } from '../middleware/auth';
+import { isAuthenticatedAdmin, isAuthenticatedCandidate, isAuthenticatedEmployer } from '../middleware/auth';
 import profileComplete from '../middleware/profileComplete';
 
 const jobPostRouter = express.Router();
@@ -23,7 +23,7 @@ jobPostRouter.route("/get").get(getJobPosts);
 jobPostRouter.route("/populate").post(populateJobPost);
 jobPostRouter.route("/askGpt").get(chatWithAiUsingRest);
 jobPostRouter.route("/employer/:employerId").get(getJobPostsForEmployer);
-jobPostRouter.route("/related").get(isAuthenticatedCandidate, getRelatedJobs);
+jobPostRouter.route("/related").get(isAuthenticatedCandidate,isAuthenticatedAdmin, getRelatedJobs);
 jobPostRouter.route("/uploadToPc").post(upload.single('pdfFile'), uploadResumeToPinecone);
 jobPostRouter.route("/queryToPc").get(queryToPinecone);
 jobPostRouter.route("/deleteFromPc").delete(deleteFromPinecone);
@@ -31,7 +31,7 @@ jobPostRouter.route("/query").get(query);
 jobPostRouter.route("/newUpload").post(newUploadToPc);
 jobPostRouter.route("/newQuery").get(newQueryToPc);
 jobPostRouter.route("/suggestion").get(getSuggestion);
-jobPostRouter.route("/getJobForEmployer/:id").get(isAuthenticatedEmployer,  getDetailsForEmployer);
+jobPostRouter.route("/getJobForEmployer/:id").get(isAuthenticatedEmployer,isAuthenticatedAdmin,  getDetailsForEmployer);
 jobPostRouter.route("/:id").get(isAuthenticatedCandidate, profileComplete, getDetails).delete(deleteJobPost);
 jobPostRouter.route("/jobpostviews/:id/:viewby").get(getJobPostViews);
 jobPostRouter.route("/jobpostviews/:id/").post(addJobPostViews);

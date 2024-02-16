@@ -3,8 +3,9 @@ import catchAsyncError from "./catchAsyncError.js";
 import Candidate from "../model/user/Candidate.js";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { isActive, isActiveGoogle } from "../utils/helper.js";
-import { ICandidate, IEmployer } from "../types/user.js";
+import { AdminDocument, ICandidate, IEmployer } from "../types/user.js";
 import Employer from "../model/user/Employer.js";
+import Admin from "../model/user/Admin.js";
 
 interface CustomJwtPayload extends JwtPayload {
   id: string;
@@ -13,6 +14,9 @@ interface CustomJwtPayload extends JwtPayload {
 
 export const isAuthenticatedCandidate = catchAsyncError(
   async (req, res, next) => {
+    if(req.user){
+      return next();
+    }
     const { token } = req.cookies;
 
     if (!token) {
@@ -32,7 +36,7 @@ export const isAuthenticatedCandidate = catchAsyncError(
     // console.log(candidate)
     if (!candidate) {
       return next(
-        new ErrorHandler("user not found with associated token", 401)
+        // new ErrorHandler("user not found with associated token", 401)
       );
     }
     req.user = candidate as ICandidate;
@@ -43,6 +47,9 @@ export const isAuthenticatedCandidate = catchAsyncError(
 
 export const isAuthenticatedEmployer = catchAsyncError(
   async (req, res, next) => {
+    if(req.user){
+      return next();
+    }
     const { token } = req.cookies;
 
     if (!token) {
@@ -64,10 +71,41 @@ export const isAuthenticatedEmployer = catchAsyncError(
     console.log(employer)
     if (!employer) {
       return next(
-        new ErrorHandler("user not found with associated token", 401)
+        // new ErrorHandler("user not found with associated token", 401)
       );
     }
     req.user = employer as IEmployer;
     next();
   }
 );
+
+export const isAuthenticatedAdmin = catchAsyncError (async (req,res,next) => {
+  if(req.user){
+    return next();
+  }
+  const {token} = req.cookies;
+  
+  if(!token){
+    return next(
+      new ErrorHandler("Please Login to access this resource", 401)
+    );
+  }
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is not defined in the environment.");
+  }
+  const decodedData = jwt.verify(
+    token,
+    process.env.JWT_SECRET
+  ) as CustomJwtPayload;
+
+  const admin = await Admin.findOne({ _id: decodedData.id });
+    console.log(admin)
+    if (!admin) {
+      return next(
+        // new ErrorHandler("user not found with associated token", 401)
+      );
+    }
+    req.user = admin as AdminDocument;
+    next();
+
+})
