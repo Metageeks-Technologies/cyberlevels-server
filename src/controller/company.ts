@@ -127,20 +127,20 @@ export const getCompanies = catchAsyncError(async (req, res, next) => {
   }
 
   const candidate = await Candidate.findById(candidateId);
-  if (!candidate) {
-    return next(new ErrorHandler("User not Found", 401));
-  }
+  // if (!candidate) {
+  //   return next(new ErrorHandler("User not Found", 401));
+  // }
 
-  const savedCompanies = candidate.savedCompanies as string[];
+  const savedCompanies = candidate?.savedCompanies as string[];
 
   const result = await Promise.all(
-    companies.map(async (company) => {
-      const isSaved = savedCompanies.includes(company._id);
-      const jobOpenings = await JobPost.countDocuments({
+    companies?.map(async (company) => {
+      const isSaved = savedCompanies?.includes(company._id);
+      const jobOpenings = await JobPost?.countDocuments({
         companyId: company._id,
         status: "active",
       });
-      const companyObject = company.toObject();
+      const companyObject = company?.toObject();
 
       return {
         ...companyObject,
