@@ -75,6 +75,7 @@ export const updateCurrEmployer = catchAsyncError(async (req, res, next) => {
   if (!employer) {
     return next(new ErrorHandler("something went wrong ,try again", 500));
   }
+  sendMail("employer","deleteProfile",{...employer})
   res.status(200).json({
     success: true,
     employer,

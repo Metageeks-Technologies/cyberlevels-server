@@ -198,6 +198,10 @@ const candidateSchema = new mongoose.Schema({
         type: String,
         default: "Admin"
     },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
     paymentDate: {
         type: Date,
     }

@@ -112,6 +112,10 @@ const employerSchema = new mongoose.Schema({
     paymentDate: {
         type: Date,
     },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
     savedCandidates: [{ type: mongoose.Types.ObjectId, ref: 'Candidate' }]
 
 },
