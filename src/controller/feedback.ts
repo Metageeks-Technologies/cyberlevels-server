@@ -13,9 +13,9 @@ export const askFeedback = catchAsyncError(async (req, res, next) => {
         return next(new ErrorHandler("Not all value found in request", 400));
     }
     const user = req.user as ICandidate;
-    if (user && user.subscription.feedbackLimit === 0) {
-        return next(new ErrorHandler("You can't ask for more feedback with you current plan Upgrade your plan to increase your limit ask feedback", 400));
-    }
+    // if (user && user.subscription.feedbackLimit === 0) {
+    //     return next(new ErrorHandler("You can't ask for more feedback with you current plan Upgrade your plan to increase your limit ask feedback", 400));
+    // }
     const body = {
         jobApp: appId,
         candidateQuestion: {
@@ -25,7 +25,7 @@ export const askFeedback = catchAsyncError(async (req, res, next) => {
     }
     const feedback = await Feedback.create(body);
     await JobApp.findByIdAndUpdate(appId, { isFeedbackAsked: true });
-    user.subscription.feedbackLimit--;
+    // user.subscription.feedbackLimit--;
     await user.save();
 
     res.status(200).json({

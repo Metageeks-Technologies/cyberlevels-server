@@ -19,14 +19,14 @@ export const createJobApp = catchAsyncError(async (req, res, next) => {
   const requestingUser = req?.user as ICandidate;
   const user = await Candidate.findById(requestingUser?._id || "");
   const job = await JobPost.findById(jobPost);
-  if (user && user.subscription.offering.applyJobLImit === 0) {
-    return next(
-      new ErrorHandler(
-        "You can't Apply more with you current plan Upgrade your plan to increase you daily limit maximum jobs you can apply",
-        400
-      )
-    );
-  }
+  // if (user && user.subscription.offering.applyJobLImit === 0) {
+  //   return next(
+  //     new ErrorHandler(
+  //       "You can't Apply more with you current plan Upgrade your plan to increase you daily limit maximum jobs you can apply",
+  //       400
+  //     )
+  //   );
+  // }
 
   const score = Math.floor(
     calculateMatchScore(
@@ -119,7 +119,7 @@ export const getAllCandidateAppByJob = catchAsyncError(
       return next(new ErrorHandler("candidate no found", 404));
     }
     const candidateFilters: any = {};
-    const jobAppFilter:any = {};
+    const jobAppFilter: any = {};
     if (candidateName) {
       candidateFilters.firstName = new RegExp(`^${candidateName}`, "i"); // Case-insensitive search
     }
@@ -137,14 +137,14 @@ export const getAllCandidateAppByJob = catchAsyncError(
 
     const matchingCandidates = await Candidate.find(candidateFilters);
 
-      // Extract the _id values of matching candidates
-      const matchingCandidateIds = matchingCandidates.map(candidate => candidate._id);
+    // Extract the _id values of matching candidates
+    const matchingCandidateIds = matchingCandidates.map(candidate => candidate._id);
 
-    const allJobApp = await JobApp.find({ jobPost,candidate: { $in: matchingCandidateIds },...jobAppFilter })
+    const allJobApp = await JobApp.find({ jobPost, candidate: { $in: matchingCandidateIds }, ...jobAppFilter })
       .sort({ createdAt: -1 })
       .populate("candidate");
-      
-      console.log(allJobApp.length);
+
+    console.log(allJobApp.length);
 
     res.status(200).json({
       allJobApp,

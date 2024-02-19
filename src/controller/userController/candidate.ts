@@ -518,8 +518,7 @@ export const getDetails = catchAsyncError(async (req, res, next) => {
   }
   if (
     user &&
-    user.role !== "admin" &&
-    user.subscription?.viewProfileLimit === 0
+    user.role !== "admin"
   ) {
     return next(
       new ErrorHandler("Upgrade your Plan to view more profile", 400)
@@ -535,7 +534,7 @@ export const getDetails = catchAsyncError(async (req, res, next) => {
     await candidate.save();
   }
   if (user.role !== "admin") {
-    user.subscription.viewProfileLimit--;
+    // user.subscription.viewProfileLimit--;
     await user.save();
   }
 
