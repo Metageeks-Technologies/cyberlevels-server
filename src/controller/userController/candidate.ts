@@ -374,10 +374,18 @@ export const getAllCandidate = catchAsyncError(async (req, res, next) => {
 
   const queryObject: any = {};
   if (location) {
-    let desiredLocation: string | string[] = location as string;
-    desiredLocation = desiredLocation.split(",");
-    queryObject.location = { $in: desiredLocation };
-  }
+    let cityNames: string | string[] = location as string;
+    cityNames = cityNames.split(",");
+    queryObject['location.city'] = { $in: cityNames };
+}
+// if (location) {
+//   let cityNames: string | string[] = location as string;
+//   cityNames = cityNames.split(",");
+//   queryObject.$or = cityNames.map(city => ({ preferredLocations: city }));
+// }
+
+
+
   if (keyword) {
     // queryObject.skills = { $in: [new RegExp(myKeyWord, 'i')] };
     queryObject.firstName = { $regex: myKeyWord, $options: "i" };
@@ -389,16 +397,60 @@ export const getAllCandidate = catchAsyncError(async (req, res, next) => {
   if (preferredExperience) {
     let desiredExperience: string | string[] = preferredExperience as string;
     desiredExperience = desiredExperience.split(",");
-    queryObject.experienceInShort = { $all: desiredExperience };
-  }
-  //user provides a number, such as salary=4, to find job posts with salary ranges that include this number:
+    if (desiredExperience.includes("Fresher") && desiredExperience.includes("Intermediate") && desiredExperience.includes("Expert")) {
+        queryObject.$or = [
+            // { experienceInYears: { $all: desiredExperience } },
+            { experienceInYears: { $lt: 4 } },
+            { experienceInYears: { $gte: 4, $lte: 10 } },
+            { experienceInYears: { $gt: 10 } }
+        ];
+    } else if (desiredExperience.includes("Fresher") && desiredExperience.includes("Intermediate")) {
+        queryObject.$or = [
+            // { experienceInYears: { $all: desiredExperience } },
+            { experienceInYears: { $lt: 4 } },
+            { experienceInYears: { $gte: 4, $lte: 10 } }
+        ];
+    } else if (desiredExperience.includes("Fresher") && desiredExperience.includes("Expert")) {
+        queryObject.$or = [
+            // { experienceInYears: { $all: desiredExperience } },
+            { experienceInYears: { $lt: 4 } },
+            { experienceInYears: { $gt: 10 } }
+        ];
+    } else if (desiredExperience.includes("Intermediate") && desiredExperience.includes("Expert")) {
+        queryObject.$or = [
+            // { experienceInYears: { $all: desiredExperience } },
+            { experienceInYears: { $gte: 4, $lte: 10 } },
+            { experienceInYears: { $gt: 10 } }
+        ];
+    } else if (desiredExperience.includes("Fresher")) {
+        queryObject.$or = [
+            // { experienceInYears: { $all: desiredExperience } },
+            { experienceInYears: { $lt: 4 } }
+        ];
+    } else if (desiredExperience.includes("Intermediate")) {
+        queryObject.$or = [
+            // { experienceInYears: { $all: desiredExperience } },
+            { experienceInYears: { $gte: 4, $lte: 10 } }
+        ];
+    } else if (desiredExperience.includes("Expert")) {
+        queryObject.$or = [
+            // { experienceInYears: { $all: desiredExperience } },
+            { experienceInYears: { $gt: 10 } }
+        ];
+    } else {
+        queryObject.experienceInYears = { $all: desiredExperience };
+    }
+}
 
+  //user provides a number, such as salary=4, to find job posts with salary ranges that include this number:
+  queryObject.isDeleted = false;
   console.log(page);
   const p = Number(page) || 1;
   const limit = 8;
   const skip = (p - 1) * limit;
 
   let candidates = await Candidate.find(queryObject).skip(skip).limit(limit);
+  console.log(candidates,queryObject.location)
   const totalCandidate = await Candidate.countDocuments(queryObject);
   const totalNumOfPage = Math.ceil(totalCandidate / limit);
 
@@ -425,43 +477,44 @@ export const getAllCandidate = catchAsyncError(async (req, res, next) => {
   });
 });
 
-
-export const updateCandidateByAdmin = catchAsyncError(async (req,res,next) => {
-  const {id} = req.params;
-  const candidate = await Candidate.findByIdAndUpdate(id,req.body);
-  if(!candidate){
-    return next(new Error("Candidate not found!!!"));
+export const updateCandidateByAdmin = catchAsyncError(
+  async (req, res, next) => {
+    const { id } = req.params;
+    const candidate = await Candidate.findByIdAndUpdate(id, req.body);
+    if (!candidate) {
+      return next(new Error("Candidate not found!!!"));
+    }
+    sendMail("candidate", "deleteProfile", { ...candidate });
+    res.status(200).send({ success: true, data: candidate });
   }
-  sendMail("candidate","deleteProfile",{...candidate});
-  res.status(200).send({success:true,data:candidate})
-})
-
-
-
+);
 
 export const getDetails = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
 
   const user = req.user as IEmployer;
-  if(!req.user){
-    return next(new ErrorHandler("user not authenticated",401))
+  if (!req.user) {
+    return next(new ErrorHandler("user not authenticated", 401));
   }
-  if (user && user.role!=="admin" && user.subscription?.viewProfileLimit === 0) {
+  if (
+    user &&
+    user.role !== "admin" &&
+    user.subscription?.viewProfileLimit === 0
+  ) {
     return next(
       new ErrorHandler("Upgrade your Plan to view more profile", 400)
     );
   }
 
   const candidate = await Candidate.findById({ _id: id });
-  if (candidate && user.role !=="admin") {
+  if (candidate && user.role !== "admin") {
     candidate.profileViews.push({
       view_count: 1,
       view_timestamp: Date.now().toString(),
     });
     await candidate.save();
   }
-  if(user.role!=="admin"){
-
+  if (user.role !== "admin") {
     user.subscription.viewProfileLimit--;
     await user.save();
   }

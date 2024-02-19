@@ -106,6 +106,7 @@ export const getCompanies = catchAsyncError(async (req, res, next) => {
     let cityNames: string | string[] = location as string;
     cityNames = cityNames.split(",");
     queryObject.location = { $elemMatch: { city: { $in: cityNames } } };
+    // console.log(cityNames)
   }
   queryObject.isDeleted = false;
 
