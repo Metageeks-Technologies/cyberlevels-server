@@ -23,8 +23,8 @@ const candidateSchema = new mongoose.Schema({
     gender: {
         type: String,
     },
-    experienceInYears:{
-        type:Number,
+    experienceInYears: {
+        type: Number,
     },
     experienceInShort: {
         type: String,
@@ -68,7 +68,7 @@ const candidateSchema = new mongoose.Schema({
             startYear: String,
             endYear: String,
             description: String,
-            present:Boolean,
+            present: Boolean,
         }
     ],
     experience: [
@@ -78,7 +78,7 @@ const candidateSchema = new mongoose.Schema({
             startYear: String,
             endYear: String,
             description: String,
-            present:Boolean,
+            present: Boolean,
         }
     ],
     certificate: {
@@ -92,9 +92,9 @@ const candidateSchema = new mongoose.Schema({
 
     }
     ,
-    selfDeclaration:{
-        gender:String,
-        race:String,
+    selfDeclaration: {
+        gender: String,
+        race: String,
     },
     socialSites: {
         linkedIn: {
@@ -140,7 +140,7 @@ const candidateSchema = new mongoose.Schema({
             symbol: String
         },
         min: Number,
-        max:Number,
+        max: Number,
         period: {
             type: String,
             enum: ["monthly", "yearly", "weekly", "hourly"]
@@ -194,9 +194,12 @@ const candidateSchema = new mongoose.Schema({
         type: Date,
         default: Date.now()
     },
-    provider:{
-        type:String,
+    provider: {
+        type: String,
         default: "Admin"
+    },
+    paymentDate: {
+        type: Date,
     }
 },
     { timestamps: true }

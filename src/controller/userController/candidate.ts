@@ -19,6 +19,8 @@ import { calculateMatchScore } from "../../utils/helper";
 import Company from "../../model/Company";
 import { sendMail } from "../../utils/nodemailer";
 import CandidateSub from "../../model/subscription/CandidateSub";
+import EmployerSub from "../../model/subscription/EmployerSub";
+import { ICandidateSub, IEmployerSub } from "../../types/subscription";
 dotenv.config();
 
 const serverGeneratedState = "12345678";
@@ -83,7 +85,20 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
   if (role === "employer") {
     user = await Employer.findOne({ email: response.email });
     if (!user) {
+      console.log("creating the employer")
+
       user = await Employer.create(userObj);
+      const freeSubscription = await EmployerSub.findOne({ subscriptionType: "essential" });
+      if (freeSubscription) {
+        const userSubscription = {
+          ...(freeSubscription.toObject()),
+        };
+        // const userSubscription = freeSubscription?.toObject();
+        console.log(userSubscription, "from the employer");
+        user.subscription = userSubscription as IEmployerSub;
+        await user.save();
+      }
+      // console.log(user, "from the employer")
       sendMail("employer", "signup", userObj);
     } else {
       if (user.provider !== "Google") {
@@ -104,18 +119,17 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
 
     // console.log(user)
     if (!user) {
-      const freeSubscription = await (
-        await CandidateSub
-      ).findOne({ subscriptionType: "free" });
-      const userSubscription = {
-        ...freeSubscription,
-      };
-      const userWithSubscription = {
-        ...userObj,
-        subscription: userSubscription,
-      };
-      console.log(userWithSubscription);
-      user = await Candidate.create(userWithSubscription);
+
+      user = await Candidate.create(userObj);
+      const freeSubscription = await CandidateSub.findOne({ subscriptionType: "foundational" });
+      if (freeSubscription) {
+        const userSubscription = {
+          ...(freeSubscription.toObject()),
+        };
+
+        user.subscription = userSubscription as ICandidateSub;
+        await user.save();
+      }
 
       // console.log(user);
       sendMail("candidate", "signup", userObj);
@@ -133,7 +147,7 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
     }
   }
   // console.log(user)
-  console.log(user);
+  // console.log(user);
   await sendToken(user, 201, res, accessToken);
 });
 
@@ -188,7 +202,18 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
   if (role == "employer") {
     user = await Employer.findOne({ email: response.email });
     if (!user) {
+
       user = await Employer.create(Obj);
+      const freeSubscription = await EmployerSub.findOne({ subscriptionType: "essential" });
+      if (freeSubscription) {
+        const userSubscription = {
+          ...(freeSubscription.toObject()),
+        };
+        // const userSubscription = freeSubscription?.toObject();
+        console.log(userSubscription, "from the employer");
+        user.subscription = userSubscription as IEmployerSub;
+        await user.save();
+      }
       sendMail("employer", "signup", Obj);
     } else {
       if (user.provider !== "LinkedIn") {
@@ -206,21 +231,16 @@ export const getUserLinkedIn = catchAsyncError(async (req, res, next) => {
   if (role == "candidate") {
     user = await Candidate.findOne({ email: response.email });
     if (!user) {
-      console.log("user not found");
-      const freeSubscription = await (
-        await CandidateSub
-      ).findOne({ subscriptionType: "free" });
-      console.log("freeSubscription not found");
-      const userSubscription = {
-        ...freeSubscription,
-      };
-      console.log("userSubscription not found");
-      const userWithSubscription = {
-        ...Obj,
-        subscription: userSubscription,
-      };
-      console.log("user", userWithSubscription);
-      user = await Candidate.create(userWithSubscription);
+      user = await Candidate.create(Obj);
+      const freeSubscription = await CandidateSub.findOne({ subscriptionType: "foundational" });
+      if (freeSubscription) {
+        const userSubscription = {
+          ...(freeSubscription.toObject()),
+        };
+
+        user.subscription = userSubscription as ICandidateSub;
+        await user.save();
+      }
       sendMail("candidate", "signup", Obj);
     } else {
       if (user.provider !== "LinkedIn") {
@@ -428,11 +448,11 @@ export const getDetails = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
 
   const user = req.user as IEmployer;
-  if (user && user.subscription.viewProfileLimit === 0) {
-    return next(
-      new ErrorHandler("Upgrade your Plan to view more profile", 400)
-    );
-  }
+  // if (user && user.subscription.viewProfileLimit === 0) {
+  //   return next(
+  //     new ErrorHandler("Upgrade your Plan to view more profile", 400)
+  //   );
+  // }
 
   const candidate = await Candidate.findById({ _id: id });
   if (candidate) {
@@ -442,7 +462,7 @@ export const getDetails = catchAsyncError(async (req, res, next) => {
     });
     await candidate.save();
   }
-  user.subscription.viewProfileLimit--;
+  // user.subscription.viewProfileLimit--;
   await user.save();
 
   res.status(200).json({

@@ -44,6 +44,9 @@ const paymentSchema: Schema = new mongoose.Schema({
     currency: {
         type: String,
     },
+    duration: {
+        type: String,
+    },
     receipt: {
         type: String,
     },

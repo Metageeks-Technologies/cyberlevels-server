@@ -2,6 +2,7 @@ import mongoose, { Document } from "mongoose";
 import type { ICompany } from "./company";
 import type { IJobPost } from "./jobPost";
 import { ICandidateSub } from "./subscription";
+import { IEmployerSub } from "./subscription";
 
 interface ProfileView {
 
@@ -24,8 +25,8 @@ interface IEducation {
     startYear: string;
     endYear: string;
     description: string;
-    _id:string
-    present:boolean;
+    _id: string
+    present: boolean;
 }
 interface IExperience {
     title: string;
@@ -33,7 +34,7 @@ interface IExperience {
     startYear: string;
     endYear: string;
     description: string;
-    present:boolean;
+    present: boolean;
 }
 interface INotification {
     sender: string,
@@ -59,16 +60,7 @@ interface FSocial {
     facebook: string,
     website: string,
 }
-interface ISubscription {
-    plan: 'starter' | 'gold' | 'diamond';
-    jobApplicationLimit: number;
-    feedbackLimit: number;
-}
-interface ESubscription {
-    plan: 'starter' | 'gold' | 'diamond';
-    requestLimit: number;
-    viewProfileLimit: number;
-}
+
 
 export interface ICandidate extends Document {
     email: string;
@@ -86,7 +78,7 @@ export interface ICandidate extends Document {
     role: string,
     location: ILocation,
     isProfileCompleted: boolean,
-    provider:string,
+    provider: string,
     expectedSalary: {
         currency: {
             abbreviation: string;
@@ -94,16 +86,16 @@ export interface ICandidate extends Document {
             symbol: string;
         },
         min: number,
-        max:number,
+        max: number,
         period: string
     },
     selfDeclaration: {
-        gender:string,
-        race:string
+        gender: string,
+        race: string
     },
-    preferredLocations:string[],
-    preferredLanguages:string[],
-    experienceInYears:number,
+    preferredLocations: string[],
+    preferredLanguages: string[],
+    experienceInYears: number,
     experience: IExperience[],
     education: IEducation[],
     socialSites: ISocial;
@@ -112,6 +104,7 @@ export interface ICandidate extends Document {
     bio: string,
     lastLogin: Date,
     isSaved?: boolean,
+    paymentDate?: Date,
     savedJobs: string[] | IJobPost[];
     savedCompanies: string[] | ICompany[];
     notifications: INotification[];
@@ -130,7 +123,7 @@ export interface IEmployer extends Document {
     lastName: string;
     avatar: string;
     phoneNumber: string,
-    provider:string,
+    provider: string,
     company: {
         name: string,
         companyId: mongoose.Types.ObjectId,
@@ -147,10 +140,11 @@ export interface IEmployer extends Document {
     role: string,
     bio: string,
     lastLogin: Date,
-    subscription: ESubscription,
+    subscription: IEmployerSub,
     signInProvider?: "linkedIn" | "jwt"
     savedCandidates: string[],
-    _id:string,
+    _id: string,
+    paymentDate?: Date,
     createJWT(accessToken?: string): string;
     comparePassword(givenPassword: string): Promise<boolean>;
 

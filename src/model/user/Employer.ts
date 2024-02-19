@@ -106,19 +106,11 @@ const employerSchema = new mongoose.Schema({
         enum: ["linkedIn", "jwt"]
     },
     subscription: {
-        plan: {
-            type: String,
-            enum: ['starter', 'gold', 'diamond'],
-            default: 'starter',
-        },
-        requestLimit: {
-            type: Number,
-            default: 10,
-        },
-        viewProfileLimit: {
-            type: Number,
-            default: 10
-        }
+        type: mongoose.Schema.Types.Mixed,
+        default: {}
+    },
+    paymentDate: {
+        type: Date,
     },
     savedCandidates: [{ type: mongoose.Types.ObjectId, ref: 'Candidate' }]
 

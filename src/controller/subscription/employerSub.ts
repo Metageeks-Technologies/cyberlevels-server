@@ -1,6 +1,6 @@
 import catchAsyncError from "../../middleware/catchAsyncError";
-import initializeDynamicModel from "../../model/subscription/EmployerSub";
 import ErrorHandler from "../../utils/errorHandler";
+import EmployerSub from "../../model/subscription/EmployerSub";
 
 export const createSubscription = catchAsyncError(async (req, res, next) => {
 
@@ -8,7 +8,6 @@ export const createSubscription = catchAsyncError(async (req, res, next) => {
         return next(new ErrorHandler("body not found", 400));
     }
 
-    const EmployerSub = await initializeDynamicModel
     if (!EmployerSub) {
         return next(new ErrorHandler("Something went wrong while creating Subscription, try latter.", 500));
     }
@@ -24,7 +23,7 @@ export const createSubscription = catchAsyncError(async (req, res, next) => {
 
 export const getEmploySub = catchAsyncError(async (req, res, next) => {
 
-    const EmployerSub = await initializeDynamicModel
+
     if (!EmployerSub) {
         return next(new ErrorHandler("Something went wrong while creating Subscription, try latter.", 500));
     }
@@ -38,10 +37,10 @@ export const getEmploySub = catchAsyncError(async (req, res, next) => {
 
 })
 
-export const updateSubscription = catchAsyncError(async (req,res) => {
-    const planId:string = req.body._id;
+export const updateSubscription = catchAsyncError(async (req, res) => {
+    const planId: string = req.body._id;
     const updateDoc = req.body;
-    const EmployerSub = await initializeDynamicModel
-    const plan = await EmployerSub.findByIdAndUpdate(planId,updateDoc); 
-    res.status(200).json({success: true,data:plan});
+    // const EmployerSub = await initializeDynamicModel
+    const plan = await EmployerSub.findByIdAndUpdate(planId, updateDoc);
+    res.status(200).json({ success: true, data: plan });
 })

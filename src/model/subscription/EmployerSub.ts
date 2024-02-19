@@ -1,31 +1,66 @@
-import mongoose, { Document, Schema, SchemaDefinition } from 'mongoose';
-import TemplateModel from '../Template';
+import mongoose from 'mongoose';
 import type { IEmployerSub } from '../../types/subscription';
-import type { ISchemaTemplate } from '../Template';
 
-const getTemplateData = async (): Promise<ISchemaTemplate | null> => {
-    try {
-        return await TemplateModel.findOne({ name: 'EmployerSubModel' });
+const employerSubSchema = new mongoose.Schema({
+    subscriptionType: {
+        type: String,
+        required: true
+    },
+    subscriptionFor: {
+        type: String,
+        required: true
+    },
 
-    } catch (error) {
-        console.error('Error retrieving template:', error);
-        return null;
+    price: [
+        {
+            duration: {
+                type: String,
+                required: true
+            },
+            amount: {
+                type: Number,
+                required: true
+            },
+            currency: {
+                abbreviation: {
+                    type: String,
+                    required: true
+                },
+                name: {
+                    type: String,
+                    required: true
+                },
+                symbol: {
+                    type: String,
+                    required: true
+                }
+            }
+        }
+    ],
+
+    offering: {
+        isCandidateSearchLimited: {
+            type: Boolean,
+            required: true
+        },
+        jobPostLimit: {
+            type: Number,
+            required: true
+        },
+        aiTokenLimit: {
+            type: Number,
+            required: true
+        },
+        isChatApplicable: {
+            type: Boolean,
+            required: true
+        },
+        isRequestApplicable: {
+            type: Boolean,
+            required: true
+        }
     }
-};
+});
 
-// Async function to initialize dynamic schema and model
-const initializeDynamicModel = async () => {
-    const templateData = await getTemplateData();
-
-    if (!templateData) {
-        throw new Error('Employer subscription Schema not found');
-    }
-
-    const employerSub = new Schema<IEmployerSub>(templateData.properties);
-
-    return mongoose.model<IEmployerSub>('EmployerSub', employerSub);
-};
-
-
-// Export a Promise that resolves to the DynamicModel
-export default initializeDynamicModel();
+const EmployerSub = mongoose.model<IEmployerSub>('EmployerSub', employerSubSchema);
+export default EmployerSub;
