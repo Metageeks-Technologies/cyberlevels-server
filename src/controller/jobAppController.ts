@@ -30,7 +30,7 @@ export const createJobApp = catchAsyncError(async (req, res, next) => {
   if (
     user &&
     user.subscription &&
-    user.subscription.subscriptionType === "foundational" 
+    user.subscription.subscriptionType === "foundational"
   ) {
     const lastUpdate = await hasOneMonthOrGreaterGap(
       user.lastJobAppLimitUpdated
@@ -38,12 +38,14 @@ export const createJobApp = catchAsyncError(async (req, res, next) => {
     if (lastUpdate === true) {
       user.lastJobAppLimitUpdated = new Date();
       user.subscription.offering.jobApplicationLimit = 5;
-    } else if(lastUpdate === false && user.subscription.offering.jobApplicationLimit === 0) {
+    } else if (
+      lastUpdate === false &&
+      user.subscription.offering.jobApplicationLimit === 0
+    ) {
       return next(
         new ErrorHandler("You have exhausted your monthly job apply limit", 401)
       );
-    }else{
-
+    } else {
     }
   }
   const score = Math.floor(
@@ -70,9 +72,11 @@ export const createJobApp = catchAsyncError(async (req, res, next) => {
   }
   try {
     if (user) {
-      console.log("before update",user);
+      console.log("before update", user);
+      user.markModified("subscription");
+
       const u = await user.save();
-      console.log("Updated user",u);
+      console.log("Updated user", u);
     }
     // sendMail("candidate","jobApplication",{...job,...user});
   } catch (error) {
