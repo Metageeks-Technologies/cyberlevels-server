@@ -3,7 +3,7 @@ import ErrorHandler from "../utils/errorHandler";
 import JobApp from "../model/JobApp";
 import Candidate from "../model/user/Candidate";
 import { ICandidate } from "../types/user";
-import { calculateMatchScore } from "../utils/helper";
+import { calculateMatchScore, hasOneMonthOrGreaterGap } from "../utils/helper";
 import JobPost from "../model/JobPost";
 import { sendMail } from "../utils/nodemailer";
 
@@ -27,7 +27,27 @@ export const createJobApp = catchAsyncError(async (req, res, next) => {
   //     )
   //   );
   // }
-
+  if (
+    user &&
+    user.subscription &&
+    user.subscription.subscriptionType === "foundational"
+  ) {
+    const lastUpdate = await hasOneMonthOrGreaterGap(
+      user.lastJobAppLimitUpdated
+    );
+    if (lastUpdate === true) {
+      user.lastJobAppLimitUpdated = new Date();
+      user.subscription.offering.jobApplicationLimit = 5;
+    } else if (
+      lastUpdate === false &&
+      user.subscription.offering.jobApplicationLimit === 0
+    ) {
+      return next(
+        new ErrorHandler("You have exhausted your monthly job apply limit", 401)
+      );
+    } else {
+    }
+  }
   const score = Math.floor(
     calculateMatchScore(
       user?.skills as string[],
@@ -36,26 +56,33 @@ export const createJobApp = catchAsyncError(async (req, res, next) => {
     )
   );
   req.body.profileMatchPercent = score;
+
   const jobApp = await JobApp.create(req.body);
   if (
     user &&
-    "applyJobLimit" in user.subscription.offering &&
-    typeof user.subscription.offering.applyJobLimit === "number"
+    "jobApplicationLimit" in user.subscription.offering &&
+    typeof user.subscription.offering.jobApplicationLimit === "number"
   ) {
     console.log(
       "from job application",
-      user.subscription.offering.applyJobLimit
+      user.subscription.offering.jobApplicationLimit
     );
-    user.subscription.offering.applyJobLimit =
-      user.subscription.offering.applyJobLimit - 1;
-    try {
-      await user.save();
-      // sendMail("candidate","jobApplication",{...job,...user});
-    } catch (error) {
-      console.error("Error saving user:", error);
-    }
+    const lastLimit = user.subscription.offering.jobApplicationLimit;
+    user.subscription.offering.jobApplicationLimit = lastLimit - 1;
   }
-  job?.candidates.push(requestingUser?._id)
+  try {
+    if (user) {
+      console.log("before update", user);
+      user.markModified("subscription");
+
+      const u = await user.save();
+      console.log("Updated user", u);
+    }
+    // sendMail("candidate","jobApplication",{...job,...user});
+  } catch (error) {
+    console.error("Error saving user:", error);
+  }
+  job?.candidates.push(requestingUser?._id);
   await job?.save();
   res.status(200).json({
     jobApp,
@@ -138,9 +165,15 @@ export const getAllCandidateAppByJob = catchAsyncError(
     const matchingCandidates = await Candidate.find(candidateFilters);
 
     // Extract the _id values of matching candidates
-    const matchingCandidateIds = matchingCandidates.map(candidate => candidate._id);
+    const matchingCandidateIds = matchingCandidates.map(
+      (candidate) => candidate._id
+    );
 
-    const allJobApp = await JobApp.find({ jobPost, candidate: { $in: matchingCandidateIds }, ...jobAppFilter })
+    const allJobApp = await JobApp.find({
+      jobPost,
+      candidate: { $in: matchingCandidateIds },
+      ...jobAppFilter,
+    })
       .sort({ createdAt: -1 })
       .populate("candidate");
 
