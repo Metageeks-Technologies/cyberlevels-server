@@ -20,6 +20,8 @@ import path from 'path';
 
 import { getUrlForDownloadPdf } from "../utils/uploadToS3";
 import { NextFunction } from "express";
+import Candidate from "../model/user/Candidate";
+import { ICandidate, IEmployer } from "../types/user";
 dotenv.config();
 
 
@@ -168,6 +170,16 @@ export const newQueryToPc = catchAsyncError(async (req, res, next) => {
 export const chatWithAiUsingRest = catchAsyncError(async (req, res, next) => {
 
     const { query } = req.query;
+    if (!req.user) {
+        return next(new ErrorHandler("user not found", 404))
+    }
+
+    const employer = req.user as IEmployer;
+    if (employer.subscription.offering.aiTokenLimit <= 0) {
+        return next(new ErrorHandler("You have exhausted your token limit", 400))
+    }
+
+
     if (!query) next(new ErrorHandler("Query not found", 404))
 
     const messages = [
@@ -186,6 +198,63 @@ export const chatWithAiUsingRest = catchAsyncError(async (req, res, next) => {
             "api-key": `${azureApiKey}`
         }
     })
+    if (!data) {
+        return next(new ErrorHandler(" error while querying", 500))
+    }
+
+
+    const tokenUsage = data.usage.total_tokens;
+
+    employer.subscription.offering.aiTokenLimit -= tokenUsage;
+    employer.markModified('subscription');
+    // console.log(employer)
+    await employer.save();
+
+    // console.log(data);
+
+    res.send({ result: data });
+}
+)
+export const chatWithAiUsingRestForCan = catchAsyncError(async (req, res, next) => {
+
+    const { query } = req.query;
+    const candidate = req.user as ICandidate;
+    if (!req.user) {
+        return next(new ErrorHandler("user not found", 404))
+    }
+    if (candidate.subscription.offering.aiTokenLimit <= 0) {
+        return next(new ErrorHandler("You have exhausted your token limit", 400))
+    }
+    if (!query) next(new ErrorHandler("Query not found", 404))
+
+    const messages = [
+        { role: "system", content: "You are a helpful assistant." },
+        { role: "user", content: "Does Azure OpenAI support customer managed keys?" },
+        { role: "assistant", content: "Yes, customer managed keys are supported by Azure OpenAI" },
+        {
+            role: "user",
+            content: query
+        },
+    ];
+
+    const { data } = await axios.post(endpoint, { messages }, {
+        headers: {
+            "Content-Type": "application/json",
+            "api-key": `${azureApiKey}`
+        }
+    })
+    if (!data) {
+        return next(new ErrorHandler(" error while querying", 500))
+    }
+
+    const tokenUsage = data.usage.total_tokens;
+
+    candidate.subscription.offering.aiTokenLimit -= tokenUsage;
+    candidate.markModified('subscription');
+    // console.log(candidate)
+    await candidate.save();
+
+    // console.log(data);
 
     res.send({ result: data });
 }
@@ -608,10 +677,30 @@ export const getSuggestion = catchAsyncError(async (req, res, next) => {
     const fileName = resume[resume.length - 1];
     const filePath = path.join(__dirname, "../..", 'uploads', fileName);
 
+    const candidate = await Candidate.findById(candidateId);
+    if (!candidate) {
+        return next(new ErrorHandler("candidate not found", 404))
+    }
+
+    if (candidate.subscription.offering.aiTokenLimit <= 0) {
+        return next(new ErrorHandler("Token limit exceeded", 400))
+    }
+
     await downloadResumeToServer(s3Key, filePath);
     await uploadToPinecone(candidateId, filePath, next);
 
     const response = await queryToPc(candidateId, question, next);
+    if (!response) {
+        return next(new ErrorHandler("response not found", 500))
+    }
+    const tokenUsage = response.tokenUsage.totalTokenCount;
+
+    candidate.subscription.offering.aiTokenLimit -= tokenUsage;
+    candidate.markModified('subscription');
+    console.log(candidate)
+    await candidate.save();
+
+
 
     // reset
     await deleteFromPc(candidateId, next);
