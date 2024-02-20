@@ -112,6 +112,7 @@ export interface ICandidate extends Document {
     subscription: ICandidateSub;
     createJWT(accessToken?: string): string;
     comparePassword(givenPassword: string): Promise<boolean>;
+    lastJobAppLimitUpdated:Date,
 }
 
 

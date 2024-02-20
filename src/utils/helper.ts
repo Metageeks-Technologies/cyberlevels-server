@@ -99,3 +99,16 @@ export const getCandidatesWhoSavedCompany = async (companyId: string) => {
 
     return { candidates: company?.savedByCandidates, companyName: company?.name };
 }
+
+export const hasOneMonthOrGreaterGap = async(candidateJoinDate:Date) => {
+    const currentDate = new Date();
+    const joinDate = new Date(candidateJoinDate);
+  
+    // Calculate the difference in years, months, and days
+    const yearsDiff = currentDate.getFullYear() - joinDate.getFullYear();
+    const monthsDiff = currentDate.getMonth() - joinDate.getMonth();
+    const daysDiff = currentDate.getDate() - joinDate.getDate();
+  
+    // Check if the difference is greater than or equal to 1 month
+    return yearsDiff * 12 + monthsDiff + (daysDiff >= 0 ? 0 : -1) >= 1;
+  }

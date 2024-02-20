@@ -204,7 +204,12 @@ const candidateSchema = new mongoose.Schema({
     },
     paymentDate: {
         type: Date,
+    },
+    lastJobAppLimitUpdated:{
+        type:Date,
+        default: new Date(),
     }
+
 },
     { timestamps: true }
 );
