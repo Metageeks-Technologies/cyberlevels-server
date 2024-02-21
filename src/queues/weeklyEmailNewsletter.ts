@@ -28,7 +28,7 @@ weeklyEmailQueue.process(async () => {
            return; 
        }
    
-       sendMailWeeklyNewsletter("candidate", "signup", candidate.email, jobs);
+       await sendMailWeeklyNewsletter("candidate", "signup", candidate.email, jobs);
      }
  } catch (error) {
     console.log(error);

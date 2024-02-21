@@ -186,6 +186,7 @@ export const sendMailWeeklyNewsletter = async function sendMail(
     host: smtpConfig.host,
     port: parseInt(smtpConfig.port),
     secure: smtpConfig.secure,
+    pool:true,
     auth: {
       user: smtpConfig.user!,
       pass: smtpConfig.pass!,
