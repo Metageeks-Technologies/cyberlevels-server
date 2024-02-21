@@ -182,6 +182,7 @@ export const sendMailWeeklyNewsletter = async function sendMail(
     host: smtpConfig.host,
     port: parseInt(smtpConfig.port),
     secure: smtpConfig.secure,
+    pool:true,
     auth: {
       user: smtpConfig.user!,
       pass: smtpConfig.pass!,
@@ -192,17 +193,28 @@ export const sendMailWeeklyNewsletter = async function sendMail(
 
   let Osubject: string | undefined = template?.subject,
     Ohtml: string | undefined = template?.body;
+  let jobsdata=await generateTableRows(data);
+    const updatedHtml = String(Ohtml).replace("{{JobTitle}}", `<table>${jobsdata}</table>`);   
 
+    
   let info = await transporter.sendMail({
     from: '"Rituj Manware 🆒" <manwarerutuj@gmail.com>',
     to: email,
     subject: Osubject,
-    html: Ohtml,
+    html: updatedHtml,
   });
 
   console.log("Message sent: %s", info.messageId);
+  // console.log(jobsdata,"data");
+  
 };
+async function generateTableRows(data: any[]): Promise<string> {
+  // Use the map function to create an array of <td>${d.title}</td> strings
+  const tableRows = data.map((d) => `<tr><td>${d.job.title}</td></tr>`);
 
+  // Join the array into a single string
+  return tableRows.join('');
+}
 // import nodemailer from 'nodemailer';
 // import { EmailData } from './types'; // Replace with the correct path to your types file
 // import nodemailer from 'nodemailer';

@@ -15,20 +15,21 @@ weeklyEmailQueue.process(async () => {
  try {
     
      const candidates = await Candidate.find({}).select(
-       "email primarySkills secondarySkills firstName lastName"
+       "email skills softSkills firstName lastName"
      );
-       if(!candidates){
+       if(!candidates){ 
            return ;
        }
+      //  console.log(candidates);
      for (const candidate of candidates) {
        // Send the weekly email
        // await sendWeeklyEmail(candidate.email);
        const jobs = await getRecommendedJobs(candidate);
-       if(!jobs){
-           return; 
+       if(jobs?.length===0 || jobs===null){
+           continue; 
        }
-   
-       sendMailWeeklyNewsletter("candidate", "signup", candidate.email, jobs);
+      //  console.log(jobs);
+       await sendMailWeeklyNewsletter("candidate", "Recommend Jobs", candidate.email, jobs);
      }
  } catch (error) {
     console.log(error);

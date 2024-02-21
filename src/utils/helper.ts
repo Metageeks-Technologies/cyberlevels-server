@@ -62,6 +62,7 @@ export function calculateMatchScore(userSkills: string[], jobPrimarySkills: stri
 
     // Calculate score for primary skills
     const primaryScore = calculateScoreForSkills(userSkills, jobPrimarySkills);
+    // console.log(primaryScore);
     const totalPrimaryPer = (primaryScore / jobPrimarySkills.length) * 100;
 
     // Calculate score for secondary skills
@@ -81,7 +82,7 @@ export function calculateMatchScore(userSkills: string[], jobPrimarySkills: stri
 
 export function calculateScoreForSkills(userSkills: string[], jobSkills: string[]) {
     let score = 0;
-
+    // console.log(jobSkills);
     jobSkills.forEach((jobSkill) => {
         const userSkillIndex = userSkills.indexOf(jobSkill);
 
