@@ -152,15 +152,19 @@ export const sendMailForFavAlert = async function sendMail(
       Job Description: ${data.jobDescription}
     `;
   }
+  try{
+    let info = await transporter.sendMail({
+      from: '"Rituj Manware 🆒" <manwarerutuj@gmail.com>',
+      to: user,
+      subject: subject,
+      html: html,
+    });
 
-  let info = await transporter.sendMail({
-    from: '"Rituj Manware 🆒" <manwarerutuj@gmail.com>',
-    to: user,
-    subject: subject,
-    html: html,
-  });
+    console.log("Message sent: %s", info.messageId);
 
-  console.log("Message sent: %s", info.messageId);
+  }catch(err){
+    console.log(err);
+  }
 };
 
 export const sendMailWeeklyNewsletter = async function sendMail(
@@ -193,6 +197,9 @@ export const sendMailWeeklyNewsletter = async function sendMail(
   let Osubject: string | undefined = template?.subject,
     Ohtml: string | undefined = template?.body;
 
+  
+try{
+
   let info = await transporter.sendMail({
     from: '"Rituj Manware 🆒" <manwarerutuj@gmail.com>',
     to: email,
@@ -201,6 +208,9 @@ export const sendMailWeeklyNewsletter = async function sendMail(
   });
 
   console.log("Message sent: %s", info.messageId);
+}catch(error){
+  console.log(error);
+}
 };
 
 // import nodemailer from 'nodemailer';
