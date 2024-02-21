@@ -111,7 +111,8 @@ const jobPostSchema: Schema = new Schema({
     jobCode: {
         type: String,
         unique: true,
-    }
+    },
+    
 
 
 },

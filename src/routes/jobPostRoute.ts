@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-jobPostRouter.route("/add").post(addJobPost).patch(updateJobPost);
+jobPostRouter.route("/add").post(isAuthenticatedEmployer, isAuthenticatedAdmin, addJobPost).patch(updateJobPost);
 jobPostRouter.route("/getalljobposts").get(getAllJobPost);
 jobPostRouter.route("/get").get(getJobPosts);
 jobPostRouter.route("/populate").post(populateJobPost);

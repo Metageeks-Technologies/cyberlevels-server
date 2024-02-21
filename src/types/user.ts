@@ -148,6 +148,7 @@ export interface IEmployer extends Document {
     paymentDate?: Date,
     createJWT(accessToken?: string): string;
     comparePassword(givenPassword: string): Promise<boolean>;
+    lastJobPostLimitUpdated:Date
 
 }
 

@@ -25,7 +25,7 @@ weeklyEmailQueue.process(async () => {
        // await sendWeeklyEmail(candidate.email);
        const jobs = await getRecommendedJobs(candidate);
        if(!jobs){
-           return; 
+           continue; 
        }
    
        await sendMailWeeklyNewsletter("candidate", "signup", candidate.email, jobs);

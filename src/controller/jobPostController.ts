@@ -4,13 +4,18 @@ import JobPost from "../model/JobPost";
 import fs from "fs";
 import Company from "../model/Company";
 import Candidate from "../model/user/Candidate";
-import { calculateMatchScore, calculateScoreForSkills } from "../utils/helper";
+import {
+  calculateMatchScore,
+  calculateScoreForSkills,
+  hasOneMonthOrGreaterGap,
+} from "../utils/helper";
 import { ICandidate, IEmployer } from "../types/user";
 import { IJobPost } from "../types/jobPost";
 import mongoose from "mongoose";
 const { ObjectId } = require("mongodb");
 const uuid = require("uuid");
 import favCompanyAlertQueue from "../queues/favCompanyAlert";
+import Employer from "../model/user/Employer";
 
 export const addJobPost = catchAsyncError(async (req, res, next) => {
   if (!req.body) {
@@ -18,6 +23,54 @@ export const addJobPost = catchAsyncError(async (req, res, next) => {
   }
   const { companyId, employerId } = req.body;
   // console.log(req.body);
+  // const employer = Employer.findById(employerId);
+  const requestingEmployer = req?.user as IEmployer;
+  const employer = await Employer.findById(requestingEmployer?._id || "");
+  if (
+    employer &&
+    employer.subscription &&
+    employer.subscription.subscriptionType === "essential"
+  ) {
+    const lastUpdate = await hasOneMonthOrGreaterGap(
+      employer.lastJobPostLimitUpdated
+    );
+    if (lastUpdate === true) {
+      employer.lastJobPostLimitUpdated = new Date();
+      employer.subscription.offering.jobPostLimit = 2;
+    } else if (
+      lastUpdate === false &&
+      employer.subscription.offering.jobPostLimit === 0
+    ) {
+      return next(
+        new ErrorHandler("You have exhausted your monthly job post limit", 401)
+      );
+    } else {
+    }
+  }
+
+  if (
+    employer &&
+    employer.subscription &&
+    employer.subscription.subscriptionType === "professional"
+  ) {
+    const lastUpdate = await hasOneMonthOrGreaterGap(
+      employer.lastJobPostLimitUpdated
+    );
+    if (lastUpdate === true) {
+      employer.lastJobPostLimitUpdated = new Date();
+      employer.subscription.offering.jobPostLimit = 10;
+    } else if (
+      lastUpdate === false &&
+      employer.subscription.offering.jobPostLimit === 0
+    ) {
+      return next(
+        new ErrorHandler("You have exhausted your monthly job post limit", 401)
+      );
+    } else {
+    }
+  }
+
+
   const generatedUuid = uuid.v4();
   const formattedUuid = `CL-${generatedUuid.substring(
     0,
@@ -26,6 +79,29 @@ export const addJobPost = catchAsyncError(async (req, res, next) => {
   const jobPostObj = { ...req.body, jobCode: formattedUuid };
 
   const job = await JobPost.create(jobPostObj);
+  if(employer &&
+    "jobPostLimit" in employer.subscription.offering &&
+    typeof employer.subscription.offering.jobPostLimit === "number" ){
+      console.log(
+        "from job post controller",
+        employer.subscription.offering.jobPostLimit
+      );
+      const lastLimit = employer.subscription.offering.jobPostLimit;
+      employer.subscription.offering.jobPostLimit = lastLimit - 1;
+    }
+    try {
+      if (employer) {
+        console.log("before update", employer);
+        employer.markModified("subscription");
+  
+        const u = await employer.save();
+        console.log("Updated user", u);
+      }
+      // sendMail("candidate","jobApplication",{...job,...user});
+    } catch (error) {
+      console.error("Error saving Employer:", error);
+    }
+
 
   if (!job) {
     return next(
@@ -63,10 +139,10 @@ export const updateJobPost = catchAsyncError(async (req, res, next) => {
     success: true,
   });
 });
-export const getDetailsForEmployer = catchAsyncError(async(req,res,next) => {
+export const getDetailsForEmployer = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
- 
-  if (!req.user ) {
+
+  if (!req.user) {
     return next(new ErrorHandler("unauthenticated user", 404));
   }
   // console.log("id", id);
@@ -118,7 +194,7 @@ export const getDetailsForEmployer = catchAsyncError(async(req,res,next) => {
     job: jobWithScore,
     success: true,
   });
-})
+});
 export const getDetails = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
   // console.log("id", id);
@@ -370,8 +446,8 @@ export const populateJobPost = catchAsyncError(async (req, res, next) => {
 
 export const getRelatedJobs = catchAsyncError(async (req, res, next) => {
   const { jobId } = req.query;
-  if(!req.user){
-    return next(new ErrorHandler("User not authenticated",401));
+  if (!req.user) {
+    return next(new ErrorHandler("User not authenticated", 401));
   }
   if (!jobId) {
     return next(new ErrorHandler("jobId  not Found", 400));
@@ -421,12 +497,12 @@ export const getRelatedJobs = catchAsyncError(async (req, res, next) => {
 });
 
 export const getAllJobPost = catchAsyncError(async (req, res) => {
-  const { page, adminId,companyId, status, jobCode, title } = req.query;
+  const { page, adminId, companyId, status, jobCode, title } = req.query;
   let p = Number(page) || 1;
   let limit = page ? 8 : 7;
   let skip = (p - 1) * limit;
-  const queryObject:any = {};
-  if(adminId){
+  const queryObject: any = {};
+  if (adminId) {
     queryObject.employerId = adminId;
   }
   if (title) {
@@ -448,9 +524,7 @@ export const getAllJobPost = catchAsyncError(async (req, res) => {
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit);
-  const totalDocs = await JobPost.countDocuments(
-    queryObject
-  );
+  const totalDocs = await JobPost.countDocuments(queryObject);
   const totalPages = totalDocs / limit;
   // console.log(totalPages);
 
