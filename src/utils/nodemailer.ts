@@ -1,10 +1,15 @@
-
 // your nodemailer setup file
-import nodemailer from 'nodemailer';
-import { getEmailTemplate, getSmtpConfigFromDB } from '../services/smtpConfigService';
+import nodemailer from "nodemailer";
+import {
+  getEmailTemplate,
+  getSmtpConfigFromDB,
+} from "../services/smtpConfigService";
 
-
-export const sendMail = async function sendMail(user: string, useFor: string, data: any): Promise<void> {
+export const sendMail = async function sendMail(
+  user: string,
+  useFor: string,
+  data: any
+): Promise<void> {
   try {
     const smtpConfig = await getSmtpConfigFromDB();
     // console.log(smtpConfig);
@@ -21,11 +26,18 @@ export const sendMail = async function sendMail(user: string, useFor: string, da
 
       const template = await getEmailTemplate(user, useFor);
 
-      let Osubject: string | undefined = template?.subject, Ohtml: string | undefined = template?.body;
+      let Osubject: string | undefined = template?.subject,
+        Ohtml: string | undefined = template?.body;
 
       const updatedHtml = String(Ohtml)
         .replace("{{email}}", data.email)
-        .replace("{{userAvatar}}", `<img class="CToWUd" src="${data.avatar}" alt="" width="20" height="20" data-bit="iit">`).replace("{{Username}}", `${data.firstName} ${data.lastName}`).replace("{{jobPost}}",`${data.title}`).replace(`{{jobCode}}`,`${data.jobCode}`);
+        .replace(
+          "{{userAvatar}}",
+          `<img class="CToWUd" src="${data.avatar}" alt="" width="20" height="20" data-bit="iit">`
+        )
+        .replace("{{Username}}", `${data.firstName} ${data.lastName}`)
+        .replace("{{jobPost}}", `${data.title}`)
+        .replace(`{{jobCode}}`, `${data.jobCode}`);
 
       //   if (str === 'candidateSignup') {
       //     Osubject = `Thank you for signing up ${data.firstName}`;
@@ -88,26 +100,27 @@ export const sendMail = async function sendMail(user: string, useFor: string, da
         html: updatedHtml, // html body
       });
 
-      console.log('Message sent: %s', info.messageId);
+      console.log("Message sent: %s", info.messageId);
 
       // ... rest of your nodemailer logic
     } else {
-      console.error('SMTP configuration not found in the database.');
+      console.error("SMTP configuration not found in the database.");
     }
-
-
-  }
-  catch (error) {
-    console.error('Error creating nodemailer transporter:', error);
+  } catch (error) {
+    console.error("Error creating nodemailer transporter:", error);
   }
 };
 
-export const sendMailForFavAlert = async function sendMail(user: string, useFor: string, data: any): Promise<void> {
+export const sendMailForFavAlert = async function sendMail(
+  user: string,
+  useFor: string,
+  data: any
+): Promise<void> {
   let smtpConfig;
   try {
     smtpConfig = await getSmtpConfigFromDB();
   } catch (error) {
-    console.error('Error creating nodemailer transporter:', error);
+    console.error("Error creating nodemailer transporter:", error);
   }
   if (!smtpConfig) {
     return;
@@ -122,10 +135,10 @@ export const sendMailForFavAlert = async function sendMail(user: string, useFor:
     },
   });
 
-  let subject: string = '';
-  let html: string = '';
+  let subject: string = "";
+  let html: string = "";
 
-  if (useFor === 'favCompanyJobSubmission') {
+  if (useFor === "favCompanyJobSubmission") {
     subject = `New Job Submission for Favorite Company`;
     html = `
       <h1>New Job Submission for Favorite Company</h1>
@@ -147,12 +160,48 @@ export const sendMailForFavAlert = async function sendMail(user: string, useFor:
     html: html,
   });
 
-  console.log('Message sent: %s', info.messageId);
+  console.log("Message sent: %s", info.messageId);
 };
 
+export const sendMailWeeklyNewsletter = async function sendMail(
+  user: string,
+  useFor: string,
+  email: string,
+  data:any,
+): Promise<void> {
+  let smtpConfig;
+  try {
+    smtpConfig = await getSmtpConfigFromDB();
+  } catch (error) {
+    console.error("Error creating nodemailer transporter:", error);
+  }
+  if (!smtpConfig) {
+    return;
+  }
+  let transporter = nodemailer.createTransport({
+    host: smtpConfig.host,
+    port: parseInt(smtpConfig.port),
+    secure: smtpConfig.secure,
+    auth: {
+      user: smtpConfig.user!,
+      pass: smtpConfig.pass!,
+    },
+  });
 
+  const template = await getEmailTemplate(user, useFor);
 
+  let Osubject: string | undefined = template?.subject,
+    Ohtml: string | undefined = template?.body;
 
+  let info = await transporter.sendMail({
+    from: '"Rituj Manware 🆒" <manwarerutuj@gmail.com>',
+    to: email,
+    subject: Osubject,
+    html: Ohtml,
+  });
+
+  console.log("Message sent: %s", info.messageId);
+};
 
 // import nodemailer from 'nodemailer';
 // import { EmailData } from './types'; // Replace with the correct path to your types file
@@ -175,7 +224,6 @@ export const sendMailForFavAlert = async function sendMail(user: string, useFor:
 //       pass: process.env.NOMEMAILER_PASSWORD!,
 //     },
 //   });
-
 
 //   let Osubject: string = '', Ohtml: string = '';
 

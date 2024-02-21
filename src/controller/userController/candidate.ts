@@ -17,10 +17,12 @@ import {
 import JobPost from "../../model/JobPost";
 import { calculateMatchScore } from "../../utils/helper";
 import Company from "../../model/Company";
-import { sendMail } from "../../utils/nodemailer";
+import { sendMail, sendMailWeeklyNewsletter } from "../../utils/nodemailer";
 import CandidateSub from "../../model/subscription/CandidateSub";
 import EmployerSub from "../../model/subscription/EmployerSub";
 import { ICandidateSub, IEmployerSub } from "../../types/subscription";
+import cron from 'node-cron';
+
 dotenv.config();
 
 const serverGeneratedState = "12345678";
@@ -133,6 +135,11 @@ export const getUserGoogle = catchAsyncError(async (req, res, next) => {
 
       // console.log(user);
       sendMail("candidate", "signup", userObj);
+      // cron.schedule('* * * * * *', async () => {
+      //   await sendMailWeeklyNewsletter("candidate","signup",userObj);
+      // }, {
+      //   timezone: 'Asia/Kolkata', // India's timezone (IST)
+      // });
     } else {
       if (user.provider !== "Google") {
         user.provider = "Google";
