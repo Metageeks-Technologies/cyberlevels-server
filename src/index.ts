@@ -25,6 +25,8 @@ import emailTemplateRouter from './routes/emailTemplate.js';
 import smtpConfigRouter from './routes/smtpConfig.js';
 import backupRouter from './routes/backup.js';
 import blogRouter from './routes/blog.js';
+import cron from 'node-cron';
+import weeklyEmailQueue from './queues/weeklyEmailNewsletter.js';
 dotenv.config();
 
 // initiating the app
@@ -90,7 +92,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 
-
+cron.schedule(`0 9 * * 1`, () => {
+  weeklyEmailQueue.add({});
+})
 // routers
 app.use("/api/v1/company", companyRouter);
 app.use("/api/v1/jobPost", jobPostRouter);

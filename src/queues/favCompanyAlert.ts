@@ -1,7 +1,9 @@
 import Queue from 'bull';
-import { getCandidatesWhoSavedCompany } from '../utils/helper';
-import { sendMailForFavAlert } from '../utils/nodemailer';
+import { calculateMatchScore, getCandidatesWhoSavedCompany } from '../utils/helper';
+import { sendMailForFavAlert, sendMailWeeklyNewsletter } from '../utils/nodemailer';
 import Candidate from '../model/user/Candidate';
+import JobPost from '../model/JobPost';
+import { getRecommendedJobs } from '../services/getRecommendedJobs';
 
 const favCompanyAlertQueue = new Queue('favCompanyAlert', 'redis://default:AVNS_124zJan9XX_c9HJwYyC@redis-2b8bb14e-cyberlevels01-7716.a.aivencloud.com:27597');
 
@@ -32,3 +34,4 @@ favCompanyAlertQueue.process(async (job) => {
     }
 });
 export default favCompanyAlertQueue;
+
