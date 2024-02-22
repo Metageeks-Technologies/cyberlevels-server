@@ -523,14 +523,14 @@ export const getDetails = catchAsyncError(async (req, res, next) => {
   if (!req.user) {
     return next(new ErrorHandler("user not authenticated", 401));
   }
-  if (
-    user &&
-    user.role !== "admin"
-  ) {
-    return next(
-      new ErrorHandler("Upgrade your Plan to view more profile", 400)
-    );
-  }
+  // if (
+  //   user &&
+  //   user.role !== "admin"
+  // ) {
+  //   return next(
+  //     new ErrorHandler("Upgrade your Plan to view more profile", 400)
+  //   );
+  // }
 
   const candidate = await Candidate.findById({ _id: id });
   if (candidate && user.role !== "admin") {
