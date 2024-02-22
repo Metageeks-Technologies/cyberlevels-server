@@ -12,28 +12,29 @@ const weeklyEmailQueue = new Queue(
 
 weeklyEmailQueue.process(async () => {
   // Get all candidates or users who need to receive the weekly email
- try {
-    
-     const candidates = await Candidate.find({}).select(
-       "email primarySkills secondarySkills firstName lastName"
-     );
-       if(!candidates){
-           return ;
-       }
-     for (const candidate of candidates) {
-       // Send the weekly email
-       // await sendWeeklyEmail(candidate.email);
-       const jobs = await getRecommendedJobs(candidate);
-       if(!jobs){
-           continue; 
-       }
-   
-       await sendMailWeeklyNewsletter("candidate", "signup", candidate.email, jobs);
-     }
- } catch (error) {
+  try {
+
+    const candidates = await Candidate.find({}).select(
+      "email skills softSkills firstName lastName"
+    );
+    if (!candidates) {
+      return;
+    }
+    //  console.log(candidates);
+    for (const candidate of candidates) {
+      // Send the weekly email
+      // await sendWeeklyEmail(candidate.email);
+      const jobs = await getRecommendedJobs(candidate);
+      if (jobs?.length === 0 || jobs === null) {
+        continue;
+      }
+      //  console.log(jobs);
+      await sendMailWeeklyNewsletter("candidate", "Recommend Jobs", candidate.email, jobs);
+    }
+  } catch (error) {
     console.log(error);
 
- }
+  }
 });
 
 export default weeklyEmailQueue;
