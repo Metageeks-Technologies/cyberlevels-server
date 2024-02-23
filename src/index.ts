@@ -94,10 +94,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 
-// cron.schedule('0 9 * * 1', () => {
-//   console.log("running")
-//   weeklyEmailQueue.add({});
-// },{scheduled:true})
+cron.schedule('0 9 * * 1', () => {
+  // console.log("running")
+  weeklyEmailQueue.add({});
+})
 // routers
 app.use("/api/v1/company", companyRouter);
 app.use("/api/v1/jobPost", jobPostRouter);

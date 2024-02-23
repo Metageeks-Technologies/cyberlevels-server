@@ -53,5 +53,25 @@ export const editCoupon = catchAsyncError(async (req, res, next) => {
 }
 );
 
+export const isValidCoupon = catchAsyncError(async (req, res, next) => {
+    const { code } = req.params;
+    // console.log(code);
+    const coupon = await DiscountCoupon.findOne({ code });
+    if (!coupon) {
+        return next(new ErrorHandler("Coupon not found", 404));
+    }
+    if (coupon.expirationDate.getTime() < Date.now()) {
+        return next(new ErrorHandler("Coupon has expired", 400));
+    }
+    if (coupon.isValid === false) {
+        return next(new ErrorHandler("Coupon is not valid", 400));
+    }
+    res.status(200).json({
+        success: true,
+        coupon,
+    });
+}
+);
+
 
 
