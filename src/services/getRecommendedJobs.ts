@@ -15,7 +15,7 @@ export const getRecommendedJobs = async (candidate: ICandidate) => {
     .populate({
       path: "companyId",
       select: "logo",
-    }).select("title companyId primarySkills secondarySkills").limit(6);
+    }).select("title companyId primarySkills secondarySkills jobCode").limit(6);
     
 
     const totalPerRequired = 60;
