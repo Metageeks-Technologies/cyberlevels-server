@@ -18,5 +18,5 @@ const CouponSchema: Schema = new Schema({
 }, { timestamps: true });
 
 const DiscountCoupon = mongoose.model<IDiscountCoupon>('DiscountCoupon', CouponSchema);
-
+// 
 export default DiscountCoupon;
