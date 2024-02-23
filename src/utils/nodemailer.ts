@@ -198,23 +198,60 @@ export const sendMailWeeklyNewsletter = async function sendMail(
   let Osubject: string | undefined = template?.subject,
     Ohtml: string | undefined = template?.body;
   let jobsdata = await generateTableRows(data);
+  // console.log(jobsdata);
   const updatedHtml = String(Ohtml).replace("{{JobTitle}}", `<table>${jobsdata}</table>`);
 
+  try {
+    let info = await transporter.sendMail({
+      from: '"Rituj Manware 🆒" <manwarerutuj@gmail.com>',
+      to: email,
+      subject: Osubject,
+      html: updatedHtml,
+    });
 
-  let info = await transporter.sendMail({
-    from: '"Rituj Manware 🆒" <manwarerutuj@gmail.com>',
-    to: email,
-    subject: Osubject,
-    html: updatedHtml,
-  });
-
-  console.log("Message sent: %s", info.messageId);
-  // console.log(jobsdata,"data");
+    console.log("Message sent: %s", info.messageId);
+    // console.log(jobsdata,"data");
+  } catch (error) {
+    console.log(error);
+  }
 
 };
 async function generateTableRows(data: any[]): Promise<string> {
   // Use the map function to create an array of <td>${d.title}</td> strings
-  const tableRows = data.map((d) => `<tr><td>${d.job.title}</td></tr>`);
+  const tableRows = data.map((d) =>
+    `
+   <tr style="padding: 16px 20px; display: flex; border: 1px solid rgb(212,212,212); background-color: ghostwhite;border-radius: 10px; vertical-align: middle; margin-bottom:10px">
+   <td style="width: 10%; margin-right: 10px; display:flex; vertical-align: middle; align-items:center;">
+     <a href="https://www.cyberlevels.com/job-list-v1?jobCode=${d.job.jobCode}" target="_blank">
+       <img class="CToWUd" src="${d.job.companyId.logo}" alt="" width="50" height="50" data-bit="iit" style="border-radius:50%;">
+     </a>
+   </td>
+   <td style="width: 100%; display:flex; flex-wrap: wrap; vertical-align: middle;align-items:center; padding-top:10px;">
+     <a href="https://www.cyberlevels.com/job-list-v1?jobCode=${d.job.jobCode}" target="_blank" style="text-decoration: none;">
+       <span style="color: #09097e; font-weight: bold; font-size:large; display:block ">${d.job.title}</span>
+       <span style="font-weight: bold; font-size:large;  display:block "> ${d.job.jobCode}</span>
+     </a>
+   </td>
+   <td style="width:15%; display: flex; align-items: center; justify-content: flex-end;">
+     <a href="https://www.cyberlevels.com/job-list-v1?jobCode=${d.job.jobCode}" target="_blank" style="text-decoration: none;">
+       <button style="background-color: #4CAF50; /* Green */
+                  border: none;
+                  color: white;
+                  padding: 10px 20px;
+                  text-align: center;
+                  text-decoration: none;
+                  display: inline-block;
+                  font-size: 16px;
+                  margin: 4px 2px;
+                  cursor: pointer;
+                  border-radius: 5px;">
+         Apply
+       </button>
+     </a>
+   </td>
+</tr>
+    `
+  );
 
   // Join the array into a single string
   return tableRows.join('');
