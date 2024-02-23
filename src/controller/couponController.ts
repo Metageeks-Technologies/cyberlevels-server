@@ -3,11 +3,12 @@ import DiscountCoupon from "../model/couponCode";
 import ErrorHandler from "../utils/errorHandler";
 
 export const createCoupon = catchAsyncError(async (req, res, next) => {
-    const { code, discountPercentage, expirationDate } = req.body;
+    const { code, discountPercentage, expirationDate, description } = req.body;
     const coupon = await DiscountCoupon.create({
         code,
         discountPercentage,
         expirationDate,
+        description
     });
     res.status(201).json({
         success: true,
@@ -16,10 +17,22 @@ export const createCoupon = catchAsyncError(async (req, res, next) => {
 });
 
 export const getAllCoupons = catchAsyncError(async (req, res, next) => {
-    const coupons = await DiscountCoupon.find();
+    const {page} = req.query;
+    const p = Number(page) || 1;
+    const limit = 8;
+    const skip = (p-1)*limit;
+
+    const coupons = await DiscountCoupon.find().skip(skip).limit(limit);
+    const totalCoupons = await DiscountCoupon.countDocuments({});
+    const totalPages = totalCoupons/limit;
+
     res.status(200).json({
         success: true,
         coupons,
+        itemsPerPage:limit,
+        totalPages,
+        totalCoupons,
+        // currPage:p
     });
 });
 
