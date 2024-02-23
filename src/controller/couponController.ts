@@ -1,6 +1,7 @@
 import catchAsyncError from "../middleware/catchAsyncError";
-import DiscountCoupon from "../model/couponCode";
+import DiscountCoupon from "../model/CouponCode";
 import ErrorHandler from "../utils/errorHandler";
+
 
 export const createCoupon = catchAsyncError(async (req, res, next) => {
     const { code, discountPercentage, expirationDate } = req.body;
