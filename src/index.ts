@@ -25,8 +25,10 @@ import emailTemplateRouter from './routes/emailTemplate.js';
 import smtpConfigRouter from './routes/smtpConfig.js';
 import backupRouter from './routes/backup.js';
 import blogRouter from './routes/blog.js';
+import couponRouter from './routes/coupon.js';
 import cron from 'node-cron';
 import weeklyEmailQueue from './queues/weeklyEmailNewsletter.js';
+
 dotenv.config();
 
 // initiating the app
@@ -106,6 +108,7 @@ app.use("/api/v1/jobApp", jobAppRouter);
 app.use("/api/v1/template", templateRouter);
 app.use("/api/v1/subscription", subscriptionRouter);
 app.use("/api/v1/payment", paymentRouter);
+app.use("/api/v1/coupon", couponRouter);
 app.use("/api/v1", controlledFieldRouter);
 app.use("/api/v1/chat", chatRouter);
 app.use("/api/v1/emailTemplate", emailTemplateRouter);
