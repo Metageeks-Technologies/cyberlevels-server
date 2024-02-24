@@ -28,7 +28,7 @@ import blogRouter from './routes/blog.js';
 import couponRouter from './routes/coupon.js';
 import cron from 'node-cron';
 import weeklyEmailQueue from './queues/weeklyEmailNewsletter.js';
-import couponRouter from './routes/coupon.js';
+
 dotenv.config();
 
 // initiating the app
