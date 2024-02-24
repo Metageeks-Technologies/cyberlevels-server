@@ -3,7 +3,7 @@ import { createCoupon, editCoupon, getAllCoupons, getCoupon, isValidCoupon } fro
 const couponRouter = express.Router();
 
 couponRouter.route("/create").post(createCoupon);
-couponRouter.route("/edit/:id").put(editCoupon);
+couponRouter.route("/edit/:id").patch(editCoupon);
 couponRouter.route("/get/:id").get(getCoupon);
 couponRouter.route("/getAll").get(getAllCoupons);
 couponRouter.route("/isValid/:code").get(isValidCoupon);
