@@ -23,8 +23,8 @@ export const getAllCoupons = catchAsyncError(async (req, res, next) => {
     const limit = 8;
     const skip = (p-1)*limit;
 
-    const coupons = await DiscountCoupon.find({}).skip(skip).limit(limit);
-    const totalCoupons = await DiscountCoupon.countDocuments({});
+    const coupons = await DiscountCoupon.find({isValid:true}).skip(skip).limit(limit);
+    const totalCoupons = await DiscountCoupon.countDocuments({isValid:true});
     const totalPages = totalCoupons/limit;
 
     res.status(200).json({
