@@ -25,6 +25,7 @@ import emailTemplateRouter from './routes/emailTemplate.js';
 import smtpConfigRouter from './routes/smtpConfig.js';
 import backupRouter from './routes/backup.js';
 import blogRouter from './routes/blog.js';
+import couponRouter from './routes/coupon.js';
 import cron from 'node-cron';
 import weeklyEmailQueue from './queues/weeklyEmailNewsletter.js';
 dotenv.config();
@@ -111,6 +112,7 @@ app.use("/api/v1/emailTemplate", emailTemplateRouter);
 app.use("/api/v1/smtpConfig", smtpConfigRouter);
 app.use("/api/v1/backup", backupRouter);
 app.use("/api/v1/blog", blogRouter);
+app.use("/api/v1/coupon", couponRouter);
 app.use("/getClientUrl", (req, res) => {
   res.send({
     clientUrl: process.env.CLIENT_URL || "http://localhost:3000"
