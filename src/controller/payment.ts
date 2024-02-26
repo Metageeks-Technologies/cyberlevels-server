@@ -144,11 +144,17 @@ export const getRazorApiKey = catchAsyncError(async (req, res, next) => {
 })
 
 export const getPayments = catchAsyncError(async (req, res, next) => {
-
-    const payments = await Payment.find({}).populate('user').populate('product');
-
+    const {page} = req.query;
+    const p = Number(page) || 1;
+    const limit = 8;
+    const skip = (p-1) * limit;
+    const payments = await Payment.find({}).populate('user').populate('product').skip(skip).limit(limit).sort({createdAt:-1});
+const totalPayments = await Payment.countDocuments({});
+const totalPages = await totalPayments/limit;
     res.status(200).json({
         success: true,
-        payments
+        payments,
+        totalPayments,
+        totalPages,
     });
 })
