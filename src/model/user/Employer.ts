@@ -121,6 +121,10 @@ const employerSchema = new mongoose.Schema(
       type: Date,
       default: Date.now(),
     },
+    subPayment: {
+      type: String,
+      default: "free",
+    },
   },
   { timestamps: true }
 );
