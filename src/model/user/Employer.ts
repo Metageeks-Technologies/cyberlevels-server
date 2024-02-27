@@ -1,6 +1,7 @@
 import mongoose, { Model } from "mongoose";
 import { IEmployer } from "../../types/user";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 const employerSchema = new mongoose.Schema(
   {
@@ -38,10 +39,7 @@ const employerSchema = new mongoose.Schema(
       type: String,
       enum: ["male", "female", "others"],
     },
-    freeCount: {
-      type: Number,
-      default: 5,
-    },
+
     isEmailVerified: {
       type: Boolean,
       required: true,
@@ -129,7 +127,18 @@ const employerSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-interface CandidateModel extends Model<IEmployer> {}
+interface CandidateModel extends Model<IEmployer> { }
+
+employerSchema.pre<IEmployer>("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+
+  next();
+});
+
+
 
 employerSchema.methods.createJWT = function (
   this: IEmployer,
@@ -142,6 +151,16 @@ employerSchema.methods.createJWT = function (
     expiresIn: "1d",
   });
 };
+
+
+employerSchema.methods.comparePassword = async function (
+  this: IEmployer,
+  givenPassword: string
+) {
+  const isMatch = await bcrypt.compare(givenPassword, this.password);
+  return isMatch;
+};
+
 
 export default mongoose.model<IEmployer, CandidateModel>(
   "Employer",

@@ -5,6 +5,9 @@ import Employer from "../../model/user/Employer";
 import { sendToken } from "../../utils/sendToken";
 import Candidate from "../../model/user/Candidate";
 import { sendMail } from "../../utils/nodemailer";
+import EmployerSub from "../../model/subscription/EmployerSub";
+import { IEmployerSub } from "../../types/subscription";
+
 
 dotenv.config();
 
@@ -19,15 +22,27 @@ export const signupEmployer = catchAsyncError(async (req, res, next) => {
   }
   const firstName = name.split(" ")[0].trim();
   const lastName = name.split(" ")[1] ? name.split(" ")[1] : ".";
-  const candidate = await Employer.create({
+  const employer = await Employer.create({
     firstName,
     lastName,
     email,
     password,
     isEmailVerified: false,
   });
-  sendMail("employer","signup", req.body);
-  sendToken(candidate, 201, res);
+
+  const freeSubscription = await EmployerSub.findOne({ subscriptionType: "essential" });
+  if (!freeSubscription) {
+    return next(new ErrorHandler("subscription not found", 404));
+  }
+  const userSubscription = {
+    ...(freeSubscription.toObject()),
+  };
+
+  employer.subscription = userSubscription as IEmployerSub;
+  await employer.save();
+
+  sendMail("employer", "signup", req.body);
+  sendToken(employer, 201, res);
 });
 
 export const loginEmployer = catchAsyncError(async (req, res, next) => {
@@ -36,17 +51,17 @@ export const loginEmployer = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("please provide all values", 400));
   }
 
-  const candidate = await Employer.findOne({ email }).select("+password");
-  if (!candidate) {
+  const employer = await Employer.findOne({ email }).select("+password");
+  if (!employer) {
     return next(new ErrorHandler("Invalid  Email or Password", 400));
   }
-  const verifyPassword = await candidate.comparePassword(password);
+  const verifyPassword = await employer.comparePassword(password);
   if (!verifyPassword) {
     return next(new ErrorHandler("Invalid  Email or Password", 401));
   }
 
-  sendMail("employer","login", req.body);
-  sendToken(candidate, 201, res);
+  sendMail("employer", "login", req.body);
+  sendToken(employer, 201, res);
 });
 
 export const getCurrEmployer = catchAsyncError(async (req, res, next) => {
@@ -75,7 +90,7 @@ export const updateCurrEmployer = catchAsyncError(async (req, res, next) => {
   if (!employer) {
     return next(new ErrorHandler("something went wrong ,try again", 500));
   }
-  sendMail("employer","deleteProfile",{...employer})
+  sendMail("employer", "deleteProfile", { ...employer })
   res.status(200).json({
     success: true,
     employer,

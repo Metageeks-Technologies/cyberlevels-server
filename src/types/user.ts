@@ -112,8 +112,8 @@ export interface ICandidate extends Document {
     subscription: ICandidateSub;
     createJWT(accessToken?: string): string;
     comparePassword(givenPassword: string): Promise<boolean>;
-    lastJobAppLimitUpdated:Date;
-    subPayment:string;
+    lastJobAppLimitUpdated: Date;
+    subPayment: string;
 }
 
 
@@ -130,7 +130,7 @@ export interface IEmployer extends Document {
         name: string,
         companyId: mongoose.Types.ObjectId,
     },
-    password?: string;
+    password: string;
     location: ILocation,
     resume: string,
     industry: string,
@@ -149,8 +149,8 @@ export interface IEmployer extends Document {
     paymentDate?: Date,
     createJWT(accessToken?: string): string;
     comparePassword(givenPassword: string): Promise<boolean>;
-    lastJobPostLimitUpdated:Date;
-    subPayment:string;
+    lastJobPostLimitUpdated: Date;
+    subPayment: string;
 
 }
 
