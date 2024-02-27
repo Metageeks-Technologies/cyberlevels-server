@@ -256,6 +256,83 @@ async function generateTableRows(data: any[]): Promise<string> {
   // Join the array into a single string
   return tableRows.join('');
 }
+
+
+export const sendMailWeeklyEmployer = async function sendMail(
+  user: string,
+  useFor: string,
+  email: string,
+  data: any,
+): Promise<void> {
+  let smtpConfig;
+  try {
+    smtpConfig = await getSmtpConfigFromDB();
+  } catch (error) {
+    console.error("Error creating nodemailer transporter:", error);
+  }
+  if (!smtpConfig) {
+    return;
+  }
+  let transporter = nodemailer.createTransport({
+    host: smtpConfig.host,
+    port: parseInt(smtpConfig.port),
+    secure: smtpConfig.secure,
+    pool: true,
+    auth: {
+      user: smtpConfig.user!,
+      pass: smtpConfig.pass!,
+    },
+  });
+
+  const template = await getEmailTemplate(user, useFor);
+
+  let Osubject: string | undefined = template?.subject,
+    Ohtml: string | undefined = template?.body;
+  let candidates = await generateTableRowsForEmployer(data);
+  // console.log(jobsdata);
+  const updatedHtml = `<table>${candidates}</table>`;
+
+  try {
+    let info = await transporter.sendMail({
+      from: '"Rituj Manware 🆒" <manwarerutuj@gmail.com>',
+      to: email,
+      subject: Osubject,
+      html: updatedHtml,
+    });
+
+    console.log("Message sent: %s", info.messageId);
+    // console.log(jobsdata,"data");
+  } catch (error) {
+    console.log(error);
+  }
+
+};
+async function generateTableRowsForEmployer(data: any[]): Promise<string> {
+  // Use the map function to create an array of <td>${d.title}</td> strings
+  const tableRows = data.map((d) =>
+    `
+   <tr style="padding: 16px 20px; display: flex; border: 1px solid rgb(212,212,212); background-color: ghostwhite;border-radius: 10px; vertical-align: middle; margin-bottom:10px">
+   <td style="width: 10%; margin-right: 10px; display:flex; vertical-align: middle; align-items:center;">
+     <a href="https://www.cyberlevels.com/job-list-v1?jobCode=" target="_blank">
+       <img class="CToWUd" src="${d.avatar}" alt="" width="50" height="50" data-bit="iit" style="border-radius:50%;">
+     </a>
+   </td>
+   <td style="width: 100%; display:flex; flex-wrap: wrap; vertical-align: middle;align-items:center; padding-top:10px;">
+     <a href="https://www.cyberlevels.com/job-list-v1?jobCode=" target="_blank" style="text-decoration: none;">
+       <span style="color: #09097e; font-weight: bold; font-size:large; display:block ">${d.firstName} ${d.lastName}</span>
+       
+     </a>
+   </td>
+   <td style="width:15%; display: flex; align-items: center; justify-content: flex-end;">
+    
+   </td>
+</tr>
+    `
+  );
+
+  // Join the array into a single string
+  return tableRows.join('');
+}
 // import nodemailer from 'nodemailer';
 // import { EmailData } from './types'; // Replace with the correct path to your types file
 // import nodemailer from 'nodemailer';

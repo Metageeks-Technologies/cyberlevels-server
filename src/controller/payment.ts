@@ -159,17 +159,21 @@ export const getRazorApiKey = catchAsyncError(async (req, res, next) => {
 });
 
 export const getPayments = catchAsyncError(async (req, res, next) => {
-  const { page } = req.query;
+  const { page, productModel } = req.query;
   const p = Number(page) || 1;
   const limit = 8;
   const skip = (p - 1) * limit;
-  const payments = await Payment.find({})
+  const queryObject:any={};
+  if(productModel){
+    queryObject.productModel = productModel;
+  }
+  const payments = await Payment.find(queryObject)
     .populate("user")
     .populate("product")
     .skip(skip)
     .limit(limit)
     .sort({ createdAt: -1 });
-  const totalPayments = await Payment.countDocuments({});
+  const totalPayments = await Payment.countDocuments(queryObject);
   const totalPages = totalPayments / limit;
   res.status(200).json({
     success: true,

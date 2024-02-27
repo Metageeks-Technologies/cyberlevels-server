@@ -28,6 +28,7 @@ import blogRouter from './routes/blog.js';
 import couponRouter from './routes/coupon.js';
 import cron from 'node-cron';
 import weeklyEmailQueue from './queues/weeklyEmailNewsletter.js';
+import weeklyEmailQueueForEmployer from './queues/weeklyMailToEmployer.js';
 
 dotenv.config();
 
@@ -96,6 +97,7 @@ app.use(morgan("dev"));
 
 cron.schedule(`0 9 * * 1`, () => {
   weeklyEmailQueue.add({});
+  weeklyEmailQueueForEmployer.add({});
 })
 // routers
 app.use("/api/v1/company", companyRouter);
