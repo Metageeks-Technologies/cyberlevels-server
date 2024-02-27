@@ -26,6 +26,6 @@ adminRouter.route("/:id").delete(deleteAdmin);
 adminRouter.route("/getCurrUser").get(getCurrentAdmin);
 adminRouter.route("/candidate").get(getAllCandidate);
 adminRouter.route("/employer").get(getAllEmployer);
-adminRouter.route("/company/:id").get(getAllCompanies);
+adminRouter.route("/company").get(getAllCompanies);
 
 export default adminRouter;

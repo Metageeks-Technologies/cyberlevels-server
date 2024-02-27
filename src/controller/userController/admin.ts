@@ -135,9 +135,15 @@ export const getAllAdmin = catchAsyncError(async (req, res, next) => {
 
 export const getAllCandidate = catchAsyncError(async (req, res, next) => {
 
-    const { page } = req.query;
+    const { page,type,name } = req.query;
 
     const queryObject: any = {};
+    if (name) {
+        queryObject.firstName = { $regex: new RegExp(name.toString(), 'i') };
+    }
+    if(type){
+        queryObject.subPayment = type;
+    }
     queryObject.isDeleted = false;
     console.log(page)
     const p = Number(page) || 1;
@@ -159,10 +165,15 @@ export const getAllCandidate = catchAsyncError(async (req, res, next) => {
 
 export const getAllEmployer = catchAsyncError(async (req, res, next) => {
 
-    const { page } = req.query;
+    const { page,type,name } = req.query;
 
     const queryObject: any = {};
-
+    if (name) {
+        queryObject.firstName = { $regex: new RegExp(name.toString(), 'i') };
+    }
+    if(type){
+        queryObject.subPayment = type;
+    }
     console.log(page)
     const p = Number(page) || 1;
     const limit = 8;
@@ -184,9 +195,14 @@ export const getAllEmployer = catchAsyncError(async (req, res, next) => {
 export const getAllCompanies = catchAsyncError(async (req, res, next) => {
 
     const { page } = req.query;
-    const { id: createdBy } = req.params;
+    
+    const { id: createdBy } = req.query;
 
-    const queryObject: any = {createdBy,isDeleted:false};
+
+    const queryObject: any = {isDeleted:false};
+    if(createdBy){
+        queryObject.createdBy = createdBy;
+    }
 
     console.log(page)
     const p = Number(page) || 1;
