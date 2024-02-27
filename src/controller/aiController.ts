@@ -173,9 +173,9 @@ export const chatWithAiUsingRest = catchAsyncError(async (req, res, next) => {
     if (!req.user) {
         return next(new ErrorHandler("user not found", 404))
     }
-
+ 
     const employer = req.user as IEmployer;
-    if (employer.subscription.offering.aiTokenLimit <= 0) {
+    if (employer.role!=="admin" && employer.subscription.offering.aiTokenLimit <= 0  ) {
         return next(new ErrorHandler("You have exhausted your token limit", 400))
     }
 
@@ -204,11 +204,13 @@ export const chatWithAiUsingRest = catchAsyncError(async (req, res, next) => {
 
 
     const tokenUsage = data.usage.total_tokens;
+    if(employer.role!=="admin"){
 
-    employer.subscription.offering.aiTokenLimit -= tokenUsage;
-    employer.markModified('subscription');
-    // console.log(employer)
-    await employer.save();
+        employer.subscription.offering.aiTokenLimit -= tokenUsage;
+        employer.markModified('subscription');
+        // console.log(employer)
+    }
+        await employer.save();
 
     // console.log(data);
 

@@ -21,7 +21,7 @@ jobPostRouter.route("/add").post(isAuthenticatedEmployer, isAuthenticatedAdmin, 
 jobPostRouter.route("/getalljobposts").get(getAllJobPost);
 jobPostRouter.route("/get").get(getJobPosts);
 jobPostRouter.route("/populate").post(populateJobPost);
-jobPostRouter.route("/askGpt").get(isAuthenticatedEmployer, chatWithAiUsingRest);
+jobPostRouter.route("/askGpt").get(isAuthenticatedEmployer,isAuthenticatedAdmin, chatWithAiUsingRest);
 jobPostRouter.route("/askGpt/candidate").get(isAuthenticatedCandidate, chatWithAiUsingRestForCan);
 jobPostRouter.route("/employer/:employerId").get(getJobPostsForEmployer);
 jobPostRouter.route("/related").get(isAuthenticatedCandidate, isAuthenticatedAdmin, getRelatedJobs);

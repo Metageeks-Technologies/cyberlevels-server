@@ -70,7 +70,6 @@ export const addJobPost = catchAsyncError(async (req, res, next) => {
     }
   }
 
-
   const generatedUuid = uuid.v4();
   const formattedUuid = `CL-${generatedUuid.substring(
     0,
@@ -79,29 +78,30 @@ export const addJobPost = catchAsyncError(async (req, res, next) => {
   const jobPostObj = { ...req.body, jobCode: formattedUuid };
 
   const job = await JobPost.create(jobPostObj);
-  if(employer &&
+  if (
+    employer &&
     "jobPostLimit" in employer.subscription.offering &&
-    typeof employer.subscription.offering.jobPostLimit === "number" ){
-      console.log(
-        "from job post controller",
-        employer.subscription.offering.jobPostLimit
-      );
-      const lastLimit = employer.subscription.offering.jobPostLimit;
-      employer.subscription.offering.jobPostLimit = lastLimit - 1;
-    }
-    try {
-      if (employer) {
-        console.log("before update", employer);
-        employer.markModified("subscription");
-  
-        const u = await employer.save();
-        console.log("Updated user", u);
-      }
-      // sendMail("candidate","jobApplication",{...job,...user});
-    } catch (error) {
-      console.error("Error saving Employer:", error);
-    }
+    typeof employer.subscription.offering.jobPostLimit === "number"
+  ) {
+    console.log(
+      "from job post controller",
+      employer.subscription.offering.jobPostLimit
+    );
+    const lastLimit = employer.subscription.offering.jobPostLimit;
+    employer.subscription.offering.jobPostLimit = lastLimit - 1;
+  }
+  try {
+    if (employer) {
+      console.log("before update", employer);
+      employer.markModified("subscription");
 
+      const u = await employer.save();
+      console.log("Updated user", u);
+    }
+    // sendMail("candidate","jobApplication",{...job,...user});
+  } catch (error) {
+    console.error("Error saving Employer:", error);
+  }
 
   if (!job) {
     return next(
@@ -412,12 +412,25 @@ export const getJobPostsForEmployer = catchAsyncError(
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
+    const currentDate = new Date();
+    let updatedJobPosts = [];
+    for (const jobPost of jobPosts) {
+      if (currentDate > jobPost.deadlineDate) {
+        jobPost.status = "expired";
+        const updatedJobPost = await jobPost.save();
+        updatedJobPosts.push(updatedJobPost);
+      }
+      else{
+        updatedJobPosts.push(jobPost)
+
+      }
+    }
     const totalCount = await JobPost.countDocuments(queryObject);
     const totalPages = Math.ceil(totalCount / limit);
     // console.log(totalCount);
     res.status(200).json({
       success: true,
-      jobPosts,
+      jobPosts:updatedJobPosts,
       totalPages,
       currentPage: page,
       pageSize: limit,
@@ -520,15 +533,28 @@ export const getAllJobPost = catchAsyncError(async (req, res) => {
     const jobCodeRegExp = new RegExp(`^${jobCode}`);
     queryObject.jobCode = jobCodeRegExp;
   }
-  const response = await JobPost.find(queryObject)
+  const jobPosts = await JobPost.find(queryObject)
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit);
+
+    const currentDate = new Date();
+    let updatedJobPosts = [];
+    for (const jobPost of jobPosts) {
+      if (currentDate > jobPost.deadlineDate) {
+        jobPost.status = "expired";
+        const updatedJobPost = await jobPost.save();
+        updatedJobPosts.push(updatedJobPost);
+      }else{
+        updatedJobPosts.push(jobPost)
+
+      }
+    }
   const totalDocs = await JobPost.countDocuments(queryObject);
   const totalPages = totalDocs / limit;
   // console.log(totalPages);
 
-  res.status(200).send({ jobPosts: response, page: p, totalPages, totalDocs });
+  res.status(200).send({ jobPosts: updatedJobPosts, page: p, totalPages, totalDocs });
 });
 
 export const getJobPostViews = catchAsyncError(async (req, res) => {
