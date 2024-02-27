@@ -25,9 +25,10 @@ import emailTemplateRouter from './routes/emailTemplate.js';
 import smtpConfigRouter from './routes/smtpConfig.js';
 import backupRouter from './routes/backup.js';
 import blogRouter from './routes/blog.js';
+import couponRouter from './routes/coupon.js';
 import cron from 'node-cron';
 import weeklyEmailQueue from './queues/weeklyEmailNewsletter.js';
-import couponRouter from './routes/coupon.js';
+
 dotenv.config();
 
 // initiating the app
