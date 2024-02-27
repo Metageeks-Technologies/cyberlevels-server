@@ -1,5 +1,6 @@
+import JobApp from "../model/JobApp";
 import JobPost from "../model/JobPost";
-import { ICandidate } from "../types/user";
+import { ICandidate, IEmployer } from "../types/user";
 import { calculateMatchScore } from "../utils/helper";
 
 export const getRecommendedJobs = async (candidate: ICandidate) => {
@@ -48,3 +49,28 @@ export const getRecommendedJobs = async (candidate: ICandidate) => {
     return null;
   }
 };
+
+
+export const getRecommendedCandidates = async (employer: IEmployer) => {
+  try {
+    // Get the last five job ids posted by the employer
+    const lastFiveJobIds = await JobPost.find({ employerId: employer._id })
+      .sort({ createdAt: -1 }) // Sort by creation date in descending order
+      .limit(5) // Limit to the last five jobs
+      .select("_id");
+
+    // Get all candidates who have applied to any of the last five jobs and populate their details
+    const candidates = await JobApp.find({ jobPost: { $in: lastFiveJobIds } })
+      .populate("candidate")
+      .limit(4)
+      .exec();
+
+    const uniqueCandidates = [...new Set(candidates.map((jobApp) => jobApp.candidate))];
+    return uniqueCandidates;
+  } catch (error) {
+    console.error("Error fetching recommended candidates:", error);
+    return null;
+  }
+};
+
+
