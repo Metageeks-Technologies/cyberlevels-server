@@ -5,6 +5,7 @@ import Employer from "../../model/user/Employer";
 import { sendToken } from "../../utils/sendToken";
 import Candidate from "../../model/user/Candidate";
 import { sendMail } from "../../utils/nodemailer";
+import { IEmployer } from "../../types/user";
 
 dotenv.config();
 
@@ -324,3 +325,29 @@ export const getEmployerByJoiningDate = catchAsyncError(async (req, res) => {
 
   res.send(employersByJoiningDate);
 });
+
+export const resetPassword = catchAsyncError(async (req,res,next) => {
+  const user = req.user as IEmployer;
+  const { currentPassword,
+    newPassword,
+    confirmPassword,} = req.body;
+  if(!user) {
+    return next(new ErrorHandler("User does not exist",401));
+  }
+  if(newPassword !== confirmPassword) {
+    return next(new ErrorHandler("new password does not match with confirm password.",402));
+  }
+
+  const employer = await Employer.findById(user?._id);
+
+  const verifyPassword = await employer?.comparePassword(currentPassword);
+  if(!verifyPassword) {
+    return next(new ErrorHandler("Invalid  Email or Password", 401));
+  }
+  if(employer)
+  employer.password = newPassword;
+
+  await employer?.save();
+res.status(200).send({success:true,message:"Password Changed Successfully"});
+
+}) 
