@@ -8,6 +8,7 @@ import { sendMail } from "../utils/nodemailer";
 import Candidate from "../model/user/Candidate";
 import Employer from "../model/user/Employer";
 import { ICandidateSub, IEmployerSub } from "../types/subscription";
+import DiscountCoupon from "../model/CouponCode";
 
 interface IPaymentData {
   amount: number;
@@ -17,6 +18,7 @@ interface IPaymentData {
   userModel: string;
   product: string;
   productModel: string;
+  coupon: string;
 }
 
 export const checkout = catchAsyncError(async (req, res, next) => {
@@ -70,7 +72,7 @@ export const paymentVerification = catchAsyncError(async (req, res, next) => {
     if (!data) {
       return next(new ErrorHandler("Payment Verification Failed", 500));
     }
-    const { userModel } = data;
+    const { userModel, coupon } = data;
     // console.log(data);
     const paymentData = {
       ...data,
@@ -97,7 +99,16 @@ export const paymentVerification = catchAsyncError(async (req, res, next) => {
     if (!user) {
       return next(new ErrorHandler("Payment Verification Failed", 500));
     }
-    console.log("4");
+    if (coupon) {
+      const discountCoupon = await DiscountCoupon.findById(coupon);
+      if (!discountCoupon) {
+        return next(new ErrorHandler("Coupon not found", 404));
+      }
+      discountCoupon.usedBy.push(user._id);
+      discountCoupon.userModel = userModel as "Candidate" | "Employer";
+      discountCoupon.usedCount++;
+      await discountCoupon.save();
+    }
     const subscription = payment.product;
     const currentPrice = subscription.price.filter(
       (price: any) => price.duration === payment.duration
