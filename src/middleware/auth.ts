@@ -68,7 +68,7 @@ export const isAuthenticatedEmployer = catchAsyncError(
     console.log(decodedData.id)
 
     const employer = await Employer.findOne({ _id: decodedData.id });
-    console.log(employer)
+    // console.log(employer)
     if (!employer) {
       return next(
         // new ErrorHandler("user not found with associated token", 401)

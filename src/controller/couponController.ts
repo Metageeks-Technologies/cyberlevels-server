@@ -4,12 +4,13 @@ import ErrorHandler from "../utils/errorHandler";
 
 
 export const createCoupon = catchAsyncError(async (req, res, next) => {
-    const { code, discountPercentage, expirationDate, description } = req.body;
+    const { code, discountPercentage, expirationDate, description, maxUseLimit } = req.body;
     const coupon = await DiscountCoupon.create({
         code,
         discountPercentage,
         expirationDate,
-        description
+        description,
+        maxUseLimit
     });
     res.status(201).json({
         success: true,
@@ -18,19 +19,19 @@ export const createCoupon = catchAsyncError(async (req, res, next) => {
 });
 
 export const getAllCoupons = catchAsyncError(async (req, res, next) => {
-    const {page} = req.query;
+    const { page } = req.query;
     const p = Number(page) || 1;
     const limit = 8;
-    const skip = (p-1)*limit;
+    const skip = (p - 1) * limit;
 
-    const coupons = await DiscountCoupon.find({isValid:true}).skip(skip).limit(limit);
-    const totalCoupons = await DiscountCoupon.countDocuments({isValid:true});
-    const totalPages = totalCoupons/limit;
+    const coupons = await DiscountCoupon.find({ isValid: true }).skip(skip).limit(limit);
+    const totalCoupons = await DiscountCoupon.countDocuments({ isValid: true });
+    const totalPages = totalCoupons / limit;
 
     res.status(200).json({
         success: true,
         coupons,
-        itemsPerPage:limit,
+        itemsPerPage: limit,
         totalPages,
         totalCoupons,
         // currPage:p
@@ -75,6 +76,11 @@ export const isValidCoupon = catchAsyncError(async (req, res, next) => {
     }
     if (coupon.expirationDate.getTime() < Date.now()) {
         return next(new ErrorHandler("Coupon has expired", 400));
+    }
+    if (coupon.usedCount >= coupon.maxUseLimit) {
+        coupon.isValid = false;
+        await coupon.save();
+        return next(new ErrorHandler("Coupon has reached its limit", 400));
     }
     if (coupon.isValid === false) {
         return next(new ErrorHandler("Coupon is not valid", 400));
