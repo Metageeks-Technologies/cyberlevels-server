@@ -165,6 +165,13 @@ export const updateCompany = catchAsyncError(async (req, res, next) => {
   if (!id) {
     return next(new ErrorHandler("Company not found", 400));
   }
+  if(bodyObj.isDeleted === true){
+    const jobs = await JobPost.find({companyId:id,status:"active"})
+
+    if(jobs.length !== 0){
+      return next(new ErrorHandler(`you still have ${jobs.length} jobs active`,401));
+    }
+  }
   const company = await Company.findByIdAndUpdate({ _id: id }, bodyObj);
 
   const { folder, extension, type } = logoMetadata;

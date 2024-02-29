@@ -6,6 +6,7 @@ import { ICandidate } from "../types/user";
 import { calculateMatchScore, hasOneMonthOrGreaterGap } from "../utils/helper";
 import JobPost from "../model/JobPost";
 import { sendMail } from "../utils/nodemailer";
+import Employer from "../model/user/Employer";
 
 export const createJobApp = catchAsyncError(async (req, res, next) => {
   if (!req.body) {
@@ -19,6 +20,7 @@ export const createJobApp = catchAsyncError(async (req, res, next) => {
   const requestingUser = req?.user as ICandidate;
   const user = await Candidate.findById(requestingUser?._id || "");
   const job = await JobPost.findById(jobPost);
+  
   // if (user && user.subscription.offering.applyJobLImit === 0) {
   //   return next(
   //     new ErrorHandler(
@@ -82,6 +84,20 @@ export const createJobApp = catchAsyncError(async (req, res, next) => {
   } catch (error) {
     console.error("Error saving user:", error);
   }
+
+  const notificationObject = {
+    sender: user?._id,
+    message: `You have a job application for ${
+      job?.title
+    } (${
+      job?.jobCode
+    }) from ${user?.firstName}`,
+    redirectUrl: `/dashboard/employer-dashboard/jobs`,
+  };
+  const employer = await Employer.findByIdAndUpdate(job?.employerId,{
+    $push:{notifications:notificationObject}
+  });
+
   job?.candidates.push(requestingUser?._id);
   await job?.save();
   res.status(200).json({

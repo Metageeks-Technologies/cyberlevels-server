@@ -92,7 +92,15 @@ const employerSchema = new mongoose.Schema(
     bio: {
       type: String,
     },
-
+    notifications: [
+      {
+        sender: { type: mongoose.Types.ObjectId, ref: "Candidate" },
+        message: String,
+        redirectUrl: String,
+        timestamp: { type: Date, default: Date.now },
+        isRead: { type: Boolean, default: false },
+      },
+    ],
     jobs: [
       {
         type: mongoose.Types.ObjectId,

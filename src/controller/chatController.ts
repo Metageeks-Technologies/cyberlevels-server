@@ -2,6 +2,7 @@ import catchAsyncError from "../middleware/catchAsyncError";
 import Chat from "../model/Chat";
 import JobApp from "../model/JobApp";
 import Candidate from "../model/user/Candidate";
+import Employer from "../model/user/Employer";
 import ErrorHandler from "../utils/errorHandler";
 import { sendMail } from "../utils/nodemailer";
 
@@ -49,7 +50,7 @@ export const initiateChat = catchAsyncError(async (req, res, next) => {
     success: true,
     chat,
   });
-});
+}); 
 
 export const addMessage = catchAsyncError(async (req, res, next) => {
   const { chatId, role, userId, text } = req.body;
@@ -68,6 +69,37 @@ export const addMessage = catchAsyncError(async (req, res, next) => {
     { $addToSet: { messages: newMessage } },
     { new: true }
   );
+  const CurrentChat = await Chat.findById(chatId)
+  .populate({
+    path: 'jobApp',
+    populate: {
+      path: 'jobPost',
+      model: 'JobPost'
+    }
+  });
+  if (role === "candidate") {
+    const candidate = await Candidate.findById(userId);
+    const jobPostTitle = (CurrentChat?.jobApp as any).jobPost.title;
+    const jobCode = (CurrentChat?.jobApp as any).jobPost.jobCode;
+    const jobId = (CurrentChat?.jobApp as any).jobPost._id;
+    const notificationObject = {
+      sender: userId,
+    message: `You have recieved a message from ${candidate?.firstName} ${candidate?.lastName} for ${jobPostTitle}(${jobCode})`,
+    redirectUrl: `/dashboard/employer-dashboard/jobs/${jobId}`,
+    }
+    const employer = await Employer.findOneAndUpdate(CurrentChat?.participants[0],{$push:{notifications:notificationObject}})
+  }
+  if(role === "employer"){
+    const jobPostTitle = (CurrentChat?.jobApp as any).jobPost.title;
+    const jobCode = (CurrentChat?.jobApp as any).jobPost.jobCode;
+    const notificationObject = {
+      sender:userId,
+      message:`You have a message from employer for ${jobPostTitle}(${jobCode})  job application`,
+      redirectUrl:`/dashboard/candidate-dashboard/jobs`
+    }
+    const candidate = await Candidate.findOneAndUpdate(CurrentChat?.participants[1],{$push:{notifications:notificationObject}})
+  }
+
   if (!chats) {
     return next(new ErrorHandler("chat not found", 404));
   }
@@ -77,6 +109,8 @@ export const addMessage = catchAsyncError(async (req, res, next) => {
     chat,
   });
 });
+
+
 export const getMessages = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
 
