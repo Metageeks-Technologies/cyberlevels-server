@@ -145,6 +145,7 @@ export interface IEmployer extends Document {
     subscription: IEmployerSub,
     signInProvider?: "linkedIn" | "jwt"
     savedCandidates: string[],
+    notifications: INotification[];
     _id: string,
     paymentDate?: Date,
     createJWT(accessToken?: string): string;
