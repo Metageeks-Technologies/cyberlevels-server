@@ -414,9 +414,13 @@ export const getAllCandidate = catchAsyncError(async (req, res, next) => {
 
 
   if (keyword) {
-    // queryObject.skills = { $in: [new RegExp(myKeyWord, 'i')] };
-    queryObject.firstName = { $regex: myKeyWord, $options: "i" };
-  }
+    const regex = new RegExp(myKeyWord, 'i');
+    queryObject.$or = [
+        { firstName: { $regex: regex } },
+        { skills: { $in: [regex] } },
+        { softSkills: { $in: [regex] } }
+    ];
+}
   if (candidateType) {
     queryObject.gender = candidateType;
   }
