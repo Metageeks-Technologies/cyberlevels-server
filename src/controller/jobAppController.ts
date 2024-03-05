@@ -237,6 +237,7 @@ export const updateStatus = catchAsyncError(async (req, res, next) => {
   };
 
   // Add the notification to the recipient's user document
+  const jobPost = JobPost.findById(jobApp.jobPost)
   const candidate = await Candidate.findByIdAndUpdate(
     candidateId,
     {
@@ -250,7 +251,9 @@ export const updateStatus = catchAsyncError(async (req, res, next) => {
   const notificationObject =
     candidate.notifications[candidate.notifications.length - 1];
   console.log(notificationObject);
-
+  if(status === "Shortlisted"){
+    sendMail("candidate","Shortlisted",{email:candidate.email,...jobPost});
+  }
   res.status(200).json({
     success: true,
     notification: notificationObject,
