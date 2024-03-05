@@ -29,10 +29,6 @@ const profileComplete = catchAsyncError(async (req: Request, res: Response, next
             candidate.isProfileCompleted = true;
             console.log('profileComplete middleware making true');
             await candidate.save();
-        }else{
-            candidate.isProfileCompleted = false;
-            console.log('profileComplete middleware making false');
-            await candidate.save();
         }
     }
 

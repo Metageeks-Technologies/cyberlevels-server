@@ -303,7 +303,6 @@ export const updateCurrCandidate = catchAsyncError(async (req, res, next) => {
   const { firstName, lastName, resumes, location, skills, softSkills } =
     candidate;
   if (
-    !candidate.isProfileCompleted &&
     firstName &&
     lastName &&
     resumes.length &&
@@ -314,6 +313,10 @@ export const updateCurrCandidate = catchAsyncError(async (req, res, next) => {
   ) {
     candidate.isProfileCompleted = true;
     console.log("profileComplete middleware making true");
+    await candidate.save();
+  }else{
+    candidate.isProfileCompleted = false;
+    console.log("profileComplete middleware making false");
     await candidate.save();
   }
   res.status(200).json({
@@ -961,6 +964,11 @@ export const addResume = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("candidate not found", 404));
   }
   const resume = candidate.resumes[candidate.resumes.length - 1];
+  if (candidate.firstName && candidate.lastName && candidate.resumes.length && candidate.location.city && candidate.location.country && candidate.skills.length && candidate.softSkills.length) {
+    candidate.isProfileCompleted = true;
+    console.log('profileComplete middleware making true');
+    await candidate.save();
+}
   res.status(200).json({
     success: true,
     resume,
@@ -983,7 +991,12 @@ export const deleteResumeFromS3 = catchAsyncError(async (req, res, next) => {
   const candidate = await Candidate.findByIdAndUpdate(candidateId, {
     $pull: { resumes: { _id: resumeId } },
   });
-
+  console.log(candidate)
+  if(candidate && candidate.resumes.length===1){
+    candidate.isProfileCompleted = false;
+    console.log("Making false");
+    await candidate.save();
+  }
   res.status(200).json({
     success: true,
     resumeId,
