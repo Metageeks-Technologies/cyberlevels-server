@@ -3,6 +3,7 @@ import CandidateSkills from '../../model/controlledField/candidateSkills.js';
 import ErrorHandler from '../../utils/errorHandler.js';
 import JobPosition from '../../model/controlledField/JobPosition';
 import JobCategory from '../../model/controlledField/jobCategory';
+import CompanyCategory from '../../model/controlledField/companyCategory.js';
 
 export const getAutoComplete = (model: any) => {
     return catchAsyncError(async (req, res, next) => {
@@ -56,7 +57,22 @@ export const getAutoCompleteCategory = catchAsyncError(async (req, res, next) =>
     res.send(result);
 
 })
-
+export const addCompanyCategory = catchAsyncError(async (req,res,next) => {
+    const { categoryName } = req.body;
+    if (!categoryName) {
+        return next(new ErrorHandler("category is required", 400));
+    }
+    const category = categoryName.toLowerCase().trim();
+    const existingCategory = await CompanyCategory.findOne({ name: category });
+    if (existingCategory) {
+        return next(new ErrorHandler("category already exists, please select from the list", 400));
+    }
+    const newCategory = await CompanyCategory.create({ name: category });
+    res.status(200).json({
+        success: true,
+        category: newCategory
+    })
+})
 export const addJobCategory = catchAsyncError(async (req, res, next) => {
 
     const { categoryName } = req.body;
