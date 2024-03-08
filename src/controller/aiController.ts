@@ -685,7 +685,7 @@ export const getSuggestion = catchAsyncError(async (req, res, next) => {
     }
 
     if (candidate.subscription.offering.aiTokenLimit <= 0) {
-        return next(new ErrorHandler("Token limit exceeded", 400))
+        return next(new ErrorHandler("You have exhausted your token limit", 400))
     }
 
     await downloadResumeToServer(s3Key, filePath);

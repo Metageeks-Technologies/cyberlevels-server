@@ -28,7 +28,7 @@ export const sendMail = async function sendMail(
 
       let Osubject: string | undefined = template?.subject,
         Ohtml: string | undefined = template?.body;
-
+      // console.log(data._doc.title,"This is nodemailer data")
       const updatedHtml = String(Ohtml)
         .replace("{{email}}", data.email)
         .replace(
@@ -37,7 +37,7 @@ export const sendMail = async function sendMail(
         )
         .replace("{{Username}}", `${data.firstName} ${data.lastName}`)
         .replace("{{jobPost}}", `${data.title}`)
-        .replace(`{{jobCode}}`, `${data.jobCode}`);
+        .replace("{{jobCode}}", `${data.jobCode}`);
 
       //   if (str === 'candidateSignup') {
       //     Osubject = `Thank you for signing up ${data.firstName}`;
