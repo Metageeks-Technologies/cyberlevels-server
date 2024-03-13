@@ -3,7 +3,7 @@ import CandidateSkills from '../../model/controlledField/candidateSkills.js';
 import ErrorHandler from '../../utils/errorHandler.js';
 import JobPosition from '../../model/controlledField/JobPosition';
 import JobCategory from '../../model/controlledField/jobCategory';
-import CompanyCategory from '../../model/controlledField/companyCategory.js';
+import CompanyCategory from '../../model/controlledField/companyCategory';
 
 export const getAutoComplete = (model: any) => {
     return catchAsyncError(async (req, res, next) => {
@@ -43,6 +43,20 @@ export const getAutoComplete = (model: any) => {
 
     })
 }
+
+export const getAutoCompleteCategoryCompany = catchAsyncError(async (req, res, next) => {
+
+    const query = req.query.query as string;
+    const queryObject: any = {}
+    if (query) {
+        queryObject.name = { $regex: query, $options: "i" };
+    }
+
+    const result = await CompanyCategory.find(queryObject).limit(5);
+
+    res.send(result);
+
+})
 
 export const getAutoCompleteCategory = catchAsyncError(async (req, res, next) => {
 

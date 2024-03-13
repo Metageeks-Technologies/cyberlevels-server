@@ -2,14 +2,14 @@ import express from 'express';
 import JobCategory from '../model/controlledField/jobCategory';
 import JobPosition from '../model/controlledField/JobPosition';
 import CompanyCategory from '../model/controlledField/companyCategory';
-import { addPosition, addSkill, getAutoComplete, getAutoCompleteCategory, addJobCategory, addCompanyCategory } from '../controller/controlledField/controlledFeild.ts';
+import { addPosition, addSkill, getAutoComplete, getAutoCompleteCategory,getAutoCompleteCategoryCompany, addJobCategory, addCompanyCategory } from '../controller/controlledField/controlledFeild.ts';
 import Company from '../model/Company';
 import CandidateSkills from '../model/controlledField/candidateSkills';
 const controlledFieldRouter = express.Router();
 
 // controlledFieldRouter.route("/companyCategory/add").post(addCompanyCategory);
 // controlledFieldRouter.route("/companyCategory/delete").delete(deleteCompanyCategory);
-controlledFieldRouter.route("/companyCategory/search").get(getAutoComplete(CompanyCategory));
+controlledFieldRouter.route("/companyCategory/search").get(getAutoCompleteCategoryCompany);
 controlledFieldRouter.route("/companyCategory/add").post(addCompanyCategory);
 // controlledFieldRouter.route("/getAllFields").get()
 // controlledFieldRouter.route("/jobCategory/add").post(addJobCategory);
