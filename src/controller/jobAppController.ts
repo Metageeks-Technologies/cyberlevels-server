@@ -20,7 +20,7 @@ export const createJobApp = catchAsyncError(async (req, res, next) => {
   const requestingUser = req?.user as ICandidate;
   const user = await Candidate.findById(requestingUser?._id || "");
   const job = await JobPost.findById(jobPost);
-  
+
   // if (user && user.subscription.offering.applyJobLImit === 0) {
   //   return next(
   //     new ErrorHandler(
@@ -87,15 +87,13 @@ export const createJobApp = catchAsyncError(async (req, res, next) => {
 
   const notificationObject = {
     sender: user?._id,
-    message: `You have a job application for ${
-      job?.title
-    } (${
-      job?.jobCode
-    }) from ${user?.firstName}`,
+    message: `You have a job application for ${job?.title
+      } (${job?.jobCode
+      }) from ${user?.firstName}`,
     redirectUrl: `/dashboard/employer-dashboard/jobs`,
   };
-  const employer = await Employer.findByIdAndUpdate(job?.employerId,{
-    $push:{notifications:notificationObject}
+  const employer = await Employer.findByIdAndUpdate(job?.employerId, {
+    $push: { notifications: notificationObject }
   });
 
   job?.candidates.push(requestingUser?._id);
@@ -245,15 +243,15 @@ export const updateStatus = catchAsyncError(async (req, res, next) => {
     },
     { new: true }
   );
-  if (!candidate) {
-    return next(new ErrorHandler("candidate not  found", 404));
+  if (!candidate || !jobPost) {
+    return next(new ErrorHandler("candidate or jobPost not  found", 404));
   }
   const notificationObject =
     candidate.notifications[candidate.notifications.length - 1];
   // console.log(notificationObject);
   // console.log(jobPost,"This is jobPost")
-  if(status === "Shortlisted"){
-    await sendMail("candidate","Shortlisted",{email:candidate.email,...jobPost.toObject()});
+  if (status === "Shortlisted") {
+    await sendMail("candidate", "Shortlisted", { email: candidate.email, ...jobPost.toObject() });
   }
   res.status(200).json({
     success: true,
